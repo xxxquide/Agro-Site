@@ -1,7 +1,7 @@
 {%- extends "base.html.j2" -%}
 {%- import "blocks.html.j2" as B with context -%}
 {%- block body -%}
-{{ B.hero_page(c.about.eyebrow, c.about.title, c.about.lead) }}
+{{ B.hero_page(c.about.eyebrow, c.about.title, c.about.lead, 'about-team', c.about.image_alt) }}
 {%- for s in V.about_sections %}
 {{ B.render(s) }}
 {%- endfor %}

@@ -1,0 +1,202 @@
+/* ==========================================================================
+   VARIATION THEMES
+
+   Re-ordering sections was not enough — with one surface treatment across all
+   three, the variations read as the same site shuffled. Each variation now gets
+   its own design direction, applied from a single class on <body>:
+
+     v1  Light      white canvas, shadowed floating cards, lime accents.
+                    The airy, product-site reading. (the base styles)
+     v2  Banded     dark full-bleed bands interleaved with light ones, cards
+                    flattened to hairline borders, bigger and tighter headings,
+                    section numbers. Denser, more editorial-industrial.
+     v3  Quiet      no card containers at all — content separated by rules and
+                    whitespace, larger and lighter display type, lime used once
+                    per screen instead of throughout. Gallery-like.
+
+   Same brand, same content, three directions — which is what a client is
+   actually choosing between.
+   ========================================================================== */
+
+/* ==========================================================================
+   V2 — BANDED
+   ========================================================================== */
+
+.v2 {
+  --section: clamp(4rem, 2.5rem + 5.5vw, 8rem);
+}
+
+/* headings get a size up and a tighter track */
+.v2 h2 { font-size: clamp(2.15rem, 1.2rem + 3.4vw, 3.4rem); letter-spacing: -.065em; }
+.v2 .head { gap: var(--s-md); }
+
+/* numbered section headings */
+.v2 .head > .tag { position: relative; }
+
+/* --- the dark bands ---------------------------------------------------- */
+.v2 #capacity,
+.v2 #terms,
+.v2 #journey {
+  background: var(--ink);
+  color: var(--on-dark);
+  padding-bottom: var(--section);
+  margin-top: var(--section);
+  padding-top: var(--section);
+}
+.v2 #capacity h2, .v2 #terms h2, .v2 #journey h2,
+.v2 #capacity h3, .v2 #terms h3, .v2 #journey h3 { color: var(--white); }
+.v2 #capacity .lead, .v2 #terms .lead, .v2 #journey .lead { color: var(--on-dark-2); }
+.v2 #capacity .tag, .v2 #terms .tag, .v2 #journey .tag { color: var(--on-dark-2); }
+.v2 #capacity .tag::before, .v2 #terms .tag::before, .v2 #journey .tag::before { background: var(--lime); }
+
+/* cards inside a dark band invert */
+.v2 #capacity .cap__card {
+  background: rgba(255, 255, 255, .05);
+  box-shadow: none;
+  border: 1px solid var(--line-dark);
+}
+.v2 #capacity .cap__viz { background: rgba(0, 0, 0, .22); }
+.v2 #capacity .cap__txt p { color: var(--on-dark-2); }
+.v2 #capacity .bars__track { background: rgba(255, 255, 255, .12); }
+.v2 #capacity .bars__fill { background: var(--white); }
+.v2 #capacity .bars__row:first-child .bars__fill { background: var(--lime); }
+.v2 #capacity .bars__val { color: var(--on-dark-2); }
+.v2 #capacity .chart__fill { background: rgba(255, 255, 255, .18); }
+.v2 #capacity .chart__years { border-color: var(--line-dark); }
+.v2 #capacity .chart__years span { color: rgba(255, 255, 255, .45); }
+.v2 #capacity .lab__row { background: rgba(255, 255, 255, .07); }
+.v2 #capacity .orbit__ring { border-color: var(--line-dark-2); }
+.v2 #capacity .orbit__hub { background: var(--lime); color: var(--black); }
+.v2 #capacity .orbit__pill { background: var(--ink-2, #1c1c1c); color: var(--white); box-shadow: none; border: 1px solid var(--line-dark-2); }
+
+.v2 #terms .plan {
+  background: rgba(255, 255, 255, .05);
+  box-shadow: none;
+  border: 1px solid var(--line-dark);
+  color: var(--white);
+}
+.v2 #terms .plan__desc, .v2 #terms .plan__name { color: var(--on-dark-2); }
+.v2 #terms .plan__list svg { color: var(--lime); }
+.v2 #terms .plan--hot { background: var(--lime); color: var(--black); border-color: var(--lime); }
+.v2 #terms .plan--hot .plan__desc, .v2 #terms .plan--hot .plan__name { color: #3f5610; }
+.v2 #terms .plan--hot .plan__list svg { color: var(--ink); }
+
+.v2 #journey::before { display: none; }
+.v2 .journey::before { background: linear-gradient(180deg, var(--line-dark), var(--lime), var(--line-dark)); }
+.v2 #journey .milestone p { color: var(--on-dark-2); }
+.v2 #journey .milestone__y { color: rgba(255, 255, 255, .5); }
+.v2 #journey .milestone__body::before { box-shadow: 0 0 0 4px var(--ink); }
+
+/* --- light cards flatten to hairlines throughout v2 -------------------- */
+.v2 .card,
+.v2 .stat,
+.v2 .value,
+.v2 .svc,
+.v2 .quote,
+.v2 .cform,
+.v2 .faq__i {
+  box-shadow: none;
+  border: 1px solid var(--border);
+}
+.v2 .faq__i[open] { box-shadow: none; border-color: var(--grey-300); }
+.v2 .plan { box-shadow: none; border: 1px solid var(--border); }
+
+/* subtle canvas alternation so the light sections do not run together */
+.v2 #crops, .v2 #faq { background: var(--grey-100); padding-bottom: var(--section); }
+
+/* --- tighter, wider imagery -------------------------------------------- */
+.v2 .about__ph { border-radius: var(--r-sm); }
+.v2 .post { border-radius: var(--r-sm); }
+.v2 .member__ph { border-radius: var(--r-sm); }
+.v2 .svc { border-radius: var(--r-sm); }
+
+/* ==========================================================================
+   V3 — QUIET
+   ========================================================================== */
+
+.v3 {
+  --section: clamp(4.5rem, 3rem + 7vw, 10rem);
+  --maxw: 74rem;
+}
+
+/* display type gets larger and lighter */
+.v3 h1 { font-size: clamp(2.6rem, 1rem + 5.8vw, 4.25rem); font-weight: var(--fw-light); letter-spacing: -.055em; }
+.v3 h2 { font-size: clamp(2rem, 1.1rem + 3.2vw, 3.1rem); font-weight: var(--fw-light); letter-spacing: -.05em; }
+.v3 h3 { font-weight: var(--fw-regular); }
+.v3 .head { gap: var(--s-xl); max-width: 40rem; }
+.v3 .lead { font-size: var(--fs-xl); font-weight: var(--fw-light); line-height: 1.45; }
+
+/* section headings are centred by default in this direction */
+.v3 .head:not(.head--wide) { margin-inline: auto; text-align: center; align-items: center; }
+.v3 .head-row { justify-content: center; text-align: center; }
+.v3 .head-row .head { align-items: center; text-align: center; }
+
+/* --- no card containers: rules and space instead ----------------------- */
+.v3 .card,
+.v3 .stat,
+.v3 .value,
+.v3 .cap__card,
+.v3 .plan,
+.v3 .faq__i,
+.v3 .quote,
+.v3 .svc,
+.v3 .cform {
+  box-shadow: none;
+  background: transparent;
+  border: 0;
+}
+.v3 .stat { border-top: 1px solid var(--border); border-radius: 0; padding-inline: 0; padding-top: var(--s-lg); }
+.v3 .stats { gap: var(--s-lg) var(--s-huge); }
+.v3 .value { border-top: 1px solid var(--border); border-radius: 0; padding: var(--s-xl) 0 0; }
+.v3 .cap__card { border-top: 1px solid var(--border); border-radius: 0; padding: var(--s-huge) 0 0; }
+.v3 .cap__viz { background: transparent; border-radius: 0; padding: 0; min-height: 0; }
+.v3 .faq__i { border-bottom: 1px solid var(--border); border-radius: 0; }
+.v3 .faq__q { padding-inline: 0; }
+.v3 .faq__a { padding-inline: 0; }
+.v3 .plan { border-top: 2px solid var(--ink); border-radius: 0; padding: var(--s-xl) 0 0; }
+.v3 .plan--hot { background: transparent; border-top-color: var(--lime-lo); }
+.v3 .plan--hot .plan__desc, .v3 .plan--hot .plan__name, .v3 .plan--hot .plan__price span { color: var(--text-2); }
+.v3 .plan__flag { position: static; transform: none; align-self: flex-start; }
+.v3 .quote { background: transparent; }
+.v3 .quote__body { padding: var(--s-lg) 0 0; }
+.v3 .svc { border-radius: 0; border-top: 1px solid var(--border); padding-top: var(--s-huge); gap: clamp(1.5rem,3vw,4rem); }
+.v3 .svc__body { padding: 0; }
+.v3 .cform { border-top: 1px solid var(--border); border-radius: 0; padding: var(--s-huge) 0 0; }
+
+/* imagery: bigger radius, more generous */
+.v3 .about__ph, .v3 .post, .v3 .member__ph, .v3 .quote__ph, .v3 .svc__ph, .v3 .contact-photo {
+  border-radius: var(--r-lg);
+}
+.v3 .about__ph { box-shadow: none; }
+
+/* lime is spent sparingly here — one accent per screen */
+.v3 .tag::before { background: var(--grey-300); }
+.v3 .tag--lime::before { background: var(--lime-lo); }
+.v3 .btn--outline { box-shadow: inset 0 0 0 1px var(--ink); }
+
+/* the timeline loses its rail and becomes a plain indexed list */
+.v3 .journey::before { display: none; }
+.v3 .milestone { grid-template-columns: 6rem 1fr; border-top: 1px solid var(--border); }
+.v3 .milestone__body { padding-left: 0; }
+.v3 .milestone__body::before { display: none; }
+
+/* ==========================================================================
+   Shared: section numbering, used by v2 only
+   ========================================================================== */
+
+.v2 [data-secnum]::before {
+  content: attr(data-secnum);
+  font-family: var(--mono);
+  font-size: var(--fs-xs);
+  letter-spacing: .12em;
+  color: var(--grey-300);
+  display: block;
+  margin-bottom: var(--s-sm);
+}
+.v2 #capacity [data-secnum]::before,
+.v2 #terms [data-secnum]::before,
+.v2 #journey [data-secnum]::before { color: rgba(255, 255, 255, .4); }
+
+@media (max-width: 64rem) {
+  .v3 .milestone { grid-template-columns: 4rem 1fr; }
+}

@@ -1,0 +1,64 @@
+{#- ============================================================================
+    Partner wordmarks.
+
+    The source template fills this row with Logoipsum — invented marks that read
+    as real brands. That is the correct solution and it is kept here: putting
+    actual Ukrainian companies' trademarks on a site that claims them as partners
+    would be both a trademark issue and a false endorsement claim.
+
+    What makes a strip like this read as real is VARIETY, not fidelity. Ten marks
+    in one style look like a placeholder; ten marks in three different
+    construction styles look like a client list. So:
+
+      symbol   — glyph left, wordmark right (the common case)
+      solid    — glyph reversed out of a filled rounded tile
+      wordmark — type only, tighter and heavier, no glyph
+
+    Each mark also carries its own weight and tracking, the way real logotypes do.
+    ============================================================================ -#}
+
+{%- macro glyph(kind) -%}
+{%- if kind == 'ear' -%}
+<path d="M12 22V8.5M12 8.5c0-2.3 1.9-4 1.9-4s1.9 1.7 1.9 4-1.9 4-1.9 4-1.9-1.7-1.9-4Zm0 0c0-2.3-1.9-4-1.9-4s-1.9 1.7-1.9 4 1.9 4 1.9 4 1.9-1.7 1.9-4Zm0 6.6c0-2 1.7-3.5 1.7-3.5s1.7 1.5 1.7 3.5-1.7 3.5-1.7 3.5-1.7-1.5-1.7-3.5Zm0 0c0-2-1.7-3.5-1.7-3.5s-1.7 1.5-1.7 3.5 1.7 3.5 1.7 3.5 1.7-1.5 1.7-3.5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+{%- elif kind == 'stone' -%}
+<circle cx="12" cy="12" r="8.4" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.1" fill="currentColor"/><path d="M12 3.6v4M12 16.4v4M3.6 12h4M16.4 12h4M6.1 6.1l2.8 2.8M15.1 15.1l2.8 2.8M17.9 6.1l-2.8 2.8M8.9 15.1l-2.8 2.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+{%- elif kind == 'drop' -%}
+<path d="M12 3.4s5.4 5.7 5.4 9.4a5.4 5.4 0 1 1-10.8 0C6.6 9.1 12 3.4 12 3.4Z" stroke="currentColor" stroke-width="1.6"/><path d="M9.5 14.6a2.7 2.7 0 0 0 2.5 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+{%- elif kind == 'pellet' -%}
+<rect x="3.4" y="9.4" width="7.4" height="5.2" rx="2.6" transform="rotate(-24 3.4 9.4)" stroke="currentColor" stroke-width="1.6"/><rect x="12.2" y="12.6" width="7.4" height="5.2" rx="2.6" transform="rotate(-24 12.2 12.6)" stroke="currentColor" stroke-width="1.6"/>
+{%- elif kind == 'crystal' -%}
+<path d="M12 3.2 20 9v6l-8 5.8L4 15V9Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m12 3.2 4 5.8-4 11.8-4-11.8Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+{%- elif kind == 'sack' -%}
+<path d="M8 4.5h8l-1.2 2.8c2.6 1.4 4.2 3.7 4.2 6.6 0 3.6-3.1 5.6-7 5.6s-7-2-7-5.6c0-2.9 1.6-5.2 4.2-6.6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.4 7.3h5.2" stroke="currentColor" stroke-width="1.4"/>
+{%- elif kind == 'wave' -%}
+<path d="M3 15.5c2-2 3.6-2 5.6 0s3.6 2 5.6 0 3.6-2 5.6 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M6.5 11.4V5.8L12 3.6l5.5 2.2v5.6" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+{%- elif kind == 'hop' -%}
+<path d="M12 3.8c2.7 0 4.6 2.1 4.6 4.8 0 4.2-4.6 11.3-4.6 11.3S7.4 12.8 7.4 8.6C7.4 5.9 9.3 3.8 12 3.8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 7.2v8.6M9.5 9.4h5M10.1 12.5h3.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+{%- elif kind == 'growth' -%}
+<path d="M4 18.5 9.4 13l3.4 3.4L20 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.2 9H20v4.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+{%- elif kind == 'plot' -%}
+<rect x="3.6" y="3.6" width="16.8" height="16.8" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M9.4 3.6v16.8M3.6 12h16.8" stroke="currentColor" stroke-width="1.4"/>
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro mark(p) -%}
+{%- if p.style == 'solid' -%}
+<span class="pm pm--solid">
+  <span class="pm__tile"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true">{{ glyph(p.kind) }}</svg></span>
+  <span class="pm__t" style="font-weight:{{ p.w }};letter-spacing:{{ p.ls }}">{{ p.name }}{% if p.suffix %}<em>{{ p.suffix }}</em>{% endif %}</span>
+</span>
+{%- elif p.style == 'wordmark' -%}
+<span class="pm pm--word">
+  <span class="pm__t" style="font-weight:{{ p.w }};letter-spacing:{{ p.ls }}">{{ p.name }}{% if p.suffix %}<em>{{ p.suffix }}</em>{% endif %}</span>
+</span>
+{%- else -%}
+<span class="pm">
+  <svg class="pm__g" viewBox="0 0 24 24" fill="none" aria-hidden="true">{{ glyph(p.kind) }}</svg>
+  <span class="pm__t" style="font-weight:{{ p.w }};letter-spacing:{{ p.ls }}">{{ p.name }}{% if p.suffix %}<em>{{ p.suffix }}</em>{% endif %}</span>
+</span>
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro row(items, doubled=True) -%}
+{%- for pass_ in ([1, 2] if doubled else [1]) %}{% for p in items %}{{ mark(p) }}{% endfor %}{% endfor %}
+{%- endmacro -%}

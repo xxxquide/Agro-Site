@@ -29,7 +29,7 @@ import sys
 import rcssmin
 import rjsmin
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
-from markupsafe import Markup
+from markupsafe import Markup, escape
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE = "https://xxxquide.github.io/Agro-Site/"
@@ -45,6 +45,7 @@ CSS_PARTS = [
     "src/css/04-sections.css",
     "src/css/05-motion.css",
     "src/css/06-responsive.css",
+    "src/css/07-variants.css",
 ]
 
 LOCALES = [("uk", ""), ("en", "en/")]
@@ -151,6 +152,32 @@ def fan_transforms(n):
             "z": n - int(d * 2),
         })
     return out
+
+
+ICON_CHIP = {
+    "leaf":      ("lime", "M20 4.5c0 8-4.7 12.4-10 12.4a5 5 0 0 1-5-5C5 6.6 11.6 4.5 20 4.5Z"),
+    "grain":     ("sky",  "M8.4 4.8v8.4M15.6 10.8v8.4"),
+    "shield":    ("ink",  "M12 3.5 5.5 6v5.4c0 4 2.7 7.4 6.5 9.1 3.8-1.7 6.5-5.1 6.5-9.1V6Z"),
+    "handshake": ("lime", "m3.5 12.5 3.4-3.4a2 2 0 0 1 2.8 0l1.1 1.1a1.6 1.6 0 0 0 2.3 0"),
+    "route":     ("sky",  "M6 8.4v3.4a3.6 3.6 0 0 0 3.6 3.6h4.8"),
+}
+
+
+def iconic(text):
+    """Render [[icon]] markers inside a heading as inline coloured discs.
+
+    The template drops small coloured chips into the middle of a display line;
+    it is one of its most recognisable moves and it breaks up an otherwise long
+    heading. Markers live in the content JSON so both locales stay in sync.
+    """
+    def sub(m):
+        tone, path = ICON_CHIP.get(m.group(1), ("lime", ""))
+        cls = "ichip" + ("" if tone == "lime" else f" ichip--{tone}")
+        return (f'<span class="{cls}" aria-hidden="true">'
+                f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+                f'stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'
+                f'<path d="{path}"/></svg></span>')
+    return Markup(re.sub(r"\[\[([a-z]+)\]\]", sub, escape(text)))
 
 
 def chart_builder():
@@ -498,6 +525,7 @@ def main():
                     logo_mark=Markup(logo_inner),
                     srcset=make_srcset(imgs, prefix),
                     chart_html=chart_html,
+                    iconic=iconic,
                     fan=fan_transforms(len(c["hero"]["cards"])),
                     orbit=ORBIT, geo_imgs=GEO_IMGS,
                     fmt_num=lambda n, _t=thousands: f"{n:,}".replace(",", _t),

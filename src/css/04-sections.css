@@ -808,3 +808,336 @@
 .crop__spec { display: flex; justify-content: space-between; gap: .6rem; font-size: var(--fs-xs); }
 .crop__spec dt { color: rgba(255, 255, 255, .62); }
 .crop__spec dd { font-family: var(--mono); white-space: nowrap; }
+
+/* --- inner-page split hero ----------------------------------------------
+   The template's about/services pages open with a two-panel hero: a grey
+   rounded panel carrying the copy on the left, a photograph on the right.
+   Much stronger than a bare heading on white, which is what these pages had. */
+
+.phero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .75rem;
+  padding-top: calc(var(--header-h) + .75rem);
+}
+.phero__copy {
+  background: var(--grey-100);
+  border-radius: var(--r);
+  padding: clamp(2rem, 4vw, 4rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--s-lg);
+  min-height: clamp(20rem, 34vw, 27rem);
+}
+.phero__copy h1 { max-width: 16ch; }
+.phero__copy .lead { max-width: 44ch; }
+.phero__ph {
+  position: relative;
+  border-radius: var(--r);
+  overflow: hidden;
+  min-height: clamp(20rem, 34vw, 27rem);
+}
+.phero__ph img { width: 100%; height: 100%; object-fit: cover; }
+
+/* stacked avatars + trust line, as in the template */
+.avatars { display: inline-flex; align-items: center; gap: .7rem; }
+.avatars__row { display: inline-flex; }
+.avatars__row img,
+.avatars__more {
+  width: 2.1rem; height: 2.1rem;
+  border-radius: 50%;
+  border: 2px solid var(--white);
+  object-fit: cover;
+}
+.avatars__row > * + * { margin-left: -.7rem; }
+.avatars__more {
+  display: grid; place-items: center;
+  background: var(--lime);
+  color: var(--black);
+  font-size: .68rem;
+  font-weight: var(--fw-medium);
+}
+.avatars__t { font-size: var(--fs-sm); color: var(--text-2); }
+
+/* --- heading with inline icon chips --------------------------------------
+   A signature of the template: small coloured discs sitting inside the
+   heading's text flow, breaking up a long display line. */
+
+.h-iconic .ichip {
+  display: inline-grid;
+  place-items: center;
+  width: .78em; height: .78em;
+  border-radius: 50%;
+  vertical-align: -.06em;
+  margin-inline: .12em;
+  background: var(--lime);
+  color: var(--black);
+}
+.h-iconic .ichip svg { width: .46em; height: .46em; }
+.h-iconic .ichip--sky { background: var(--sky); color: var(--white); }
+.h-iconic .ichip--ink { background: var(--ink); color: var(--lime); }
+
+/* --- team card, template construction ------------------------------------
+   Name and role on top, photograph beneath, corner action button. The earlier
+   build had photo-then-name, which is the generic arrangement. */
+
+.member--top {
+  background: var(--grey-100);
+  border-radius: var(--r);
+  padding: var(--s-lg);
+  gap: var(--s-md);
+  position: relative;
+}
+.member--top .member__head { display: flex; flex-direction: column; gap: .2rem; padding-right: 2.5rem; }
+.member--top .member__n { font-size: var(--fs-h3); letter-spacing: -.045em; line-height: 1.1; }
+.member--top .member__r { font-size: var(--fs-xs); color: var(--text-2); }
+.member--top .member__ph { border-radius: var(--r-sm); aspect-ratio: 1; }
+.member--top .member__go {
+  position: absolute;
+  top: var(--s-lg); right: var(--s-lg);
+  width: 2.1rem; height: 2.1rem;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--ink);
+  color: var(--lime);
+  transition: transform var(--dur-sm) var(--ease-back);
+}
+.member--top .member__go svg { width: .68rem; height: .68rem; }
+.member--top:hover .member__go { transform: rotate(45deg); }
+.v3 .member--top { background: transparent; padding: 0; border-top: 1px solid var(--border); padding-top: var(--s-lg); }
+.v2 .member--top { background: var(--white); border: 1px solid var(--border); }
+
+@media (max-width: 64rem) {
+  .phero { grid-template-columns: 1fr; }
+  .phero__ph { min-height: 16rem; }
+}
+
+/* --- contact page furniture ----------------------------------------------
+   The three contact layouts previously rendered one section and a form — 3 KB
+   of body. These are the blocks that give them substance. */
+
+.ccards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--s-md);
+}
+.ccard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-sm);
+  padding: var(--s-xl);
+  border-radius: var(--r);
+  background: var(--white);
+  box-shadow: var(--shadow);
+  transition: transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease);
+}
+.ccard:hover { transform: translateY(-5px); box-shadow: var(--shadow-lift), var(--shadow); }
+.ccard__k {
+  font-family: var(--mono); font-size: .64rem;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--grey-300);
+}
+.ccard__v { font-size: var(--fs-lg); font-weight: var(--fw-medium); letter-spacing: -.03em; }
+.ccard__n { font-size: var(--fs-xs); color: var(--text-2); margin-top: auto; }
+.ccard .itile { margin-bottom: var(--s-sm); }
+
+.v2 .ccard { box-shadow: none; border: 1px solid var(--border); }
+.v3 .ccard {
+  box-shadow: none; background: transparent; border-radius: 0;
+  border-top: 1px solid var(--border); padding: var(--s-xl) 0 0;
+}
+.v3 .ccard:hover { transform: none; }
+
+/* directions block */
+.cway {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1.5rem, 3vw, 3rem);
+  align-items: center;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border-radius: var(--r);
+  background: var(--grey-100);
+}
+.v3 .cway { background: transparent; border-top: 1px solid var(--border); border-radius: 0; padding-inline: 0; }
+.cway__body { display: flex; flex-direction: column; gap: var(--s-md); }
+.cway__ph { border-radius: var(--r-md); overflow: hidden; aspect-ratio: 16 / 10; }
+.cway__ph img { width: 100%; height: 100%; object-fit: cover; }
+
+/* "who will answer" — two named people, contacts page only */
+.answer { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--s-lg); }
+.answer__i {
+  display: flex; align-items: center; gap: var(--s-md);
+  padding: var(--s-md);
+  border-radius: var(--r);
+  background: var(--grey-100);
+}
+.v3 .answer__i { background: transparent; border: 1px solid var(--border); }
+.answer__ph { width: 4rem; height: 4rem; border-radius: 50%; overflow: hidden; flex: none; }
+.answer__ph img { width: 100%; height: 100%; object-fit: cover; }
+.answer__b { display: flex; flex-direction: column; gap: .1rem; }
+.answer__n { font-weight: var(--fw-medium); letter-spacing: -.02em; }
+.answer__r { font-size: var(--fs-xs); color: var(--text-2); }
+
+@media (max-width: 48rem) {
+  .cway, .answer { grid-template-columns: 1fr; }
+}
+
+/* --- journey, grid construction (v1) --------------------------------------
+   The template lays its timeline out as a two-column card grid with the year in
+   a filled pill across the top of each card, beside a left-hand heading block —
+   not as a vertical rail. Rail and plain-list treatments are kept for the other
+   two variations, so the same content reads differently in each. */
+
+.jgrid {
+  display: grid;
+  grid-template-columns: .8fr 1.2fr;
+  gap: clamp(2rem, 4vw, 4rem);
+  align-items: start;
+  margin-top: clamp(2rem, 4vw, 3rem);
+}
+.jgrid__cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s-md);
+  padding: var(--s-md);
+  border-radius: var(--r);
+  background: var(--grey-100);
+}
+.jcard {
+  background: var(--white);
+  border-radius: var(--r-md);
+  padding: var(--s-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-md);
+}
+.jcard__y {
+  display: block;
+  padding: .55rem 1rem;
+  border-radius: var(--r-sm);
+  background: var(--ink);
+  color: var(--white);
+  font-family: var(--mono);
+  font-size: var(--fs-sm);
+  letter-spacing: .04em;
+  text-align: center;
+}
+.jcard:nth-child(4n+1) .jcard__y { background: var(--lime); color: var(--black); }
+.jcard__t { font-weight: var(--fw-medium); letter-spacing: -.03em; }
+.jcard p { font-size: var(--fs-xs); color: var(--text-2); line-height: 1.6; }
+
+.v2 .jgrid__cards { background: rgba(255, 255, 255, .05); }
+.v2 .jcard { background: rgba(255, 255, 255, .05); border: 1px solid var(--line-dark); color: var(--white); }
+.v2 .jcard p { color: var(--on-dark-2); }
+.v2 .jcard__y { background: var(--lime); color: var(--black); }
+
+.v3 .jgrid { grid-template-columns: 1fr; }
+.v3 .jgrid__cards { background: transparent; padding: 0; grid-template-columns: repeat(3, 1fr); }
+.v3 .jcard { background: transparent; border-top: 1px solid var(--border); border-radius: 0; padding: var(--s-lg) 0 0; }
+.v3 .jcard__y {
+  background: transparent; color: var(--text-2); text-align: left;
+  padding: 0; font-size: var(--fs-lg);
+}
+
+@media (max-width: 64rem) {
+  .jgrid { grid-template-columns: 1fr; }
+  .v3 .jgrid__cards { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 48rem) {
+  .jgrid__cards, .v3 .jgrid__cards { grid-template-columns: 1fr; }
+}
+
+/* ==========================================================================
+   CONTACT LAYOUTS — rebuilt to the template's actual geometry
+   All three source pages are a single band; the difference is entirely in how
+   the panel, the photograph and the form relate to each other.
+     ct1  grey panel 1/3 with details pinned to its foot, photo 2/3, white
+          form card floating over the photo with a shadow
+     ct2  centred header, then one grey tray holding a wide form card and a
+          narrow portrait strip with a white details card overlapping its foot
+     ct3  no photograph and no containers at all — form naked on white
+   ========================================================================== */
+
+.ct { padding-top: calc(var(--header-h) + var(--s-lg)); }
+
+/* --- ct1 ---------------------------------------------------------------- */
+.ct1 { display: grid; grid-template-columns: 1fr 2fr; gap: .625rem; min-height: 45rem; }
+.ct1__panel {
+  background: var(--grey-100);
+  border-radius: var(--r);
+  padding: clamp(1.75rem, 3vw, 2.5rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--s-huge);
+}
+.ct1__panel h1 { font-size: clamp(2rem, 1.3rem + 2.2vw, 2.5rem); }
+.ct1__media { position: relative; border-radius: var(--r); overflow: hidden; }
+.ct1__media > picture, .ct1__media img { width: 100%; height: 100%; object-fit: cover; }
+.ct1__card {
+  position: absolute;
+  inset: auto var(--s-xl) var(--s-xl) auto;
+  width: min(30rem, calc(100% - 3rem));
+  background: var(--white);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow);
+  padding: clamp(1.25rem, 2.2vw, 1.85rem);
+}
+.v3 .ct1__card { box-shadow: var(--shadow-sm); }
+
+/* --- ct2 ---------------------------------------------------------------- */
+.ct2__tray {
+  display: grid;
+  grid-template-columns: 2.25fr 1fr;
+  gap: .75rem;
+  background: var(--grey-200);
+  border-radius: var(--r);
+  padding: .75rem;
+  margin-top: clamp(2rem, 4vw, 3rem);
+}
+.ct2__form { background: var(--white); border-radius: var(--r-md); padding: clamp(1.5rem, 2.6vw, 2.25rem); }
+.ct2__side {
+  position: relative;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  padding: .75rem;
+  min-height: 26rem;
+}
+.ct2__side > picture, .ct2__side img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ct2__mini {
+  position: relative;
+  width: 100%;
+  background: var(--white);
+  border-radius: var(--r-sm);
+  padding: var(--s-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-md);
+}
+
+/* --- ct3 ---------------------------------------------------------------- */
+.ct3 { display: grid; grid-template-columns: 1.75fr 1fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+.ct3__head { grid-column: 1 / -1; max-width: 44rem; margin-bottom: clamp(1.5rem, 3vw, 2.5rem); }
+
+/* shared: social chips */
+.chips { display: flex; gap: .5rem; flex-wrap: wrap; }
+.chips a {
+  width: 2.5rem; height: 2.5rem;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--ink);
+  color: var(--white);
+  transition: background var(--dur-xs) var(--ease), transform var(--dur-xs) var(--ease);
+}
+.chips a svg { width: 1.05rem; height: 1.05rem; }
+.chips a:hover { background: var(--lime); color: var(--black); transform: translateY(-3px); }
+
+@media (max-width: 64rem) {
+  .ct1, .ct2__tray, .ct3 { grid-template-columns: 1fr; }
+  .ct1 { min-height: 0; }
+  .ct1__media { min-height: 22rem; }
+  .ct1__card { position: static; inset: auto; width: auto; margin-top: -4rem; }
+  .ct2__side { min-height: 18rem; }
+}

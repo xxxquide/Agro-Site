@@ -226,6 +226,10 @@
      ========================================================================= */
   function initParallax() {
     var gsap = window.gsap;
+    // section photographs drift by default; [data-parallax] tunes the amount
+    all('.post img, .svc__ph img, .parcel img, .contact-photo img').forEach(function (im) {
+      if (!im.closest('[data-parallax]')) im.setAttribute('data-parallax', '7');
+    });
     all('[data-parallax]').forEach(function (el) {
       var amount = parseFloat(el.getAttribute('data-parallax')) || 12;
       gsap.fromTo(el,
@@ -240,6 +244,56 @@
             scrub: true,
           },
         });
+    });
+  }
+
+  /* =========================================================================
+     3b. Image reveal — a clip-path wipe with the photograph counter-scaling
+         behind it. This is the single effect that most separates a page that
+         "fades in" from one that feels composed: the frame opens while the
+         image settles, so the two motions resolve together.
+     ========================================================================= */
+  var REVEAL_IMG = [
+    '.about__ph', '.post', '.member__ph', '.svc__ph',
+    '.contact-photo', '.quote__ph', '.step__ph', '.parcel', '.vcard__ph',
+  ].join(',');
+
+  function initImageReveal() {
+    var gsap = window.gsap;
+    all(REVEAL_IMG).forEach(function (frame) {
+      var img = frame.querySelector('img');
+      var tl = gsap.timeline({
+        scrollTrigger: { trigger: frame, start: 'top 88%', once: true },
+      });
+      tl.fromTo(frame,
+        { clipPath: 'inset(0% 0% 100% 0%)' },
+        { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.25, ease: EASE.expo }, 0);
+      if (img) {
+        tl.fromTo(img, { scale: 1.18 }, { scale: 1, duration: 1.6, ease: EASE.expo }, 0);
+      }
+    });
+  }
+
+  /* =========================================================================
+     3c. Magnetic buttons — the arrow badge leans toward the cursor. Pointer
+         devices only, and it releases on leave so it never sticks.
+     ========================================================================= */
+  function initMagnetic() {
+    var gsap = window.gsap;
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+    all('.btn').forEach(function (btn) {
+      var badge = one('.btn__badge', btn);
+      if (!badge) return;
+      var qx = gsap.quickTo(badge, 'x', { duration: 0.5, ease: 'power3.out' });
+      var qy = gsap.quickTo(badge, 'y', { duration: 0.5, ease: 'power3.out' });
+
+      on(btn, 'pointermove', function (e) {
+        var r = btn.getBoundingClientRect();
+        qx((e.clientX - (r.left + r.width / 2)) * 0.18);
+        qy((e.clientY - (r.top + r.height / 2)) * 0.35);
+      });
+      on(btn, 'pointerleave', function () { qx(0); qy(0); });
     });
   }
 
@@ -541,6 +595,8 @@
     initSmoothScroll();
     initHero();
     revealAll();
+    initImageReveal();
+    initMagnetic();
     initParallax();
     initMarquees();
     initCounters();

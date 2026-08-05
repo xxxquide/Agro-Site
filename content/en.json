@@ -221,7 +221,8 @@
         "label": "Export countries"
       }
     ],
-    "badge": "Machinery, dryers and the elevator are all company-owned."
+    "badge": "Machinery, dryers and the elevator are all company-owned.",
+    "title_rich": "One owner [[leaf]] along the whole path of the grain"
   },
   "crops": {
     "eyebrow": "CROPS",
@@ -424,7 +425,8 @@
           }
         ]
       }
-    ]
+    ],
+    "title_rich": "Seven crops [[grain]] one quality standard"
   },
   "capacity": {
     "eyebrow": "FACILITIES",
@@ -520,7 +522,8 @@
           }
         ]
       }
-    ]
+    ],
+    "title_rich": "Why grain arrives [[shield]] at the quality we weighed it at"
   },
   "process": {
     "eyebrow": "HOW WE WORK",
@@ -900,36 +903,84 @@
     "label": "Trusted by",
     "items": [
       {
-        "name": "GRAINTRADE",
-        "kind": "wheat"
+        "name": "GRAIN",
+        "suffix": "TRADE",
+        "kind": "ear",
+        "style": "symbol",
+        "w": 700,
+        "ls": "-.03em"
       },
       {
         "name": "PODILLIA MILL",
-        "kind": "mill"
+        "suffix": "",
+        "kind": "stone",
+        "style": "symbol",
+        "w": 500,
+        "ls": ".01em"
       },
       {
-        "name": "OLIA PLUS",
-        "kind": "drop"
+        "name": "OLIA",
+        "suffix": "PLUS",
+        "kind": "drop",
+        "style": "solid",
+        "w": 700,
+        "ls": "-.02em"
       },
       {
         "name": "AGROFEED",
-        "kind": "grain"
+        "suffix": "",
+        "kind": "pellet",
+        "style": "wordmark",
+        "w": 800,
+        "ls": "-.05em"
       },
       {
-        "name": "VINN SUGAR",
-        "kind": "beet"
+        "name": "VINN",
+        "suffix": "SUGAR",
+        "kind": "crystal",
+        "style": "symbol",
+        "w": 600,
+        "ls": "-.01em"
       },
       {
         "name": "GROATS HOUSE",
-        "kind": "box"
+        "suffix": "",
+        "kind": "sack",
+        "style": "solid",
+        "w": 600,
+        "ls": ".02em"
       },
       {
-        "name": "GRAIN EXPORT",
-        "kind": "ship"
+        "name": "GRAIN",
+        "suffix": "EXPORT",
+        "kind": "wave",
+        "style": "symbol",
+        "w": 700,
+        "ls": "-.02em"
       },
       {
         "name": "HOP BREWERY",
-        "kind": "hop"
+        "suffix": "",
+        "kind": "hop",
+        "style": "wordmark",
+        "w": 700,
+        "ls": "-.04em"
+      },
+      {
+        "name": "AGRO",
+        "suffix": "INVEST",
+        "kind": "growth",
+        "style": "symbol",
+        "w": 700,
+        "ls": "-.03em"
+      },
+      {
+        "name": "TERRA FIELD",
+        "suffix": "",
+        "kind": "plot",
+        "style": "solid",
+        "w": 500,
+        "ls": ".03em"
       }
     ]
   },
@@ -982,7 +1033,8 @@
         "alt": "Portrait of the storage and logistics manager",
         "bio": "The grain elevator, the dryers, the weighbridge, the dispatch schedule. Keeps the delivery haul inside 14 km."
       }
-    ]
+    ],
+    "title_rich": "The people [[handshake]] accountable for every consignment"
   },
   "journey": {
     "eyebrow": "HISTORY",
@@ -1120,7 +1172,8 @@
           "Accompanying documents on the day of dispatch"
         ]
       }
-    ]
+    ],
+    "title_rich": "What we do [[route]] for partners"
   },
   "why": {
     "eyebrow": "WHY US",
@@ -1239,7 +1292,15 @@
     ],
     "visit_label": "How to find us",
     "visit": "From Vinnytsia — the Haisyn road, then the first right after the village of Soroka to the weighbridge. For trucks — a separate entrance on the elevator side.",
-    "hours_note": "During harvest the weighbridge operates around the clock."
+    "hours_note": "During harvest the weighbridge operates around the clock.",
+    "quick_label": "Quick contact",
+    "answer_label": "Who will answer",
+    "phone_note": "Mon–Fri 08:00–18:00, round the clock in season",
+    "email_note": "We reply within one working day",
+    "tg_note": "Fastest channel at peak harvest",
+    "addr_note": "The weighbridge has its own entrance by the elevator",
+    "quick_title": "Pick the channel that suits you",
+    "way_title": "How to find us"
   },
   "variants_page": {
     "title": "Three versions of the site",

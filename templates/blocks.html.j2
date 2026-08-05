@@ -7,6 +7,7 @@
     (path prefix), `imgs`, `srcset`, `url_for` from the rendering page.
     ============================================================================ -#}
 {%- import "icons.html.j2" as I with context -%}
+{%- import "partners.html.j2" as P with context -%}
 
 {#- ---------------------------------------------------------------- images -#}
 {%- macro pic(name, alt, sizes, priority=False, cls='') -%}
@@ -78,9 +79,7 @@
           <span class="logo-bar__stars">{{ stars() }}</span>
         </div>
         <div class="marq" data-marquee="left" data-speed="46" data-marquee-hover>
-          <div class="marq__track">
-            {%- for pass_ in [1, 2] %}{% for w in c.partners['items'] %}{{ I.wordmark(w.name, w.kind) }}{% endfor %}{% endfor %}
-          </div>
+          <div class="marq__track">{{ P.row(c.partners['items']) }}</div>
         </div>
       </div>
     </div>
@@ -95,17 +94,31 @@
 {%- endmacro -%}
 
 {#- inner-page hero: compact, on a light surface -#}
-{%- macro hero_page(eyebrow, title, lead, tags=None) -%}
-<section class="section section--tight" aria-labelledby="ph-t">
-  <div class="wrap">
-    <div class="head head--wide">
+{%- macro hero_page(eyebrow, title, lead, img='about-team', alt='', tags=None) -%}
+<section class="wrap" aria-labelledby="ph-t">
+  <div class="phero">
+    <div class="phero__copy">
       <span class="tag tag--lime" data-r>{{ eyebrow }}</span>
       <h1 id="ph-t" data-split>{{ title }}</h1>
-      {%- if lead %}<p class="lead" data-r data-delay=".15">{{ lead }}</p>{% endif %}
+      {%- if lead %}<p class="lead" data-r data-delay=".12">{{ lead }}</p>{% endif %}
+      <div data-r data-delay=".2">{{ avatars() }}</div>
     </div>
+    <div class="phero__ph">{{ pic(img, alt or title, '(max-width: 64rem) 100vw, 50vw', priority=True) }}</div>
   </div>
-  {%- if tags %}{{ tag_band() }}{% endif %}
 </section>
+{%- if tags %}{{ tag_band() }}{% endif %}
+{%- endmacro -%}
+
+{%- macro avatars() -%}
+<span class="avatars">
+  <span class="avatars__row">
+    {%- for m in c.team['items'][:3] %}
+    <img src="{{ p }}assets/img/{{ m.img }}-420.webp" width="420" height="525" alt="" loading="lazy" decoding="async">
+    {%- endfor %}
+    <span class="avatars__more">+{{ c.team['items'] | length }}</span>
+  </span>
+  <span class="avatars__t">{{ c.cta.trust }}</span>
+</span>
 {%- endmacro -%}
 
 {#- ======================================================== HERO WIDGETS = -#}
@@ -162,9 +175,7 @@
   <div class="strip__in">
     <p class="strip__l"><span class="tag tag--lime">{{ c.partners.label }}</span></p>
     <div class="marq marq--logos" data-marquee="left" data-speed="52" data-marquee-hover>
-      <div class="marq__track">
-        {%- for pass_ in [1, 2] %}{% for w in c.partners['items'] %}{{ I.wordmark(w.name, w.kind) }}{% endfor %}{% endfor %}
-      </div>
+      <div class="marq__track">{{ P.row(c.partners['items']) }}</div>
     </div>
   </div>
 </div>
@@ -193,7 +204,7 @@
     <div class="about__grid">
       <div class="about__copy">
         <span class="tag tag--lime" data-r>{{ c.about.eyebrow }}</span>
-        <h2 id="about-t" data-split>{{ c.about.title }}</h2>
+        <h2 id="about-t" class="h-iconic" data-split>{{ iconic(c.about.title_rich) }}</h2>
         <p class="lead" data-r>{{ c.about.lead }}</p>
         {%- for para in c.about.body %}<p data-r data-delay=".{{ loop.index }}">{{ para }}</p>{% endfor %}
         <div class="about__cta" data-r>{{ btn(c.about.cta, url_for('services'), 'dark') }}</div>
@@ -230,7 +241,7 @@
     <div class="head-row">
       <div class="head">
         <span class="tag tag--lime" data-r>{{ c.crops.eyebrow }}</span>
-        <h2 id="crops-t" data-split>{{ c.crops.title }}</h2>
+        <h2 id="crops-t" class="h-iconic" data-split>{{ iconic(c.crops.title_rich) }}</h2>
         <p class="lead" data-r>{{ c.crops.lead }}</p>
       </div>
       <div data-r>{{ btn(c.crops.cta, url_for('contacts'), 'outline') }}</div>
@@ -267,7 +278,7 @@
   <div class="wrap">
     <div class="head head--center">
       <span class="tag tag--lime" data-r>{{ c.capacity.eyebrow }}</span>
-      <h2 id="cap-t" data-split>{{ c.capacity.title }}</h2>
+      <h2 id="cap-t" class="h-iconic" data-split>{{ iconic(c.capacity.title_rich) }}</h2>
       <p class="lead" data-r>{{ c.capacity.lead }}</p>
     </div>
     <div class="cap">
@@ -501,7 +512,7 @@
   <div class="wrap">
     <div class="head">
       <span class="tag tag--lime" data-r>{{ c.team.eyebrow }}</span>
-      <h2 id="team-t" data-split>{{ c.team.title }}</h2>
+      <h2 id="team-t" class="h-iconic" data-split>{{ iconic(c.team.title_rich) }}</h2>
       <p class="lead" data-r>{{ c.team.lead }}</p>
     </div>
     {%- if style == 'rail' %}
@@ -516,9 +527,14 @@
     {%- else %}
     <div class="team{{ ' team--wide' if style == 'grid-wide' }}" data-stagger=".09">
       {%- for m in c.team['items'] %}
-      <div class="member">
-        <div class="member__ph">{{ pic(m.img, m.alt, '(max-width: 35rem) 92vw, (max-width: 75rem) 46vw, 22vw') }}<span class="member__role">{{ m.role }}</span></div>
-        <div class="member__body"><span class="member__n">{{ m.name }}</span><p class="member__bio">{{ m.bio }}</p></div>
+      <div class="member member--top">
+        <div class="member__head">
+          <span class="member__n">{{ m.name }}</span>
+          <span class="member__r">{{ m.role }}</span>
+        </div>
+        <span class="member__go" aria-hidden="true">{{ I.arrow() }}</span>
+        <div class="member__ph">{{ pic(m.img, m.alt, '(max-width: 35rem) 92vw, (max-width: 75rem) 46vw, 22vw') }}</div>
+        <p class="member__bio">{{ m.bio }}</p>
       </div>
       {%- endfor %}
     </div>
@@ -529,7 +545,10 @@
 
 {%- macro sec_journey() -%}
 <section class="section" id="journey" aria-labelledby="jr-t">
-  <div class="wrap wrap--narrow">
+  <div class="wrap">
+    {%- if V.id == 'v2' %}
+    {#- V2 keeps the vertical rail: it sits inside a dark band where a card grid
+        would fight the surface. -#}
     <div class="head">
       <span class="tag tag--lime" data-r>{{ c.journey.eyebrow }}</span>
       <h2 id="jr-t" data-split>{{ c.journey.title }}</h2>
@@ -543,6 +562,24 @@
       </div>
       {%- endfor %}
     </div>
+    {%- else %}
+    <div class="jgrid">
+      <div class="head">
+        <span class="tag tag--lime" data-r>{{ c.journey.eyebrow }}</span>
+        <h2 id="jr-t" data-split>{{ c.journey.title }}</h2>
+        <p class="lead" data-r>{{ c.journey.lead }}</p>
+      </div>
+      <div class="jgrid__cards" data-stagger=".08">
+        {%- for m in c.journey['items'] %}
+        <article class="jcard">
+          <span class="jcard__y">{{ m.year }}</span>
+          <span class="jcard__t">{{ m.title }}</span>
+          <p>{{ m.text }}</p>
+        </article>
+        {%- endfor %}
+      </div>
+    </div>
+    {%- endif %}
   </div>
 </section>
 {%- endmacro -%}
@@ -594,7 +631,7 @@
     <div class="head-row">
       <div class="head">
         <span class="tag tag--lime" data-r>{{ c.services.eyebrow }}</span>
-        <h2 id="sv-t" data-split>{{ c.services.title }}</h2>
+        <h2 id="sv-t" class="h-iconic" data-split>{{ iconic(c.services.title_rich) }}</h2>
         <p class="lead" data-r>{{ c.services.lead }}</p>
       </div>
       <div data-r>{{ btn(c.services.cta, url_for('contacts'), 'outline') }}</div>
@@ -714,66 +751,143 @@
 </div>
 {%- endmacro -%}
 
+{%- macro contact_quick() -%}
+<div class="ccards" data-stagger=".08">
+  <a class="ccard" href="tel:{{ tel }}">
+    <span class="itile" aria-hidden="true">{{ I.icon('phone') }}</span>
+    <span class="ccard__k">{{ c.contact.phone_label }}</span>
+    <span class="ccard__v">{{ c.contact.phone }}</span>
+    <span class="ccard__n">{{ c.contact_page.phone_note }}</span>
+  </a>
+  <a class="ccard" href="mailto:{{ c.contact.email }}">
+    <span class="itile" aria-hidden="true">{{ I.icon('mail') }}</span>
+    <span class="ccard__k">{{ c.contact.email_label }}</span>
+    <span class="ccard__v">{{ c.contact.email }}</span>
+    <span class="ccard__n">{{ c.contact_page.email_note }}</span>
+  </a>
+  <a class="ccard" href="{{ c.contact_page.social[0].href }}">
+    <span class="itile" aria-hidden="true">{{ I.icon('telegram') }}</span>
+    <span class="ccard__k">{{ c.contact_page.social[0].label }}</span>
+    <span class="ccard__v">{{ c.contact_page.social[0].handle }}</span>
+    <span class="ccard__n">{{ c.contact_page.tg_note }}</span>
+  </a>
+  <div class="ccard">
+    <span class="itile" aria-hidden="true">{{ I.icon('pin') }}</span>
+    <span class="ccard__k">{{ c.contact.address_label }}</span>
+    <span class="ccard__v" style="font-size:var(--fs-sm);line-height:1.5">{{ c.contact.address }}</span>
+    <span class="ccard__n">{{ c.contact_page.addr_note }}</span>
+  </div>
+</div>
+{%- endmacro -%}
+
+{%- macro contact_way() -%}
+<div class="cway" data-r="in">
+  <div class="cway__body">
+    <span class="tag tag--lime">{{ c.contact_page.visit_label }}</span>
+    <h3>{{ c.contact_page.way_title }}</h3>
+    <p class="text-sm muted">{{ c.contact_page.visit }}</p>
+    <p class="text-sm muted">{{ c.contact_page.hours_note }}</p>
+  </div>
+  <div class="cway__ph">{{ pic('contact-yard', c.contact_page.photo_alt, '(max-width: 48rem) 92vw, 40vw') }}</div>
+</div>
+{%- endmacro -%}
+
+{%- macro contact_answer() -%}
+<div>
+  <p class="tag tag--lime" style="margin-bottom:1rem">{{ c.contact_page.answer_label }}</p>
+  <div class="answer" data-stagger=".1">
+    {%- for m in c.team['items'][:2] %}
+    <div class="answer__i">
+      <span class="answer__ph"><img src="{{ p }}assets/img/{{ m.img }}-420.webp" width="420" height="525" alt="{{ m.alt }}" loading="lazy" decoding="async"></span>
+      <span class="answer__b"><span class="answer__n">{{ m.name }}</span><span class="answer__r">{{ m.role }}</span></span>
+    </div>
+    {%- endfor %}
+  </div>
+</div>
+{%- endmacro -%}
+
+{%- macro contact_lines(compact=False) -%}
+<div class="cinfo">
+  <div class="cinfo__row"><span class="cinfo__k">{{ c.contact.email_label }}</span>
+    <span class="cinfo__v"><a href="mailto:{{ c.contact.email }}">{{ c.contact.email }}</a></span></div>
+  <div class="cinfo__row"><span class="cinfo__k">{{ c.contact.phone_label }}</span>
+    <span class="cinfo__v"><a href="tel:{{ tel }}">{{ c.contact.phone }}</a></span></div>
+  <div class="cinfo__row"><span class="cinfo__k">{{ c.contact.address_label }}</span>
+    <span class="cinfo__v">{{ c.contact.address }}</span></div>
+  {%- if not compact %}
+  <div class="cinfo__row"><span class="cinfo__k">{{ c.contact.hours_label }}</span>
+    <span class="cinfo__v">{{ c.contact.hours }}</span></div>
+  {%- endif %}
+</div>
+{%- endmacro -%}
+
+{%- macro social_chips() -%}
+<div>
+  <p class="tag tag--lime" style="margin-bottom:.75rem">{{ c.contact_page.social_label }}</p>
+  <div class="chips">
+    {%- for s in c.contact_page.social %}
+    <a href="{{ s.href }}" aria-label="{{ s.label }}">{{ I.icon(s.icon) }}</a>
+    {%- endfor %}
+    <a href="mailto:{{ c.contact.email }}" aria-label="{{ c.contact.email_label }}">{{ I.icon('mail') }}</a>
+  </div>
+</div>
+{%- endmacro -%}
+
 {%- macro contacts_body() -%}
 {%- if V.contact_layout == 'split' -%}
-<section class="section section--pb" id="contact" aria-labelledby="ct-t">
-  <div class="wrap">
-    <div class="head" style="margin-bottom:2.5rem">
-      <span class="tag tag--lime" data-r>{{ c.contact_page.eyebrow }}</span>
-      <h1 id="ct-t" data-split>{{ c.contact_page.title }}</h1>
-      <p class="lead" data-r>{{ c.contact_page.lead }}</p>
+{#- V1 — grey panel one third, photograph two thirds, form card floating on it -#}
+<section class="wrap ct" id="contact" aria-labelledby="ct-t">
+  <div class="ct1">
+    <div class="ct1__panel">
+      <div style="display:flex;flex-direction:column;gap:var(--s-lg)">
+        <span class="tag tag--lime" data-r>{{ c.contact_page.eyebrow }}</span>
+        <h1 id="ct-t" data-split>{{ c.contact_page.title }}</h1>
+        <p class="text-sm muted" data-r>{{ c.contact_page.lead }}</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:var(--s-xl)" data-r data-delay=".15">
+        {{ contact_lines() }}
+        {{ social_chips() }}
+      </div>
     </div>
-    <div class="contact-split">
-      <div data-r="left">
-        {{ contact_rows() }}
-        <p class="tag tag--lime" style="margin-top:2rem">{{ c.contact_page.social_label }}</p>
-        {{ contact_social() }}
-      </div>
-      <div data-r="right">
-        <div class="contact-photo">{{ pic('contact-yard', c.contact_page.photo_alt, '(max-width: 64rem) 92vw, 52vw') }}</div>
-        <div class="cform">{{ contact_form() }}</div>
-      </div>
+    <div class="ct1__media" data-r="right">
+      {{ pic('contact-yard', c.contact_page.photo_alt, '(max-width: 64rem) 100vw, 64vw', priority=True) }}
+      <div class="ct1__card">{{ contact_form() }}</div>
     </div>
   </div>
 </section>
 {%- elif V.contact_layout == 'centred-photo' -%}
-<section class="section section--pb" id="contact" aria-labelledby="ct-t">
-  <div class="wrap">
-    <div class="contact-photo" data-r="in">{{ pic('contact-yard', c.contact_page.photo_alt, '(max-width: 80rem) 100vw, 76rem') }}</div>
-    <div class="contact-centred">
-      <div class="head head--center">
-        <span class="tag tag--lime" data-r>{{ c.contact_page.eyebrow }}</span>
-        <h1 id="ct-t" data-split>{{ c.contact_page.title }}</h1>
-        <p class="lead" data-r>{{ c.contact_page.lead }}</p>
-      </div>
-      <div class="cform" data-card>{{ contact_form() }}</div>
-      <div class="contact-meta" data-stagger=".08">
-        <div class="contact-meta__i"><span class="cinfo__k">{{ c.contact.phone_label }}</span><span class="cinfo__v"><a href="tel:{{ tel }}">{{ c.contact.phone }}</a></span></div>
-        <div class="contact-meta__i"><span class="cinfo__k">{{ c.contact.email_label }}</span><span class="cinfo__v"><a href="mailto:{{ c.contact.email }}">{{ c.contact.email }}</a></span></div>
-        <div class="contact-meta__i"><span class="cinfo__k">{{ c.contact.address_label }}</span><span class="cinfo__v">{{ c.contact.address }}</span></div>
-        <div class="contact-meta__i"><span class="cinfo__k">{{ c.contact.hours_label }}</span><span class="cinfo__v">{{ c.contact.hours }}</span></div>
+{#- V2 — centred header, then one grey tray holding form + portrait strip -#}
+<section class="wrap ct" id="contact" aria-labelledby="ct-t">
+  <div class="head head--center">
+    <span class="tag tag--lime" data-r>{{ c.contact_page.eyebrow }}</span>
+    <h1 id="ct-t" data-split>{{ c.contact_page.title }}</h1>
+    <p class="lead" data-r>{{ c.contact_page.lead }}</p>
+  </div>
+  <div class="ct2__tray" data-r="in">
+    <div class="ct2__form">{{ contact_form() }}</div>
+    <div class="ct2__side">
+      {{ pic('contact-yard', c.contact_page.photo_alt, '(max-width: 64rem) 100vw, 30vw') }}
+      <div class="ct2__mini">
+        {{ contact_lines(compact=True) }}
+        {{ social_chips() }}
       </div>
     </div>
   </div>
 </section>
 {%- else -%}
-<section class="section section--pb" id="contact" aria-labelledby="ct-t">
-  <div class="wrap">
-    <div class="contact-centred">
-      <div class="head head--center">
-        <span class="tag tag--lime" data-r>{{ c.contact_page.eyebrow }}</span>
-        <h1 id="ct-t" data-split>{{ c.contact_page.title }}</h1>
-        <p class="lead" data-r>{{ c.contact_page.lead }}</p>
-      </div>
-      <div class="cform cform--dark" data-card>{{ contact_form(dark=True) }}</div>
-      <div class="contact-meta" data-stagger=".08">
-        <div class="contact-meta__i"><span class="cinfo__k">{{ c.contact.phone_label }}</span><span class="cinfo__v"><a href="tel:{{ tel }}">{{ c.contact.phone }}</a></span></div>
-        <div class="contact-meta__i"><span class="cinfo__k">{{ c.contact.email_label }}</span><span class="cinfo__v"><a href="mailto:{{ c.contact.email }}">{{ c.contact.email }}</a></span></div>
-        <div class="contact-meta__i"><span class="cinfo__k">{{ c.contact.address_label }}</span><span class="cinfo__v">{{ c.contact.address }}</span></div>
-        <div class="contact-meta__i"><span class="cinfo__k">{{ c.contact_page.visit_label }}</span><span class="cinfo__v">{{ c.contact_page.visit }}</span></div>
-      </div>
-      <p class="tag tag--lime" style="margin-top:2.5rem;justify-content:center">{{ c.contact_page.social_label }}</p>
-      {{ contact_social() }}
+{#- V3 — no photograph, no containers: form naked on white, details beside it -#}
+<section class="wrap ct" id="contact" aria-labelledby="ct-t">
+  <div class="ct3">
+    <div class="ct3__head">
+      <span class="tag tag--lime" data-r>{{ c.contact_page.eyebrow }}</span>
+      <h1 id="ct-t" data-split>{{ c.contact_page.title }}</h1>
+      <p class="lead" data-r>{{ c.contact_page.lead }}</p>
+    </div>
+    <div data-r="left">{{ contact_form() }}</div>
+    <div style="display:flex;flex-direction:column;gap:var(--s-xl)" data-r="right">
+      {{ contact_lines() }}
+      {{ social_chips() }}
+      <p class="text-xs muted">{{ c.contact_page.visit }}</p>
     </div>
   </div>
 </section>

@@ -791,3 +791,49 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 .subscribe input:focus { outline: 0; border-color: var(--lime); }
 .subscribe .btn { position: absolute; right: .3rem; top: 50%; transform: translateY(-50%); }
 .subscribe .btn:hover { transform: translateY(-50%) translateY(-2px); }
+
+/* --- partner marks -------------------------------------------------------
+   Three construction styles in one row. A strip where every mark is built the
+   same way reads as a placeholder; mixing symbol-left, reversed-tile and
+   type-only marks is what makes a client list look real. */
+
+.pm {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  flex: none;
+  color: var(--grey-400);
+  transition: color var(--dur-sm) var(--ease), opacity var(--dur-sm) var(--ease);
+  opacity: .72;
+}
+.pm__g { width: 1.5rem; height: 1.5rem; flex: none; }
+.pm__t {
+  font-family: var(--font);
+  font-size: 1.02rem;
+  line-height: 1;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+.pm__t em { font-style: normal; font-weight: 300; opacity: .68; margin-left: .18em; }
+
+.pm--solid { gap: .5rem; }
+.pm__tile {
+  width: 1.85rem; height: 1.85rem;
+  border-radius: .55rem;
+  display: grid; place-items: center;
+  background: currentColor;
+  flex: none;
+}
+.pm__tile svg { width: 1.1rem; height: 1.1rem; color: var(--white); }
+
+.pm--word .pm__t { font-size: 1.14rem; }
+
+/* the row lifts to full strength on hover, individual marks come forward */
+.marq--logos:hover .pm { opacity: .5; }
+.marq--logos .pm:hover { opacity: 1; color: var(--ink); }
+
+/* reversed, for the glass bar over the hero photograph */
+.logo-bar .pm { color: rgba(255, 255, 255, .9); opacity: .9; }
+.logo-bar .pm__tile svg { color: var(--ink); }
+.logo-bar:hover .pm { opacity: .62; }
+.logo-bar .pm:hover { opacity: 1; color: var(--white); }
