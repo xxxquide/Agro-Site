@@ -1,0 +1,631 @@
+{#- ============================================================================
+    Single template, rendered once per locale by tools/build_site.py.
+    `p` is the path prefix back to the site root ('' at root, '../' in /en/).
+    ============================================================================ -#}
+{%- set p = c.dir_prefix -%}
+{%- macro arrow() -%}<svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 9.5 9.5 2.5M9.5 2.5H4.2M9.5 2.5v5.3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>{%- endmacro -%}
+{%- macro chevron(dir) -%}<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="{% if dir == 'left' %}M10 2.5 4.5 8l5.5 5.5{% else %}M6 2.5 11.5 8 6 13.5{% endif %}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>{%- endmacro -%}
+{%- macro tick() -%}<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="m6 10.4 2.6 2.6L14 7.6" stroke="var(--lime)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>{%- endmacro -%}
+{%- macro pic(name, alt, sizes, cls='', priority=False) -%}
+{%- set m = imgs[name] -%}
+<picture{% if cls %} class="{{ cls }}"{% endif %}>
+<source type="image/avif" srcset="{{ srcset(name, 'avif') }}" sizes="{{ sizes }}">
+<img src="{{ p }}assets/img/{{ name }}-{{ m.widths[0] }}.webp" srcset="{{ srcset(name, 'webp') }}" sizes="{{ sizes }}" width="{{ m.widths[-1] }}" height="{{ m['h' ~ m.widths[-1]] }}" alt="{{ alt }}"{% if priority %} fetchpriority="high" decoding="sync"{% else %} loading="lazy" decoding="async"{% endif %}>
+</picture>
+{%- endmacro -%}
+<!DOCTYPE html>
+<html lang="{{ c.lang }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ c.seo.title }}</title>
+<meta name="description" content="{{ c.seo.description }}">
+<meta name="keywords" content="{{ c.seo.keywords }}">
+<meta name="author" content="{{ c.brand.legal }}">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#0E2A1B">
+<meta name="format-detection" content="telephone=no">
+
+<link rel="canonical" href="{{ canonical }}">
+<link rel="alternate" hreflang="uk" href="{{ base }}">
+<link rel="alternate" hreflang="en" href="{{ base }}en/">
+<link rel="alternate" hreflang="x-default" href="{{ base }}en/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{ c.brand.name }}">
+<meta property="og:locale" content="{{ c.locale }}">
+<meta property="og:url" content="{{ canonical }}">
+<meta property="og:title" content="{{ c.seo.og_title }}">
+<meta property="og:description" content="{{ c.seo.og_description }}">
+<meta property="og:image" content="{{ base }}assets/img/og-{{ c.lang }}.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{ c.seo.og_title }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ c.seo.og_title }}">
+<meta name="twitter:description" content="{{ c.seo.og_description }}">
+<meta name="twitter:image" content="{{ base }}assets/img/og-{{ c.lang }}.jpg">
+
+<link rel="icon" href="{{ p }}assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="{{ p }}assets/icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="{{ p }}assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="{{ p }}site.webmanifest">
+
+<link rel="preload" href="{{ p }}assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" as="image" type="image/avif" imagesrcset="{{ srcset('hero-field', 'avif') }}" imagesizes="100vw" fetchpriority="high">
+<link rel="stylesheet" href="{{ p }}assets/css/main.css">
+
+<script type="application/ld+json">{{ jsonld }}</script>
+</head>
+
+<body>
+<span class="sentinel" aria-hidden="true"></span>
+<a class="skip" href="#main">{{ c.nav.skip }}</a>
+
+<!-- ============================== HEADER ============================== -->
+<header class="hdr">
+  <div class="hdr__in">
+    <a class="brand" href="{{ p if p else './' }}" aria-label="{{ c.a11y.logo_home }}">
+      <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">{{ logo_mark }}</svg>
+      <span class="brand__txt">
+        <span class="brand__t1">{{ c.brand.word_1 }}</span>
+        <span class="brand__t2">{{ c.brand.word_2 }}</span>
+      </span>
+    </a>
+
+    <nav class="nav" aria-label="{{ c.nav.aria_nav }}">
+      {%- for i in c.nav['items'] %}
+      <a class="nav__link" href="{{ i.href }}">{{ i.label }}</a>
+      {%- endfor %}
+    </nav>
+
+    <div class="hdr__right">
+      <div class="lang" role="group" aria-label="{{ c.nav.lang_label }}">
+        <a class="lang__i" href="{{ '#' if c.lang == 'uk' else c.other.href }}" aria-current="{{ 'true' if c.lang == 'uk' else 'false' }}"{% if c.lang != 'uk' %} hreflang="uk"{% endif %}>{{ 'UA' }}</a>
+        <a class="lang__i" href="{{ c.other.href if c.lang == 'uk' else '#' }}" aria-current="{{ 'true' if c.lang == 'en' else 'false' }}"{% if c.lang != 'en' %} hreflang="en"{% endif %}>{{ 'EN' }}</a>
+      </div>
+      <a class="btn btn--sm" href="#contact">{{ c.nav.cta }}<span class="btn__badge">{{ arrow() }}</span></a>
+      <button class="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="{{ c.nav.menu_open }}">
+        <span class="burger__bars" aria-hidden="true"><span></span><span></span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="drawer" id="drawer" aria-hidden="true">
+  <nav class="drawer__nav">
+    {%- for i in c.nav['items'] %}
+    <a class="drawer__link" href="{{ i.href }}"><span>{{ i.label }}</span><span>{{ '%02d' % (loop.index) }}</span></a>
+    {%- endfor %}
+  </nav>
+  <div class="drawer__foot">
+    <a class="btn btn--block" href="#contact">{{ c.nav.cta }}<span class="btn__badge">{{ arrow() }}</span></a>
+    <p class="drawer__meta">
+      <a href="tel:{{ c.contact.phone | replace(' ', '') | replace('(', '') | replace(')', '') | replace('-', '') }}">{{ c.contact.phone }}</a><br>
+      <a href="mailto:{{ c.contact.email }}">{{ c.contact.email }}</a>
+    </p>
+  </div>
+</div>
+
+<main id="main">
+
+<!-- ================================ HERO ================================ -->
+<section class="hero" aria-labelledby="hero-t">
+  <div class="hero__bg">
+    {{ pic('hero-field', c.hero.image_alt, '100vw', priority=True) }}
+  </div>
+
+  <div class="hero__in wrap">
+    <h1 id="hero-t">{{ c.hero.title_1 }} <span class="soft">{{ c.hero.title_2 }}</span></h1>
+    <p class="lead">{{ c.hero.lead }}</p>
+    <div class="hero__cta">
+      <a class="btn" href="#contact">{{ c.hero.cta_primary }}<span class="btn__badge">{{ arrow() }}</span></a>
+      <a class="btn btn--ghost" href="#crops">{{ c.hero.cta_secondary }}<span class="btn__badge">{{ arrow() }}</span></a>
+    </div>
+    <p class="hero__trust">{{ c.hero.trust }}</p>
+  </div>
+
+  <div class="hero__fan">
+    <div class="fan">
+      {%- for card in c.hero.cards %}
+      {%- set f = fan[loop.index0] %}
+      <div class="fan__item" style="--i:{{ loop.index0 }};--ry:{{ f.ry }}deg;--rz:{{ f.rz }}deg;--ty:{{ f.ty }}px;--tz:{{ f.tz }}px;--sc:{{ f.sc }};--z:{{ f.z }}" aria-hidden="true">
+        <div class="fcard{{ ' fcard--dark' if card.kind in ('lab', 'pills') else '' }}{{ ' fcard--lime' if card.kind == 'stat' and loop.index0 == 5 else '' }}">
+          {%- if card.kind == 'photo' %}
+          <div class="fcard__ph">{{ pic(card.img, '', '12rem') }}</div>
+          <span class="fcard__l">{{ card.label }}</span>
+          <span class="fcard__n">{{ card.note }}</span>
+          {%- elif card.kind == 'stat' %}
+          <span class="fcard__l">{{ card.label }}</span>
+          <span class="fcard__n">{{ card.note }}</span>
+          <span class="fcard__big">{{ card.value }} <em>{{ card.unit }}</em></span>
+          {%- elif card.kind == 'chart' %}
+          <span class="fcard__l">{{ card.label }}, {{ card.unit }}</span>
+          {{ chart_html(card.series) }}
+          {%- elif card.kind == 'bars' %}
+          <span class="fcard__l">{{ card.label }} · {{ card.value }}</span>
+          <div class="bars">
+            {%- for r in card.rows %}
+            <div class="bars__row" style="--i:{{ loop.index0 }}">
+              <div class="bars__top"><span class="bars__name">{{ r.name }}</span><span class="bars__val">{{ r.pct }}%</span></div>
+              <span class="bars__track"><span class="bars__fill" style="--w:{{ r.pct }}%"></span></span>
+            </div>
+            {%- endfor %}
+          </div>
+          {%- elif card.kind == 'lab' %}
+          <span class="fcard__l">{{ card.label }} · {{ card.note }}</span>
+          <div class="lab">
+            {%- for r in card.rows %}
+            <div class="lab__row" style="--i:{{ loop.index0 }}"><span class="lab__name">{{ r.name }}</span><span class="lab__val">{{ r.val }}</span></div>
+            {%- endfor %}
+          </div>
+          {%- elif card.kind == 'pills' %}
+          <span class="fcard__l">{{ card.label }}</span>
+          <span class="fcard__n">{{ card.note }}</span>
+          <div class="fcard__pills">
+            {%- for i in card['items'] %}<span class="fcard__pill">{{ i }}</span>{% endfor %}
+          </div>
+          {%- endif %}
+        </div>
+      </div>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============================== PARTNERS =============================== -->
+<div class="strip">
+  <div class="strip__in">
+    <p class="strip__l"><span class="eyebrow">{{ c.marquee.label }}</span></p>
+    <div class="marquee">
+      <div class="marquee__track">
+        {%- for pass_ in [1, 2] %}{% for i in c.marquee['items'] %}<span class="marquee__i"{% if pass_ == 2 %} aria-hidden="true"{% endif %}>{{ i }}</span>{% endfor %}{% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================ ABOUT ================================ -->
+<section class="section" id="about" aria-labelledby="about-t">
+  <div class="wrap">
+    <div class="about__grid">
+      <div class="about__copy">
+        <span class="eyebrow" data-r>{{ c.about.eyebrow }}</span>
+        <h2 id="about-t" data-r style="--i:1">{{ c.about.title }}</h2>
+        <p class="lead" data-r style="--i:2">{{ c.about.lead }}</p>
+        {%- for para in c.about.body %}
+        <p data-r style="--i:{{ 3 + loop.index0 }}">{{ para }}</p>
+        {%- endfor %}
+        <div class="about__cta" data-r style="--i:5">
+          <a class="btn btn--dark" href="#terms">{{ c.about.cta }}<span class="btn__badge">{{ arrow() }}</span></a>
+        </div>
+      </div>
+
+      <figure class="about__ph" data-r="right">
+        {{ pic('about-team', c.about.image_alt, '(max-width: 64rem) 92vw, 44vw') }}
+        <figcaption class="about__badge">
+          <span class="itile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19V9m5 10V5m5 14v-7m5 7V8" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg></span>
+          <span>{{ c.about.badge }}</span>
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="stats about__stats">
+      {%- for s in c.about.stats %}
+      <div class="stat">
+        <span class="stat__v" data-count="{{ s.value }}" data-suffix="{{ s.suffix }}">0{{ s.suffix }}</span>
+        <span class="stat__l">{{ s.label }}</span>
+      </div>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ================================ CROPS ================================ -->
+<section class="section" id="crops" aria-labelledby="crops-t">
+  <div class="wrap">
+    <div class="head-row" style="margin-bottom: 2.5rem">
+      <div class="head">
+        <span class="eyebrow" data-r>{{ c.crops.eyebrow }}</span>
+        <h2 id="crops-t" data-r style="--i:1">{{ c.crops.title }}</h2>
+        <p class="lead" data-r style="--i:2">{{ c.crops.lead }}</p>
+      </div>
+      <a class="btn btn--onlight-ghost" href="#contact" data-r style="--i:3">{{ c.crops.cta }}<span class="btn__badge">{{ arrow() }}</span></a>
+    </div>
+
+    <div class="crops" data-r="none">
+      {%- for cr in c.crops['items'] %}
+      <button class="crop" type="button" aria-expanded="{{ 'true' if loop.first else 'false' }}">
+        <span class="crop__bg">{{ pic(cr.img, cr.alt, '(max-width: 64rem) 100vw, 46vw') }}</span>
+        <span class="crop__spine">
+          <span class="crop__vlabel">{{ cr.name }}</span>
+          <span class="crop__varea">{{ cr.area }}</span>
+        </span>
+        <span class="crop__body">
+          <span class="crop__name">{{ cr.name }}</span>
+          <span class="crop__text">{{ cr.text }}</span>
+          <dl class="crop__kpis">
+            <div class="crop__kpi"><dt>{{ c.crops.spec_labels.area }}</dt><dd>{{ cr.area }}</dd></div>
+            <div class="crop__kpi crop__kpi--accent"><dt>{{ c.crops.spec_labels.yield }}</dt><dd>{{ cr['yield'] }}</dd></div>
+            <div class="crop__kpi"><dt>{{ c.crops.spec_labels.volume }}</dt><dd>{{ cr.volume }}</dd></div>
+          </dl>
+          <dl class="crop__specs">
+            {%- for s in cr.specs %}
+            <div class="crop__spec"><dt>{{ s.k }}</dt><dd>{{ s.v }}</dd></div>
+            {%- endfor %}
+          </dl>
+        </span>
+      </button>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============================== CAPACITY =============================== -->
+<section class="section" id="capacity" aria-labelledby="cap-t">
+  <div class="wrap">
+    <div class="head head--center">
+      <span class="eyebrow" data-r>{{ c.capacity.eyebrow }}</span>
+      <h2 id="cap-t" data-r style="--i:1">{{ c.capacity.title }}</h2>
+      <p class="lead" data-r style="--i:2">{{ c.capacity.lead }}</p>
+    </div>
+
+    <div class="cap">
+      {%- for card in c.capacity.cards %}
+      <article class="cap__card{{ ' cap__card--lab' if card.widget == 'lab' else '' }}">
+        <div class="cap__viz">
+          {%- if card.widget == 'chart' %}
+          <figure>
+            <figcaption class="sr">{{ c.a11y.chart_caption }}</figcaption>
+            {{ chart_html(card.series, big=True) }}
+          </figure>
+          {%- elif card.widget == 'bars' %}
+          <div class="bars">
+            {%- for r in card.rows %}
+            <div class="bars__row" style="--i:{{ loop.index0 }}">
+              <div class="bars__top"><span class="bars__name">{{ r.name }}</span><span class="bars__val">{{ r.val }}</span></div>
+              <span class="bars__track"><span class="bars__fill" style="--w:{{ r.pct }}%"></span></span>
+            </div>
+            {%- endfor %}
+          </div>
+          {%- elif card.widget == 'orbit' %}
+          <div class="orbit">
+            {%- for ins in ['4%', '20%', '36%'] %}
+            <span class="orbit__ring" style="--inset:{{ ins }};--i:{{ loop.index0 }}" aria-hidden="true"></span>
+            {%- endfor %}
+            <span class="orbit__hub">{{ card.center }}</span>
+            {%- for it in card['items'] %}
+            {%- set o = orbit[loop.index0] %}
+            <span class="orbit__arm" style="--a:{{ o.a }}deg;--r:{{ o.r }};--d:{{ o.d }}s">
+              <span class="orbit__hold" style="--a:{{ o.a }}deg;--d:{{ o.d }}s">
+                <span class="orbit__pill" style="--i:{{ loop.index0 }}">{{ it }}</span>
+              </span>
+            </span>
+            {%- endfor %}
+          </div>
+          {%- elif card.widget == 'lab' %}
+          <div class="lab">
+            {%- for r in card.rows %}
+            <div class="lab__row" style="--i:{{ loop.index0 }}">
+              <span class="lab__name">{{ r.name }}</span>
+              <span class="lab__right">
+                <span class="lab__val">{{ r.val }}</span>
+                <span class="chip {{ 'chip--down' if '−' in r.trend or '-' in r.trend else 'chip--up' }}">{{ r.trend }}</span>
+              </span>
+            </div>
+            {%- endfor %}
+          </div>
+          {%- endif %}
+        </div>
+        <div class="cap__txt">
+          <h3>{{ card.title }}</h3>
+          <p>{{ card.text }}</p>
+        </div>
+      </article>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- =============================== PROCESS =============================== -->
+<section class="section" id="process" aria-labelledby="proc-t">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow" data-r>{{ c.process.eyebrow }}</span>
+      <h2 id="proc-t" data-r style="--i:1">{{ c.process.title }}</h2>
+      <p class="lead" data-r style="--i:2">{{ c.process.lead }}</p>
+    </div>
+
+    <ol class="proc">
+      {%- for s in c.process.steps %}
+      <li class="step" data-r style="--i:{{ loop.index0 }}">
+        <span class="step__n">{{ s.n }}</span>
+        <div class="step__ph">{{ pic(s.img, s.alt, '(max-width: 35rem) 6.5rem, (max-width: 56.25rem) 46vw, 18vw') }}</div>
+        <div class="step__body">
+          <h3>{{ s.title }}</h3>
+          <p>{{ s.text }}</p>
+        </div>
+      </li>
+      {%- endfor %}
+    </ol>
+  </div>
+</section>
+
+<!-- ============================== GEOGRAPHY ============================== -->
+<section class="section" id="geo" aria-labelledby="geo-t">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow" data-r>{{ c.geo.eyebrow }}</span>
+      <h2 id="geo-t" data-r style="--i:1">{{ c.geo.title }}</h2>
+      <p class="lead" data-r style="--i:2">{{ c.geo.lead }}</p>
+    </div>
+
+    <div class="geo__grid">
+      <div class="plan-map" data-r="left">
+        {%- for cl in c.geo.clusters %}
+        <div class="parcel">
+          {{ pic(geo_imgs[loop.index0], cl.name ~ ' — ' ~ cl.role, '(max-width: 35rem) 92vw, 40vw') }}
+          <span class="parcel__ha">{{ fmt_num(cl.area) }} {{ ha }}</span>
+          <span class="parcel__n">{{ cl.name }}</span>
+          <span class="parcel__r">{{ cl.role }}</span>
+        </div>
+        {%- endfor %}
+      </div>
+
+      <div class="geo__side">
+        <div class="dists" data-r="right">
+          {%- for d in c.geo.distances %}
+          <div class="dist"><span class="dist__to">{{ d.to }}</span><span class="dist__km">{{ d.km }}</span></div>
+          {%- endfor %}
+        </div>
+        <p class="geo__note" data-r="right" style="--i:1">{{ c.geo.note }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================ TERMS ================================ -->
+<section class="section" id="terms" aria-labelledby="terms-t">
+  <div class="wrap">
+    <div class="head head--center">
+      <span class="eyebrow" data-r>{{ c.terms.eyebrow }}</span>
+      <h2 id="terms-t" data-r style="--i:1">{{ c.terms.title }}</h2>
+      <p class="lead" data-r style="--i:2">{{ c.terms.lead }}</p>
+    </div>
+
+    <div class="plans" style="margin-top: 3rem">
+      {%- for pl in c.terms.plans %}
+      <article class="plan{{ ' plan--hot' if pl.featured else '' }}" data-r style="--i:{{ loop.index0 }}">
+        {%- if pl.featured %}<span class="plan__flag">{{ c.terms.recommended }}</span>{% endif %}
+        <h3 class="plan__name">{{ pl.name }}</h3>
+        <p class="plan__desc">{{ pl.desc }}</p>
+        <p class="plan__price"><b>{{ pl.price }}</b><span>{{ pl.unit }}</span></p>
+        <ul class="plan__list">
+          {%- for it in pl['items'] %}
+          <li>{{ tick() }}<span>{{ it }}</span></li>
+          {%- endfor %}
+        </ul>
+        <div class="plan__cta">
+          <a class="btn {{ 'btn--dark' if pl.featured else 'btn--dark' }} btn--block" href="#contact">{{ c.terms.cta }}<span class="btn__badge">{{ arrow() }}</span></a>
+        </div>
+      </article>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============================ TESTIMONIALS ============================= -->
+<section class="section" aria-labelledby="tst-t">
+  <div class="wrap">
+    <div class="head-row" style="margin-bottom: 2.5rem">
+      <div class="head">
+        <span class="eyebrow" data-r>{{ c.testimonials.eyebrow }}</span>
+        <h2 id="tst-t" data-r style="--i:1">{{ c.testimonials.title }}</h2>
+        <p class="lead" data-r style="--i:2">{{ c.testimonials.lead }}</p>
+      </div>
+      <div class="rail-btns" data-r style="--i:3">
+        <button class="rail-btn" type="button" data-rail-prev aria-label="{{ c.testimonials.prev }}">{{ chevron('left') }}</button>
+        <button class="rail-btn" type="button" data-rail-next aria-label="{{ c.testimonials.next }}">{{ chevron('right') }}</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="rail" data-rail>
+      {%- for t in c.testimonials['items'] %}
+      <figure class="quote" data-r style="--i:{{ loop.index0 }}">
+        <div class="quote__ph">{{ pic(t.img, t.alt, '23rem') }}</div>
+        <div class="quote__body">
+          <span class="quote__mark" aria-hidden="true">&bdquo;</span>
+          <blockquote class="quote__txt">{{ t.quote }}</blockquote>
+          <figcaption class="quote__who">
+            <span class="quote__name">{{ t.name }}</span>
+            <span class="quote__role">{{ t.role }}</span>
+          </figcaption>
+        </div>
+      </figure>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ================================= FAQ ================================= -->
+<section class="section section--tight" id="faq" aria-labelledby="faq-t">
+  <div class="wrap">
+    <div class="head" style="margin-bottom: 2.25rem">
+      <span class="eyebrow" data-r>{{ c.faq.eyebrow }}</span>
+      <h2 id="faq-t" data-r style="--i:1">{{ c.faq.title }}</h2>
+    </div>
+    <div class="faq">
+      {%- for q in c.faq['items'] %}
+      <details class="faq__i" data-r style="--i:{{ loop.index0 }}"{% if loop.first %} open{% endif %}>
+        <summary class="faq__q">{{ q.q }}<span class="faq__ico" aria-hidden="true"></span></summary>
+        <div class="faq__a">{{ q.a }}</div>
+      </details>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ================================ NEWS ================================= -->
+<section class="section" id="news" aria-labelledby="news-t">
+  <div class="wrap">
+    <div class="head-row" style="margin-bottom: 2.5rem">
+      <div class="head">
+        <span class="eyebrow" data-r>{{ c.news.eyebrow }}</span>
+        <h2 id="news-t" data-r style="--i:1">{{ c.news.title }}</h2>
+      </div>
+      <a class="btn btn--onlight-ghost" href="#news" data-r style="--i:2">{{ c.news.cta }}<span class="btn__badge">{{ arrow() }}</span></a>
+    </div>
+
+    <div class="news">
+      {%- for n in c.news['items'] %}
+      <article class="post" data-r style="--i:{{ loop.index0 }}">
+        {{ pic(n.img, n.alt, '(max-width: 35rem) 92vw, (max-width: 64rem) 46vw, 30vw') }}
+        <div class="post__meta">
+          <span class="chip chip--lime">{{ n.tag }}</span>
+          <time class="post__date" datetime="{{ n.iso }}">{{ n.date }}</time>
+        </div>
+        <h3>{{ n.title }}</h3>
+        <span class="post__go">{{ c.news.read }}{{ arrow() }}</span>
+      </article>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ================================= CTA ================================= -->
+<section class="section section--tight" aria-labelledby="cta-t">
+  <div class="wrap">
+    <div class="ctap" data-r="in">
+      {{ pic('cta-field', c.cta.image_alt, '(max-width: 78.5rem) 100vw, 76rem') }}
+      <div class="ctap__in">
+        <span class="ctap__trust">{{ c.cta.trust }}</span>
+        <h2 id="cta-t">{{ c.cta.title_1 }} <span class="soft">{{ c.cta.title_2 }}</span></h2>
+        <p class="lead">{{ c.cta.lead }}</p>
+        <a class="btn ctap__btn" href="#contact">{{ c.cta.button }}<span class="btn__badge">{{ arrow() }}</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================== CONTACT =============================== -->
+<section class="section section--pb" id="contact" aria-labelledby="cnt-t">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow" data-r>{{ c.contact.eyebrow }}</span>
+      <h2 id="cnt-t" data-r style="--i:1">{{ c.contact.title }}</h2>
+      <p class="lead" data-r style="--i:2">{{ c.contact.lead }}</p>
+    </div>
+
+    <div class="contact__grid">
+      <div class="cinfo" data-r="left">
+        <div class="cinfo__row">
+          <span class="cinfo__k">{{ c.contact.address_label }}</span>
+          <span class="cinfo__v">{{ c.contact.address }}</span>
+        </div>
+        <div class="cinfo__row">
+          <span class="cinfo__k">{{ c.contact.phone_label }}</span>
+          <span class="cinfo__v"><a href="tel:{{ tel }}">{{ c.contact.phone }}</a></span>
+        </div>
+        <div class="cinfo__row">
+          <span class="cinfo__k">{{ c.contact.email_label }}</span>
+          <span class="cinfo__v"><a href="mailto:{{ c.contact.email }}">{{ c.contact.email }}</a></span>
+        </div>
+        <div class="cinfo__row">
+          <span class="cinfo__k">{{ c.contact.hours_label }}</span>
+          <span class="cinfo__v">{{ c.contact.hours }}</span>
+        </div>
+        <div class="cinfo__row">
+          <span class="cinfo__k">{{ c.contact.legal_label }}</span>
+          <span class="cinfo__v">{{ c.contact.legal }}</span>
+        </div>
+      </div>
+
+      <div class="cform" data-r="right">
+        <form class="form" data-demo-form novalidate>
+          <div class="form__grid">
+            <div class="field">
+              <label for="f-name">{{ c.contact.form.name }}</label>
+              <input id="f-name" name="name" type="text" autocomplete="organization" placeholder="{{ c.contact.form.name_ph }}" required>
+            </div>
+            <div class="field">
+              <label for="f-mail">{{ c.contact.form.email }}</label>
+              <input id="f-mail" name="contact" type="text" autocomplete="email" placeholder="{{ c.contact.form.email_ph }}" required>
+            </div>
+            <div class="field">
+              <label for="f-crop">{{ c.contact.form.crop }}</label>
+              <select id="f-crop" name="crop">
+                {%- for o in c.contact.form.crop_options %}
+                <option>{{ o }}</option>
+                {%- endfor %}
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-vol">{{ c.contact.form.volume }}</label>
+              <input id="f-vol" name="volume" type="text" inputmode="numeric" placeholder="{{ c.contact.form.volume_ph }}">
+            </div>
+            <div class="field field--full">
+              <label for="f-msg">{{ c.contact.form.message }}</label>
+              <textarea id="f-msg" name="message" rows="4" placeholder="{{ c.contact.form.message_ph }}"></textarea>
+            </div>
+          </div>
+          <div class="form__ok">{{ tick() }}<span>{{ c.contact.form.demo_notice }}</span></div>
+          <button class="btn" type="submit">{{ c.contact.form.submit }}<span class="btn__badge">{{ arrow() }}</span></button>
+          <p class="form__note">{{ c.contact.form.note }}</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- =============================== FOOTER ================================ -->
+<div class="wrap footer-wrap">
+  <footer class="footer">
+    <div class="footer__top">
+      <div class="footer__brandcol">
+        <a class="brand" href="{{ p if p else './' }}" aria-label="{{ c.a11y.logo_home }}">
+          <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">{{ logo_mark }}</svg>
+          <span class="brand__txt">
+            <span class="brand__t1">{{ c.brand.word_1 }}</span>
+            <span class="brand__t2">{{ c.brand.word_2 }}</span>
+          </span>
+        </a>
+        <p class="footer__tag">{{ c.footer.tagline }}</p>
+        <form class="footer__nl" data-demo-form novalidate>
+          <span class="footer__nl-l">{{ c.footer.newsletter_label }}</span>
+          <label class="sr" for="f-nl">{{ c.footer.newsletter_ph }}</label>
+          <div class="subscribe">
+            <input id="f-nl" name="email" type="email" placeholder="{{ c.footer.newsletter_ph }}" required>
+            <button class="btn btn--sm" type="submit">{{ c.footer.newsletter_cta }}<span class="btn__badge">{{ arrow() }}</span></button>
+          </div>
+          <div class="form__ok">{{ tick() }}<span>{{ c.contact.form.demo_notice }}</span></div>
+        </form>
+      </div>
+
+      <div class="footer__cols">
+        {%- for col in c.footer.columns %}
+        <nav aria-label="{{ col.title }}">
+          <p class="footer__ct">{{ col.title }}</p>
+          <div class="footer__links">
+            {%- for l in col.links %}
+            <a href="{{ l.href }}">{{ l.label }}</a>
+            {%- endfor %}
+          </div>
+        </nav>
+        {%- endfor %}
+      </div>
+    </div>
+
+    <div class="footer__bot">
+      <p>&copy; {{ year }} {{ c.footer.copyright }}<br><span class="footer__demo">{{ c.footer.demo }}</span></p>
+      <a class="totop" href="#main">{{ c.footer.back_to_top }}<svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 10V2M2.5 5.5 6 2l3.5 3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+  </footer>
+</div>
+
+<script src="{{ p }}assets/js/app.js" defer></script>
+</body>
+</html>

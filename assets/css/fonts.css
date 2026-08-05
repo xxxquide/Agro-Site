@@ -1,0 +1,6 @@
+/* Self-hosted variable fonts, subset to basic Latin + Ukrainian Cyrillic
+ * + typographic marks. Built by tools/build_fonts.py — do not hand-edit.
+ * Upstream: Manrope and JetBrains Mono, both SIL Open Font License 1.1. */
+
+@font-face{font-family:'Manrope';font-style:normal;font-weight:400 800;font-display:swap;src:url('../fonts/manrope.woff2') format('woff2')}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500 700;font-display:swap;src:url('../fonts/jbmono.woff2') format('woff2')}

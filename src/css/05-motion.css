@@ -1,0 +1,60 @@
+/* ==========================================================================
+   MOTION
+   Every reveal is driven by one IntersectionObserver adding .is-in. Only
+   opacity and transform are animated, so the compositor does the work and the
+   main thread stays free — no scroll listeners, no layout thrash.
+   ========================================================================== */
+
+[data-r] {
+  opacity: 0;
+  transform: translate3d(0, var(--r-y, 1.6rem), 0) scale(var(--r-s, 1));
+  transition: opacity .7s var(--ease), transform .8s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+[data-r].is-in { opacity: 1; transform: none; }
+
+[data-r="left"]  { transform: translate3d(-1.6rem, 0, 0); }
+[data-r="right"] { transform: translate3d(1.6rem, 0, 0); }
+[data-r="in"]    { --r-y: 0; --r-s: .95; }
+[data-r="none"]  { transform: none; }
+
+/* soft continuous drift on the lab widget, so the card never feels static */
+.cap__card--lab .cap__viz .lab__row:nth-child(odd)  { animation: drift 7s var(--ease) infinite alternate; }
+.cap__card--lab .cap__viz .lab__row:nth-child(even) { animation: drift 8.5s var(--ease) infinite alternate-reverse; }
+@keyframes drift { to { transform: translate3d(0, -3px, 0); } }
+
+/* the sticky-header sentinel — zero-height, never painted */
+.sentinel { position: absolute; top: 0; height: 1px; width: 100%; pointer-events: none; }
+
+/* ==========================================================================
+   REDUCED MOTION
+   Full opt-out: everything is shown in its final state, nothing loops.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  [data-r] { opacity: 1 !important; transform: none !important; }
+
+  .fan__item {
+    opacity: 1 !important;
+    transform: rotateY(var(--ry)) rotateZ(var(--rz)) translateY(var(--ty)) !important;
+  }
+  .chart__fill { transform: scaleY(1) !important; }
+  .chart__val  { opacity: 1 !important; }
+  .bars__fill  { transform: scaleX(1) !important; }
+  .orbit__ring, .orbit__hub, .orbit__pill { opacity: 1 !important; transform: none !important; }
+  .orbit__pill { transform: translate(-50%, -50%) !important; }
+  .orbit__arm, .orbit__hold { animation: none !important; }
+  .lab__row { opacity: 1 !important; transform: none !important; }
+  .cap__card { opacity: 1 !important; transform: none !important; }
+  .marquee__track { animation: none !important; transform: none !important; }
+  .marquee { -webkit-mask-image: none; mask-image: none; }
+}

@@ -1,0 +1,871 @@
+{
+  "lang": "en",
+  "locale": "en_GB",
+  "dir_prefix": "../",
+  "other": {
+    "code": "uk",
+    "label": "UA",
+    "name": "Українська",
+    "href": "../"
+  },
+  "self_label": "EN",
+  "seo": {
+    "title": "CENTRAGRO PLUS — grain growing and wholesale, Vinnytsia region",
+    "description": "Full-cycle grain producer in Vinnytsia region: 14,200 ha of own land, 7 crops, 46,000 t elevator, 1,200 t/day drying. Wheat, maize, sunflower, soybean.",
+    "og_title": "CENTRAGRO PLUS — grain from 14,200 ha of our own land",
+    "og_description": "From crop rotation and crop monitoring to our own grain elevator and dispatch. Working with traders, flour mills and processors since 2008.",
+    "keywords": "grain wholesale, wheat, maize, sunflower, soybean, grain elevator, Vinnytsia region, agribusiness, forward contract"
+  },
+  "brand": {
+    "name": "CENTRAGRO PLUS",
+    "legal": "CENTRAGRO PLUS LLC",
+    "word_1": "CENTRAGRO",
+    "word_2": "PLUS",
+    "tagline": "Full-cycle grain"
+  },
+  "nav": {
+    "items": [
+      {
+        "label": "About us",
+        "href": "#about"
+      },
+      {
+        "label": "Crops",
+        "href": "#crops"
+      },
+      {
+        "label": "Facilities",
+        "href": "#capacity"
+      },
+      {
+        "label": "Partnership",
+        "href": "#terms"
+      },
+      {
+        "label": "Contact",
+        "href": "#contact"
+      }
+    ],
+    "cta": "Request a quote",
+    "menu_open": "Open menu",
+    "menu_close": "Close menu",
+    "skip": "Skip to main content",
+    "lang_label": "Site language",
+    "aria_nav": "Main navigation",
+    "aria_footer": "Footer navigation"
+  },
+  "hero": {
+    "title_1": "We grow grain",
+    "title_2": "on 14,200 hectares of Podillia",
+    "lead": "Full-cycle agribusiness in Vinnytsia region: from crop rotation and crop monitoring to our own grain elevator, drying and dispatch. Working with traders, flour mills and processors since 2008.",
+    "cta_primary": "Request a quote",
+    "cta_secondary": "Our crops",
+    "image_alt": "Aerial view of golden wheat fields at sunrise in Vinnytsia region",
+    "trust": "7 crops in rotation · 46,000 t of storage · exports to 14 countries",
+    "cards": [
+      {
+        "kind": "stat",
+        "label": "Land bank",
+        "value": "14,200",
+        "unit": "ha",
+        "note": "owned and leased land"
+      },
+      {
+        "kind": "chart",
+        "label": "Wheat yield",
+        "unit": "t/ha",
+        "series": [
+          {
+            "year": "2021",
+            "v": 5.4
+          },
+          {
+            "year": "2022",
+            "v": 4.9
+          },
+          {
+            "year": "2023",
+            "v": 5.8
+          },
+          {
+            "year": "2024",
+            "v": 6.1
+          },
+          {
+            "year": "2025",
+            "v": 6.4
+          }
+        ]
+      },
+      {
+        "kind": "bars",
+        "label": "Grain elevator",
+        "value": "46,000 t",
+        "note": "fill level as of today",
+        "rows": [
+          {
+            "name": "Wheat",
+            "pct": 82
+          },
+          {
+            "name": "Maize",
+            "pct": 64
+          },
+          {
+            "name": "Sunflower",
+            "pct": 41
+          }
+        ]
+      },
+      {
+        "kind": "photo",
+        "img": "ops-combine",
+        "label": "2025 harvest",
+        "note": "68 machines in the fleet"
+      },
+      {
+        "kind": "lab",
+        "label": "Laboratory",
+        "note": "every consignment",
+        "rows": [
+          {
+            "name": "Protein",
+            "val": "13.1%"
+          },
+          {
+            "name": "Moisture",
+            "val": "13.4%"
+          },
+          {
+            "name": "Test weight",
+            "val": "782 g/l"
+          }
+        ]
+      },
+      {
+        "kind": "stat",
+        "label": "Drying",
+        "value": "1,200",
+        "unit": "t/day",
+        "note": "three drying complexes"
+      },
+      {
+        "kind": "pills",
+        "label": "Logistics",
+        "note": "road + rail",
+        "items": [
+          "Truck fleet",
+          "Rail",
+          "Port",
+          "Elevator"
+        ]
+      }
+    ]
+  },
+  "marquee": {
+    "label": "Who we work with",
+    "items": [
+      "TRADERS",
+      "FLOUR MILLS",
+      "OILSEED CRUSHING PLANTS",
+      "FEED PRODUCERS",
+      "SUGAR PLANTS",
+      "GROAT MILLS",
+      "EXPORTERS",
+      "BREWERIES"
+    ]
+  },
+  "about": {
+    "eyebrow": "ABOUT THE COMPANY",
+    "title": "One owner for the whole journey of the grain",
+    "lead": "We are not middlemen. The land, the machinery, the dryers and the elevator are ours. So one company answers for the quality of a consignment, not a chain of five suppliers.",
+    "body": [
+      "CENTRAGRO PLUS LLC farms 14,200 hectares in Vinnytsia region. The black soils of Podillia, a seven-field crop rotation and our own machinery fleet deliver stable yields even in dry years.",
+      "Every consignment goes through our laboratory before dispatch: protein, moisture, test weight, falling number, foreign matter. The figures are added to the documents — the partner sees the grain before it has left the yard."
+    ],
+    "image_alt": "Farm manager and agronomist inspecting a green wheat field at sunset",
+    "cta": "Partnership terms",
+    "stats": [
+      {
+        "value": 14200,
+        "suffix": " ha",
+        "label": "Land bank"
+      },
+      {
+        "value": 7,
+        "suffix": "",
+        "label": "Crops in rotation"
+      },
+      {
+        "value": 46000,
+        "suffix": " t",
+        "label": "Storage capacity"
+      },
+      {
+        "value": 92000,
+        "suffix": " t",
+        "label": "Dispatched per season"
+      },
+      {
+        "value": 18,
+        "suffix": " years",
+        "label": "Trading since 2008"
+      },
+      {
+        "value": 14,
+        "suffix": "",
+        "label": "Export countries"
+      }
+    ],
+    "badge": "Machinery, dryers and the elevator are all company-owned."
+  },
+  "crops": {
+    "eyebrow": "CROPS",
+    "title": "Seven crops, one quality standard",
+    "lead": "Volumes for the 2025/26 season. Hover over a crop to see its consignment specifications.",
+    "cta": "Get a price list",
+    "spec_labels": {
+      "area": "Area",
+      "yield": "Yield",
+      "volume": "Season volume"
+    },
+    "hint": "Tap to expand",
+    "items": [
+      {
+        "name": "Winter wheat",
+        "img": "crop-wheat",
+        "area": "4,800 ha",
+        "yield": "6.4 t/ha",
+        "volume": "30,700 t",
+        "alt": "Ripe winter wheat ears in backlight",
+        "text": "Soft winter wheat, class 2–3. Protein 12.5–13.8%, moisture up to 14%, falling number from 240 s.",
+        "specs": [
+          {
+            "k": "Class",
+            "v": "2–3"
+          },
+          {
+            "k": "Protein",
+            "v": "12.5–13.8%"
+          },
+          {
+            "k": "Moisture",
+            "v": "≤14%"
+          },
+          {
+            "k": "Test weight",
+            "v": "≥760 g/l"
+          }
+        ]
+      },
+      {
+        "name": "Grain maize",
+        "img": "crop-corn",
+        "area": "3,400 ha",
+        "yield": "9.8 t/ha",
+        "volume": "33,300 t",
+        "alt": "Ripe maize cob with yellow kernels in the field",
+        "text": "FAO 280–340 hybrids. We dry to 14% in our own dryers, so the grain does not heat up in transit.",
+        "specs": [
+          {
+            "k": "FAO",
+            "v": "280–340"
+          },
+          {
+            "k": "Moisture",
+            "v": "≤14%"
+          },
+          {
+            "k": "Impurities",
+            "v": "≤2%"
+          },
+          {
+            "k": "Broken kernels",
+            "v": "≤5%"
+          }
+        ]
+      },
+      {
+        "name": "Sunflower",
+        "img": "crop-sunflower",
+        "area": "2,600 ha",
+        "yield": "3.4 t/ha",
+        "volume": "8,800 t",
+        "alt": "Field of flowering sunflowers in the sun",
+        "text": "High-oil hybrids. Oil content 46–49%, dispatched mainly to oilseed crushing plants.",
+        "specs": [
+          {
+            "k": "Oil content",
+            "v": "46–49%"
+          },
+          {
+            "k": "Moisture",
+            "v": "≤8%"
+          },
+          {
+            "k": "Foreign matter",
+            "v": "≤3%"
+          },
+          {
+            "k": "Acid value",
+            "v": "≤2.5"
+          }
+        ]
+      },
+      {
+        "name": "Soybean",
+        "img": "crop-soy",
+        "area": "1,500 ha",
+        "yield": "2.9 t/ha",
+        "volume": "4,350 t",
+        "alt": "Ripe soybean pods on the plant, macro shot",
+        "text": "Non-GMO soybean with confirmed origin. Protein 34–37% on a dry matter basis.",
+        "specs": [
+          {
+            "k": "Protein",
+            "v": "34–37%"
+          },
+          {
+            "k": "Moisture",
+            "v": "≤12%"
+          },
+          {
+            "k": "Non-GMO",
+            "v": "confirmed"
+          },
+          {
+            "k": "Oil content",
+            "v": "18–20%"
+          }
+        ]
+      },
+      {
+        "name": "Winter rapeseed",
+        "img": "crop-rapeseed",
+        "area": "900 ha",
+        "yield": "3.6 t/ha",
+        "volume": "3,240 t",
+        "alt": "Field of flowering winter rapeseed",
+        "text": "Industrial-grade winter rapeseed, oil content 42–45%, low erucic acid content.",
+        "specs": [
+          {
+            "k": "Oil content",
+            "v": "42–45%"
+          },
+          {
+            "k": "Moisture",
+            "v": "≤9%"
+          },
+          {
+            "k": "Impurities",
+            "v": "≤2%"
+          },
+          {
+            "k": "Erucic acid",
+            "v": "≤2%"
+          }
+        ]
+      },
+      {
+        "name": "Spring barley",
+        "img": "crop-barley",
+        "area": "600 ha",
+        "yield": "5.2 t/ha",
+        "volume": "3,120 t",
+        "alt": "Spring barley ears with long awns",
+        "text": "Feed and malting barley. Test weight from 620 g/l, protein to brewery specification.",
+        "specs": [
+          {
+            "k": "Test weight",
+            "v": "≥620 g/l"
+          },
+          {
+            "k": "Protein",
+            "v": "9.5–11.5%"
+          },
+          {
+            "k": "Moisture",
+            "v": "≤14%"
+          },
+          {
+            "k": "Sprouted grains",
+            "v": "≤2%"
+          }
+        ]
+      },
+      {
+        "name": "Sugar beet",
+        "img": "crop-beet",
+        "area": "400 ha",
+        "yield": "58 t/ha",
+        "volume": "23,200 t",
+        "alt": "Freshly harvested sugar beet at the edge of a field",
+        "text": "Contract growing for sugar plants in the region. Sugar content 17.2% in the 2025 season.",
+        "specs": [
+          {
+            "k": "Sugar content",
+            "v": "17.2%"
+          },
+          {
+            "k": "Soil tare",
+            "v": "≤8%"
+          },
+          {
+            "k": "Rotten roots",
+            "v": "≤2%"
+          },
+          {
+            "k": "Delivery",
+            "v": "field to plant"
+          }
+        ]
+      }
+    ]
+  },
+  "capacity": {
+    "eyebrow": "FACILITIES",
+    "title": "Why the grain arrives in the condition we weighed it in",
+    "lead": "Four things we keep in-house instead of handing to contractors.",
+    "cards": [
+      {
+        "widget": "chart",
+        "title": "Yields that keep rising",
+        "text": "Five years running we have lifted wheat yields through crop rotation and precision application. 2022 was a drought year, and we show that one too.",
+        "unit": "t/ha",
+        "series": [
+          {
+            "year": "2021",
+            "v": 5.4
+          },
+          {
+            "year": "2022",
+            "v": 4.9
+          },
+          {
+            "year": "2023",
+            "v": 5.8
+          },
+          {
+            "year": "2024",
+            "v": 6.1
+          },
+          {
+            "year": "2025",
+            "v": 6.4
+          }
+        ]
+      },
+      {
+        "widget": "bars",
+        "title": "Storage and drying",
+        "text": "Our own grain elevator and three drying complexes. We do not depend on queues at third-party elevators at peak harvest.",
+        "rows": [
+          {
+            "name": "Grain elevator",
+            "val": "46,000 t",
+            "pct": 100
+          },
+          {
+            "name": "Flat storage",
+            "val": "12,000 t",
+            "pct": 26
+          },
+          {
+            "name": "Drying",
+            "val": "1,200 t/day",
+            "pct": 62
+          }
+        ]
+      },
+      {
+        "widget": "orbit",
+        "title": "Logistics with no handovers",
+        "text": "A fleet of 24 grain trucks, a rail siding and proven routes to the ports. Dispatch in daily consignments.",
+        "center": "Soroka",
+        "items": [
+          "Fleet of 24",
+          "Rail",
+          "Port 380 km",
+          "Vinnytsia 85 km"
+        ]
+      },
+      {
+        "widget": "lab",
+        "title": "Our own laboratory",
+        "text": "Every consignment gets its own certificate before dispatch. The figures travel with the grain instead of being argued out on the buyer's weighbridge.",
+        "rows": [
+          {
+            "name": "Protein",
+            "val": "13.1%",
+            "trend": "+0.4"
+          },
+          {
+            "name": "Moisture",
+            "val": "13.4%",
+            "trend": "−0.6"
+          },
+          {
+            "name": "Test weight",
+            "val": "782 g/l",
+            "trend": "+9"
+          },
+          {
+            "name": "Falling number",
+            "val": "268 s",
+            "trend": "+12"
+          }
+        ]
+      }
+    ]
+  },
+  "process": {
+    "eyebrow": "HOW WE WORK",
+    "title": "From field to wagon — five steps",
+    "lead": "One person accountable at every stage. The partner receives a report at each step.",
+    "steps": [
+      {
+        "n": "01",
+        "title": "Crop rotation and planning",
+        "text": "Soil analyses for every field, hybrids selected for the specific block, an input application plan for the season.",
+        "img": "ops-soil",
+        "alt": "Young wheat shoots in black soil"
+      },
+      {
+        "n": "02",
+        "title": "Precision drilling",
+        "text": "No-till and strip-till, GPS guidance accurate to 2.5 cm, variable-rate seeding.",
+        "img": "news-notill",
+        "alt": "Tractor with a wide no-till drill"
+      },
+      {
+        "n": "03",
+        "title": "Crop monitoring",
+        "text": "Drones with NDVI cameras every two weeks, weekly scouting by an agronomist, maps of problem zones.",
+        "img": "ops-drone",
+        "alt": "Agronomist launching a drone over a green field"
+      },
+      {
+        "n": "04",
+        "title": "Harvesting and drying",
+        "text": "Our own combines go into the field on moisture, not on a schedule. Dryers rated at 1,200 t/day are right next door.",
+        "img": "ops-combine",
+        "alt": "Combine harvester unloading grain into a trailer"
+      },
+      {
+        "n": "05",
+        "title": "Storage and dispatch",
+        "text": "A 46,000 t grain elevator, separate storage by class, dispatch by road and rail throughout the year.",
+        "img": "ops-logistics",
+        "alt": "Queue of grain trucks beside the silo complex"
+      }
+    ]
+  },
+  "geo": {
+    "eyebrow": "GEOGRAPHY",
+    "title": "Three clusters within a 40-kilometre radius",
+    "lead": "A compact land bank means a short haul from field to dryer. The grain has no time to spoil on the way.",
+    "clusters": [
+      {
+        "name": "Soroka",
+        "role": "Head office, grain elevator, laboratory",
+        "area": 6100
+      },
+      {
+        "name": "Northern block",
+        "role": "Wheat, rapeseed, barley",
+        "area": 4300
+      },
+      {
+        "name": "Southern block",
+        "role": "Maize, soybean, sugar beet",
+        "area": 3800
+      }
+    ],
+    "distances": [
+      {
+        "to": "Vinnytsia",
+        "km": "85 km"
+      },
+      {
+        "to": "Haisyn",
+        "km": "35 km"
+      },
+      {
+        "to": "Port of Odesa",
+        "km": "380 km"
+      },
+      {
+        "to": "Kyiv",
+        "km": "230 km"
+      }
+    ],
+    "note": "The furthest field is 38 km from the elevator. The average haul from field to dryer is 14 km."
+  },
+  "terms": {
+    "eyebrow": "PARTNERSHIP",
+    "title": "Three formats, no grey schemes",
+    "lead": "We work under contract, VAT registered, with a full set of documents. Minimum consignment from 100 tonnes.",
+    "recommended": "Most often chosen",
+    "cta": "Discuss terms",
+    "plans": [
+      {
+        "name": "SPOT",
+        "desc": "Purchase against stock already at the elevator. Suits you when the volume was needed yesterday.",
+        "price": "from 100",
+        "unit": "tonnes",
+        "featured": false,
+        "items": [
+          "Price on the day of dispatch",
+          "Payment within 3–5 banking days",
+          "Laboratory certificate for the consignment",
+          "Self-collection or our transport"
+        ]
+      },
+      {
+        "name": "FORWARD",
+        "desc": "Price and volume fixed before harvest. The most predictable option for a processor.",
+        "price": "from 500",
+        "unit": "tonnes",
+        "featured": true,
+        "items": [
+          "Price fixed ahead of harvest",
+          "Advance of up to 30% of the volume",
+          "Priority in the dispatch schedule",
+          "Separate storage of the consignment",
+          "Monthly field report"
+        ]
+      },
+      {
+        "name": "LONG-TERM AGREEMENT",
+        "desc": "Seasonal volumes matched to your production needs, with agreed logistics.",
+        "price": "from 2,000",
+        "unit": "tonnes",
+        "featured": false,
+        "items": [
+          "Volume scheduled across the season",
+          "Bespoke quality parameters",
+          "Growing to order",
+          "Rail dispatch",
+          "Dedicated account manager"
+        ]
+      }
+    ]
+  },
+  "testimonials": {
+    "eyebrow": "TESTIMONIALS",
+    "title": "What our partners say",
+    "lead": "Companies that buy grain from us every season.",
+    "prev": "Previous testimonial",
+    "next": "Next testimonial",
+    "items": [
+      {
+        "quote": "We have been taking their wheat for four seasons. The main thing is that the declared protein and the actual protein match. In four years, not one recalculation on the weighbridge.",
+        "name": "Andrii Kovalchuk",
+        "role": "Procurement Director, grain trader",
+        "img": "person-trader",
+        "alt": "Portrait of the procurement director of a grain trader"
+      },
+      {
+        "quote": "A forward contract with them covers a third of the mill's annual requirement. The price is fixed in March — and in October it is exactly what we agreed.",
+        "name": "Oksana Demchenko",
+        "role": "Director of a flour mill",
+        "img": "person-mill",
+        "alt": "Portrait of the director of a flour mill"
+      },
+      {
+        "quote": "The maize arrives dry, at 13.5–14%. For feed production that is critical: it does not heat up in the silo and does not drag losses along with it.",
+        "name": "Ihor Melnyk",
+        "role": "Chief Technologist, feed production",
+        "img": "person-feed",
+        "alt": "Portrait of the chief technologist of a feed production plant"
+      }
+    ]
+  },
+  "faq": {
+    "eyebrow": "QUESTIONS",
+    "title": "The essentials, briefly",
+    "items": [
+      {
+        "q": "What is the minimum consignment?",
+        "a": "From 100 tonnes on spot. Forward contracts start at 500 tonnes and long-term agreements at 2,000 tonnes per season."
+      },
+      {
+        "q": "Who analyses the grain?",
+        "a": "First our own laboratory at the elevator — the certificate travels with the consignment. If the buyer prefers, we accept an independent test as final, and you choose the accredited laboratory."
+      },
+      {
+        "q": "Can we collect with our own transport?",
+        "a": "Yes. The weighbridge runs 24 hours a day during harvest, with dispatch from 30 tonnes per trip. There is also a rail siding for wagon consignments."
+      },
+      {
+        "q": "How is the price set?",
+        "a": "From the basis on the day of dispatch, adjusted for the actual specifications of the consignment. Under a forward contract the price is fixed in the agreement and is not revised."
+      },
+      {
+        "q": "Are you VAT registered?",
+        "a": "Yes, an LLC on the general tax system and VAT registered. Full document set: contract, specification, consignment note, laboratory certificate, VAT invoice."
+      },
+      {
+        "q": "Do you grow to order?",
+        "a": "Yes, under a long-term agreement. Hybrid, area and quality parameters are agreed before drilling — a minimum of 500 hectares per contract."
+      }
+    ]
+  },
+  "news": {
+    "eyebrow": "NEWS",
+    "title": "What is happening on the farm",
+    "cta": "All news",
+    "read": "Read",
+    "items": [
+      {
+        "date": "28 July 2026",
+        "tag": "Harvest",
+        "title": "Winter wheat harvest finished: 6.4 t/ha across every block",
+        "img": "news-harvest",
+        "alt": "Aerial view of a combine harvesting a wheat field",
+        "iso": "2026-07-28"
+      },
+      {
+        "date": "14 June 2026",
+        "tag": "Investment",
+        "title": "Third drying complex reaches 1,200 tonnes per day",
+        "img": "news-drying",
+        "alt": "Grain drying complex in operation",
+        "iso": "2026-06-14"
+      },
+      {
+        "date": "3 April 2026",
+        "tag": "Technology",
+        "title": "2,100 hectares moved to no-till: what the first season showed",
+        "img": "news-notill",
+        "alt": "Tractor with a no-till drill in the field",
+        "iso": "2026-04-03"
+      }
+    ]
+  },
+  "cta": {
+    "trust": "More than 40 regular partners",
+    "title_1": "Ready to quote",
+    "title_2": "your volume for this season",
+    "lead": "Send us the crop, the volume and the quality parameters you need — we will reply with a price and a dispatch schedule within one working day.",
+    "button": "Request a quote",
+    "image_alt": "Harvested field with straw bales at sunset"
+  },
+  "contact": {
+    "eyebrow": "CONTACT",
+    "title": "Write to us",
+    "lead": "We reply within one working day. If the matter is urgent, call us.",
+    "address_label": "Address",
+    "address": "4 Zarichna St, Soroka village, Vinnytsia district, Vinnytsia region, 22731, Ukraine",
+    "phone_label": "Phone",
+    "phone": "+380 (43) 200-00-00",
+    "email_label": "E-mail",
+    "email": "info@centragro-plus.ua",
+    "hours_label": "Hours",
+    "hours": "Mon–Fri 08:00–18:00 · weighbridge 24/7 during harvest",
+    "legal_label": "Company details",
+    "legal": "CENTRAGRO PLUS LLC, VAT registered",
+    "form": {
+      "name": "Name and company",
+      "name_ph": "James, Northfield Mills Ltd",
+      "email": "E-mail or phone",
+      "email_ph": "you@company.com",
+      "crop": "Crop",
+      "crop_options": [
+        "Winter wheat",
+        "Grain maize",
+        "Sunflower",
+        "Soybean",
+        "Winter rapeseed",
+        "Spring barley",
+        "Sugar beet",
+        "Several crops"
+      ],
+      "volume": "Volume, tonnes",
+      "volume_ph": "500",
+      "message": "Comments",
+      "message_ph": "Quality parameters you need, timing, delivery basis…",
+      "submit": "Send request",
+      "note": "By submitting this form you consent to the processing of the data provided in order to reply to your enquiry.",
+      "demo_notice": "This is a demonstration site — the form does not send data to a server."
+    }
+  },
+  "footer": {
+    "tagline": "Full-cycle agribusiness in Vinnytsia region. Growing, storing and dispatching grain since 2008.",
+    "newsletter_label": "Prices and volumes — once a month",
+    "newsletter_ph": "Your e-mail",
+    "newsletter_cta": "Subscribe",
+    "columns": [
+      {
+        "title": "Company",
+        "links": [
+          {
+            "label": "About us",
+            "href": "#about"
+          },
+          {
+            "label": "Facilities",
+            "href": "#capacity"
+          },
+          {
+            "label": "Geography",
+            "href": "#geo"
+          },
+          {
+            "label": "News",
+            "href": "#news"
+          }
+        ]
+      },
+      {
+        "title": "Products",
+        "links": [
+          {
+            "label": "Winter wheat",
+            "href": "#crops"
+          },
+          {
+            "label": "Maize",
+            "href": "#crops"
+          },
+          {
+            "label": "Sunflower",
+            "href": "#crops"
+          },
+          {
+            "label": "Soybean and rapeseed",
+            "href": "#crops"
+          }
+        ]
+      },
+      {
+        "title": "For partners",
+        "links": [
+          {
+            "label": "Partnership terms",
+            "href": "#terms"
+          },
+          {
+            "label": "Questions and answers",
+            "href": "#faq"
+          },
+          {
+            "label": "Contact",
+            "href": "#contact"
+          },
+          {
+            "label": "Request a quote",
+            "href": "#contact"
+          }
+        ]
+      }
+    ],
+    "copyright": "CENTRAGRO PLUS LLC. All rights reserved.",
+    "demo": "Demonstration layout. Figures and images are illustrative.",
+    "back_to_top": "Back to top"
+  },
+  "a11y": {
+    "logo_home": "CENTRAGRO PLUS — back to top of page",
+    "chart_caption": "Wheat yield by year, tonnes per hectare"
+  }
+}

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://xxxquide.github.io/Agro-Site/sitemap.xml
