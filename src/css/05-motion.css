@@ -76,6 +76,12 @@ html.no-motion [data-stagger] > * {
   width: max-content;
   will-change: transform;
 }
+.marq__group {
+  display: flex;
+  align-items: inherit;
+  gap: inherit;
+  flex: none;
+}
 
 /* --- hero fan: final resting transform, GSAP animates in from below ----- */
 .fan__item {
@@ -138,8 +144,15 @@ html.no-motion [data-stagger] > * {
   .orbit__pill { transform: translate(-50%, -50%) !important; }
   .orbit__arm, .orbit__hold { animation: none !important; }
 
+  .marq {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
   .marq__track { transform: none !important; }
-  .marq { -webkit-mask-image: none; mask-image: none; }
+  .marq__group[aria-hidden="true"] { display: none !important; }
   .drift-a, .drift-b { animation: none !important; }
 
   .fan__item { transform: rotateY(var(--ry)) rotateZ(var(--rz)) !important; }

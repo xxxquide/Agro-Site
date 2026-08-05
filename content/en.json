@@ -900,7 +900,8 @@
     ]
   },
   "partners": {
-    "label": "Trusted by",
+    "label": "PARTNER ECOSYSTEM",
+    "note": "Traders, mills, processors and logistics revolve around one shared lot standard.",
     "items": [
       {
         "name": "GRAIN",
@@ -1204,6 +1205,7 @@
   "blog_page": {
     "eyebrow": "NEWS",
     "title": "What is happening on the farm",
+    "title_rich": "What is happening [[drone]] on the farm",
     "lead": "Short updates on the season, the machinery, yields and the decisions we take.",
     "read": "Read",
     "all_tag": "All",

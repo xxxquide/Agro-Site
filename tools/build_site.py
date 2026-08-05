@@ -160,6 +160,8 @@ ICON_CHIP = {
     "shield":    ("ink",  "M12 3.5 5.5 6v5.4c0 4 2.7 7.4 6.5 9.1 3.8-1.7 6.5-5.1 6.5-9.1V6Z"),
     "handshake": ("lime", "m3.5 12.5 3.4-3.4a2 2 0 0 1 2.8 0l1.1 1.1a1.6 1.6 0 0 0 2.3 0"),
     "route":     ("sky",  "M6 8.4v3.4a3.6 3.6 0 0 0 3.6 3.6h4.8"),
+    "drone":     ("sky",  "M9.5 9.5h5v5h-5zM9.5 10.5 6 7m8.5 3.5L18 7m-8.5 6.5L6 17m8.5-3.5L18 17"),
+    "sun":       ("lime", "M12 6.8a5.2 5.2 0 1 0 0 10.4 5.2 5.2 0 0 0 0-10.4ZM12 2.8v2M12 19.2v2M2.8 12h2M19.2 12h2"),
 }
 
 
@@ -203,8 +205,9 @@ def chart_builder():
                 f'<span class="chart__fill"></span></div>'
             )
             years.append(f"<span>{s['year']}</span>")
+        grid = '<span class="chart__grid" aria-hidden="true"><i></i><i></i><i></i><i></i></span>'
         return Markup(
-            '<div class="chart"><div class="chart__plot">' + "".join(cols)
+            '<div class="chart"><div class="chart__plot">' + grid + "".join(cols)
             + '</div><div class="chart__years">' + "".join(years) + "</div></div>"
         )
     return chart_html

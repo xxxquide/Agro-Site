@@ -16,7 +16,9 @@
   'use strict';
 
   var doc = document;
-  var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reducedQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var REDUCED = reducedQuery.matches;
+  var finePointerQuery = window.matchMedia('(hover: hover) and (pointer: fine)');
   var hasGSAP = typeof window.gsap !== 'undefined';
 
   /* --- shared pacing ------------------------------------------------------- */
@@ -35,12 +37,33 @@
   function one(sel, ctx) { return (ctx || doc).querySelector(sel); }
   function on(el, ev, fn, opt) { el && el.addEventListener(ev, fn, opt || false); }
 
+  var refreshFrame = 0;
+  function scheduleRefresh() {
+    if (!window.ScrollTrigger) return;
+    cancelAnimationFrame(refreshFrame);
+    refreshFrame = requestAnimationFrame(function () { window.ScrollTrigger.refresh(); });
+  }
+
+  var lang = doc.documentElement.getAttribute('lang') || 'uk';
+  var numberFormatter;
+  try {
+    numberFormatter = new Intl.NumberFormat(lang === 'uk' ? 'uk-UA' : 'en-GB');
+  } catch (e) {
+    numberFormatter = { format: function (n) { return String(n); } };
+  }
+  function renderCounterFinal(el) {
+    var target = parseFloat(el.getAttribute('data-count'));
+    if (isNaN(target)) return;
+    el.textContent = numberFormatter.format(target) + (el.getAttribute('data-suffix') || '');
+  }
+
   /* =========================================================================
      0. Smooth scrolling. Lenis drives ScrollTrigger rather than running beside
         it, otherwise the two disagree about scroll position and scrubbed
         animations jitter.
      ========================================================================= */
   var lenis = null;
+  var lenisTick = null;
 
   function initSmoothScroll() {
     if (REDUCED || typeof window.Lenis === 'undefined') return;
@@ -56,7 +79,8 @@
 
     if (hasGSAP && window.ScrollTrigger) {
       lenis.on('scroll', window.ScrollTrigger.update);
-      window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); });
+      lenisTick = function (time) { if (lenis && !doc.hidden) lenis.raf(time * 1000); };
+      window.gsap.ticker.add(lenisTick);
       window.gsap.ticker.lagSmoothing(0);
     } else {
       requestAnimationFrame(function raf(t) { lenis.raf(t); requestAnimationFrame(raf); });
@@ -203,6 +227,14 @@
         { scale: 1, autoAlpha: 1, duration: DUR.md, ease: EASE.back, stagger: 0.1 },
         '-=' + DUR.sm);
       tl.add(function () { box.classList.add('is-spinning'); });
+      ST.create({
+        trigger: box,
+        start: 'top bottom',
+        end: 'bottom top',
+        onToggle: function (self) {
+          box.classList.toggle('is-spinning', self.isActive && !doc.hidden);
+        },
+      });
     });
 
     /* --- lab rows -------------------------------------------------------- */
@@ -217,7 +249,7 @@
       });
     });
 
-    if (ST) ST.refresh();
+    if (ST) scheduleRefresh();
   }
 
   /* =========================================================================
@@ -262,14 +294,27 @@
     var gsap = window.gsap;
     all(REVEAL_IMG).forEach(function (frame) {
       var img = frame.querySelector('img');
-      var tl = gsap.timeline({
-        scrollTrigger: { trigger: frame, start: 'top 88%', once: true },
-      });
-      tl.fromTo(frame,
-        { clipPath: 'inset(0% 0% 100% 0%)' },
-        { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.25, ease: EASE.expo }, 0);
-      if (img) {
-        tl.fromTo(img, { scale: 1.18 }, { scale: 1, duration: 1.6, ease: EASE.expo }, 0);
+      var started = false;
+      function buildReveal() {
+        if (started) return;
+        started = true;
+        var tl = gsap.timeline({
+          scrollTrigger: { trigger: frame, start: 'top 88%', once: true },
+        });
+        tl.fromTo(frame,
+          { clipPath: 'inset(0% 0% 100% 0%)' },
+          { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.25, ease: EASE.expo }, 0);
+        if (img) {
+          tl.fromTo(img, { scale: 1.16 }, { scale: 1, duration: 1.6, ease: EASE.expo }, 0);
+        }
+        scheduleRefresh();
+      }
+      if (!img || img.complete) return buildReveal();
+      if (typeof img.decode === 'function') {
+        img.decode().catch(function () {}).then(buildReveal);
+      } else {
+        on(img, 'load', buildReveal, { once: true });
+        on(img, 'error', buildReveal, { once: true });
       }
     });
   }
@@ -280,7 +325,7 @@
      ========================================================================= */
   function initMagnetic() {
     var gsap = window.gsap;
-    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    if (!finePointerQuery.matches) return;
 
     all('.btn').forEach(function (btn) {
       var badge = one('.btn__badge', btn);
@@ -307,16 +352,27 @@
 
     all('[data-marquee]').forEach(function (row) {
       var dir = row.getAttribute('data-marquee') === 'right' ? 1 : -1;
-      var speed = parseFloat(row.getAttribute('data-speed')) || 55; // px per second
+      var speed = parseFloat(row.getAttribute('data-speed')) || 55;
       var track = one('.marq__track', row) || row.firstElementChild;
-      if (!track) return;
+      var group = track && one('.marq__group', track);
+      if (!track || !group) return;
 
       var loop = 0;
       var tween = null;
+      var inView = true;
+      var held = false;
+
+      function syncPlayback() {
+        if (!tween) return;
+        if (doc.hidden || !inView || held) tween.pause();
+        else tween.play();
+      }
 
       function build() {
         if (tween) tween.kill();
-        loop = track.scrollWidth / 2;
+        var styles = window.getComputedStyle(track);
+        var gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
+        loop = group.getBoundingClientRect().width + gap;
         if (!loop) return;
         gsap.set(track, { x: dir < 0 ? 0 : -loop });
         tween = gsap.to(track, {
@@ -324,38 +380,36 @@
           duration: loop / speed,
           ease: 'none',
           repeat: -1,
-          modifiers: {
-            x: function (x) {
-              var v = parseFloat(x) % loop;
-              return (dir < 0 ? v : v - loop) + 'px';
-            },
-          },
         });
+        syncPlayback();
       }
       build();
 
-      var rt;
-      on(window, 'resize', function () {
-        clearTimeout(rt);
-        rt = setTimeout(build, 220);
-      }, { passive: true });
+      if (typeof window.ResizeObserver !== 'undefined') {
+        var resizeTimer = 0;
+        new window.ResizeObserver(function () {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(build, 120);
+        }).observe(group);
+      } else {
+        on(window, 'resize', build, { passive: true });
+      }
 
-      // pause off-screen and while hovered, so it never fights the reader
       if (window.ScrollTrigger) {
         window.ScrollTrigger.create({
           trigger: row,
           start: 'top bottom',
           end: 'bottom top',
-          onToggle: function (self) {
-            if (!tween) return;
-            self.isActive ? tween.play() : tween.pause();
-          },
+          onToggle: function (self) { inView = self.isActive; syncPlayback(); },
         });
       }
       if (row.hasAttribute('data-marquee-hover')) {
-        on(row, 'mouseenter', function () { tween && tween.timeScale(0.25); });
-        on(row, 'mouseleave', function () { tween && tween.timeScale(1); });
+        on(row, 'mouseenter', function () { held = true; syncPlayback(); });
+        on(row, 'mouseleave', function () { held = false; syncPlayback(); });
+        on(row, 'focusin', function () { held = true; syncPlayback(); });
+        on(row, 'focusout', function () { held = false; syncPlayback(); });
       }
+      on(doc, 'visibilitychange', syncPlayback);
     });
   }
 
@@ -372,9 +426,12 @@
     var sub = all('[data-hero-item]', hero);
     var fanItems = all('.fan__item', hero);
     var media = one('[data-hero-media]', hero);
+    var mediaImg = media && one('img', media);
+    var copy = one('.hero__in', hero);
+    var ornament = one('.hero__fan, .card-rail, .hero__foot', hero);
 
     if (media) {
-      tl.fromTo(media, { scale: 1.09, autoAlpha: 0 },
+      tl.fromTo(media, { scale: 1.07, autoAlpha: 0 },
         { scale: 1, autoAlpha: 1, duration: 1.8 }, 0);
     }
     if (title) {
@@ -383,6 +440,9 @@
       tl.from(words, {
         yPercent: 116, autoAlpha: 0, duration: DUR.xl, stagger: STAGGER.word,
       }, 0.15);
+      tl.from(all('.hero-glyph', title), {
+        scale: 0, rotate: -24, autoAlpha: 0, duration: DUR.md, ease: EASE.back,
+      }, 0.45);
     }
     if (sub.length) {
       tl.from(sub, { y: 30, autoAlpha: 0, duration: DUR.lg, stagger: 0.1 }, 0.5);
@@ -393,6 +453,55 @@
         y: 90, autoAlpha: 0, duration: DUR.xl, stagger: 0.075,
       }, 0.6);
     }
+
+    tl.eventCallback('onComplete', function () {
+      if (!window.ScrollTrigger) return;
+      var compact = window.matchMedia('(max-width: 56.25rem)').matches;
+      var depth = gsap.timeline({
+        scrollTrigger: {
+          trigger: hero,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: compact ? 0.35 : 0.8,
+          invalidateOnRefresh: true,
+        },
+      });
+      if (mediaImg) depth.to(mediaImg, { yPercent: compact ? 4 : 8, scale: compact ? 1.035 : 1.075, ease: 'none' }, 0);
+      if (copy) depth.to(copy, { yPercent: compact ? -3 : -9, autoAlpha: compact ? 0.72 : 0.42, ease: 'none' }, 0);
+      if (ornament) depth.to(ornament, { yPercent: compact ? -2 : -13, ease: 'none' }, 0);
+    });
+  }
+
+  function initPageHero() {
+    var gsap = window.gsap;
+    all('[data-page-hero]').forEach(function (hero) {
+      var title = one('[data-page-title]', hero);
+      var items = all('[data-page-item]', hero);
+      var media = one('[data-page-media]', hero);
+      var image = media && one('img', media);
+      var tl = gsap.timeline({ defaults: { ease: EASE.expo } });
+
+      if (media) {
+        tl.fromTo(media, { clipPath: 'inset(0 0 100% 0)' },
+          { clipPath: 'inset(0 0 0% 0)', duration: 1.35 }, 0);
+      }
+      if (image) tl.fromTo(image, { scale: 1.12 }, { scale: 1, duration: 1.65 }, 0);
+      if (title) {
+        var words = splitWords(title);
+        gsap.set(title, { autoAlpha: 1 });
+        tl.from(words, { yPercent: 116, autoAlpha: 0, duration: DUR.xl, stagger: STAGGER.word }, 0.12);
+        tl.from(all('.ichip', title), { scale: 0, rotate: -24, duration: DUR.md, ease: EASE.back }, 0.4);
+      }
+      if (items.length) tl.from(items, { y: 30, autoAlpha: 0, duration: DUR.lg, stagger: .1 }, .45);
+
+      if (image && window.ScrollTrigger) {
+        gsap.fromTo(image, { yPercent: -3 }, {
+          yPercent: 7,
+          ease: 'none',
+          scrollTrigger: { trigger: hero, start: 'top bottom', end: 'bottom top', scrub: .65 },
+        });
+      }
+    });
   }
 
   /* =========================================================================
@@ -409,7 +518,7 @@
       panels.forEach(function (p) {
         p.setAttribute('aria-expanded', p === target ? 'true' : 'false');
       });
-      if (window.ScrollTrigger) window.ScrollTrigger.refresh();
+      scheduleRefresh();
     }
 
     panels.forEach(function (p) {
@@ -533,7 +642,7 @@
     /* accordion (FAQ) uses <details>; keep ScrollTrigger in sync on toggle */
     all('details').forEach(function (d) {
       on(d, 'toggle', function () {
-        if (window.ScrollTrigger) window.ScrollTrigger.refresh();
+        scheduleRefresh();
       });
     });
 

@@ -32,7 +32,7 @@
 <section class="hero hero--fan" data-hero aria-labelledby="hero-t">
   <div class="hero__bg" data-hero-media>{{ pic(V.hero_img, c.hero.image_alt, '100vw', priority=True) }}</div>
   <div class="hero__in wrap">
-    <h1 id="hero-t" data-hero-title>{{ c.hero.title_1 }} <span class="soft">{{ c.hero.title_2 }}</span></h1>
+    <h1 id="hero-t" data-hero-title>{{ c.hero.title_1 }} <span class="hero-glyph" aria-hidden="true">{{ I.icon('wheat') }}</span> <span class="soft">{{ c.hero.title_2 }}</span></h1>
     <p class="lead" data-hero-item>{{ c.hero.lead }}</p>
     <div class="hero__cta" data-hero-item>
       {{ btn(c.hero.cta_primary, url_for('contacts')) }}
@@ -50,7 +50,7 @@
   <div class="wrap">
     <div class="hero__in">
       <span class="tag" data-hero-item>{{ c.hero.badge }}</span>
-      <h1 id="hero-t" data-hero-title>{{ c.hero.title_1 }} <span class="soft">{{ c.hero.title_2 }}</span></h1>
+      <h1 id="hero-t" data-hero-title>{{ c.hero.title_1 }} <span class="hero-glyph hero-glyph--sky" aria-hidden="true">{{ I.icon('drone') }}</span> <span class="soft">{{ c.hero.title_2 }}</span></h1>
       <p class="lead" data-hero-item>{{ c.hero.lead }}</p>
       <div class="hero__cta" data-hero-item>
         {{ btn(c.hero.cta_primary, url_for('contacts')) }}
@@ -67,7 +67,7 @@
 <section class="hero hero--pcentre" data-hero aria-labelledby="hero-t">
   <div class="hero__bg" data-hero-media>{{ pic(V.hero_img, c.hero.image_alt_v3, '100vw', priority=True) }}</div>
   <div class="hero__in wrap">
-    <h1 id="hero-t" data-hero-title>{{ c.hero.title_1 }} <span class="soft">{{ c.hero.title_2 }}</span></h1>
+    <h1 id="hero-t" data-hero-title>{{ c.hero.title_1 }} <span class="hero-glyph hero-glyph--glass" aria-hidden="true">{{ I.icon('leaf') }}</span> <span class="soft">{{ c.hero.title_2 }}</span></h1>
     <p class="lead" data-hero-item>{{ c.hero.lead }}</p>
     <div class="hero__cta" data-hero-item>{{ btn(c.hero.cta_primary, url_for('contacts')) }}</div>
   </div>
@@ -96,14 +96,14 @@
 {#- inner-page hero: compact, on a light surface -#}
 {%- macro hero_page(eyebrow, title, lead, img='about-team', alt='', tags=None) -%}
 <section class="wrap" aria-labelledby="ph-t">
-  <div class="phero">
+  <div class="phero" data-page-hero>
     <div class="phero__copy">
-      <span class="tag tag--lime" data-r>{{ eyebrow }}</span>
-      <h1 id="ph-t" data-split>{{ title }}</h1>
-      {%- if lead %}<p class="lead" data-r data-delay=".12">{{ lead }}</p>{% endif %}
-      <div data-r data-delay=".2">{{ avatars() }}</div>
+      <span class="tag tag--lime" data-page-item>{{ eyebrow }}</span>
+      <h1 id="ph-t" class="h-iconic" data-page-title>{{ iconic(title) }}</h1>
+      {%- if lead %}<p class="lead" data-page-item>{{ lead }}</p>{% endif %}
+      <div data-page-item>{{ avatars() }}</div>
     </div>
-    <div class="phero__ph">{{ pic(img, alt or title, '(max-width: 64rem) 100vw, 50vw', priority=True) }}</div>
+    <div class="phero__ph" data-page-media>{{ pic(img, alt or title, '(max-width: 64rem) 100vw, 50vw', priority=True) }}</div>
   </div>
 </section>
 {%- if tags %}{{ tag_band() }}{% endif %}
@@ -165,32 +165,54 @@
 {%- macro card_rail() -%}
 <div class="marq" data-marquee="left" data-speed="34" data-marquee-hover aria-hidden="true">
   <div class="marq__track">
-    {%- for pass_ in [1, 2] %}{% for card in c.hero.cards %}{{ fcard(card, loop.index0) }}{% endfor %}{% endfor %}
+    <div class="marq__group">{% for card in c.hero.cards %}{{ fcard(card, loop.index0) }}{% endfor %}</div>
+    <div class="marq__group" aria-hidden="true">{% for card in c.hero.cards %}{{ fcard(card, loop.index0) }}{% endfor %}</div>
   </div>
 </div>
 {%- endmacro -%}
 
 {%- macro logo_strip() -%}
-<div class="strip">
+{%- if V.id == 'v1' -%}
+<div class="strip strip--orbit">
+  <div class="wrap partner-stage">
+    <div class="partner-stage__copy">
+      <span class="tag tag--lime">{{ c.partners.label }}</span>
+      <p>{{ c.partners.note }}</p>
+    </div>
+    <div class="partner-orbit" data-partner-orbit>
+      <span class="partner-orbit__ring partner-orbit__ring--outer" aria-hidden="true"></span>
+      <span class="partner-orbit__ring partner-orbit__ring--inner" aria-hidden="true"></span>
+      <span class="partner-orbit__hub"><span>{{ c.brand.word_1 }}</span><small>{{ c.brand.word_2 }}</small></span>
+      {%- for ptn in c.partners['items'][:6] %}
+      <span class="partner-orbit__node" style="--i:{{ loop.index0 }};--count:6">{{ P.mark(ptn) }}</span>
+      {%- endfor %}
+    </div>
+  </div>
+</div>
+{%- else -%}
+<div class="strip{{ ' strip--quiet' if V.id == 'v3' }}">
   <div class="strip__in">
     <p class="strip__l"><span class="tag tag--lime">{{ c.partners.label }}</span></p>
-    <div class="marq marq--logos" data-marquee="left" data-speed="52" data-marquee-hover>
+    <div class="marq marq--logos" data-marquee="left" data-speed="52" data-marquee-hover tabindex="0" aria-label="{{ c.partners.label }}">
       <div class="marq__track">{{ P.row(c.partners['items']) }}</div>
     </div>
   </div>
 </div>
+{%- endif -%}
 {%- endmacro -%}
 
 {%- macro tag_band() -%}
 <div class="tagband" aria-hidden="true">
   <div class="marq marq--tags" data-marquee="left" data-speed="40">
     <div class="marq__track">
-      {%- for pass_ in [1, 2] %}{% for t in c.tagmarquee.row_a %}<span class="tag-pill{{ ' tag-pill--lime' if loop.index0 % 3 == 1 }}">{{ t }}</span>{% endfor %}{% endfor %}
+      <div class="marq__group">{% for t in c.tagmarquee.row_a %}<span class="tag-pill{{ ' tag-pill--lime' if loop.index0 % 3 == 1 }}">{{ t }}</span>{% endfor %}</div>
+      <div class="marq__group" aria-hidden="true">{% for t in c.tagmarquee.row_a %}<span class="tag-pill{{ ' tag-pill--lime' if loop.index0 % 3 == 1 }}">{{ t }}</span>{% endfor %}</div>
     </div>
   </div>
   <div class="marq marq--tags" data-marquee="right" data-speed="40">
     <div class="marq__track">
-      {%- for pass_ in [1, 2] %}{% for t in c.tagmarquee.row_b %}<span class="tag-pill{{ ' tag-pill--dark' if loop.index0 % 3 == 2 }}">{{ t }}</span>{% endfor %}{% endfor %}
+      <div class="marq__group">{% for t in c.tagmarquee.row_b %}<span class="tag-pill{{ ' tag-pill--dark' if loop.index0 % 3 == 2 }}">{{ t }}</span>{% endfor %}</div>
+      <div class="marq__group" aria-hidden="true">{% for t in c.tagmarquee.row_b %}<span class="tag-pill{{ ' tag-pill--dark' if loop.index0 % 3 == 2 }}">{{ t }}</span>{% endfor %}</div>
     </div>
   </div>
 </div>

@@ -20,16 +20,20 @@
   --grey-500:     #474747;
   --grey-400:     #585858;   /* secondary text */
   --grey-300:     #c7c7c7;   /* text on dark, secondary */
-  --grey-200:     #ececec;
-  --grey-100:     #f2f2f2;   /* subtle background */
-  --border:       #efeff2;
+  --grey-200:     #e9ebe6;
+  --grey-100:     #f4f5f1;
+  --border:       #e5e8e0;
 
-  --lime:         #d6fd70;   /* --base--green */
-  --lime-hi:      #e2ff92;
-  --lime-lo:      #c3f04c;
-  --sky:          #38c6f6;   /* --base--light-blue */
+  --lime:         #d1ff5c;
+  --lime-hi:      #e4ff9b;
+  --lime-lo:      #b9ed37;
+  --sky:          #39bfee;
   --yellow:       #f1ee46;
-  --scrim:        #12283540; /* --base--translucent-black */
+  --field:        #07150e;
+  --field-2:      #0d2117;
+  --soil:         #7a5c38;
+  --mist:         #f8f9f6;
+  --scrim:        #12283540;
 
   /* semantic aliases */
   --bg:           var(--white);

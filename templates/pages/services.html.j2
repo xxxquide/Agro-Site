@@ -1,7 +1,7 @@
 {%- extends "base.html.j2" -%}
 {%- import "blocks.html.j2" as B with context -%}
 {%- block body -%}
-{{ B.hero_page(c.services.eyebrow, c.services.title, c.services.lead,
+{{ B.hero_page(c.services.eyebrow, c.services.title_rich, c.services.lead,
                'ops-elevator', '', tags=(V.services_hero == 'tags')) }}
 {{ B.sec_services() }}
 {{ B.sec_why() }}

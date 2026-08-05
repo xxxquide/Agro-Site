@@ -60,5 +60,12 @@
 {%- endmacro -%}
 
 {%- macro row(items, doubled=True) -%}
-{%- for pass_ in ([1, 2] if doubled else [1]) %}{% for p in items %}{{ mark(p) }}{% endfor %}{% endfor %}
+<span class="marq__group">
+  {%- for p in items %}{{ mark(p) }}{% endfor %}
+</span>
+{%- if doubled %}
+<span class="marq__group" aria-hidden="true">
+  {%- for p in items %}{{ mark(p) }}{% endfor %}
+</span>
+{%- endif %}
 {%- endmacro -%}
