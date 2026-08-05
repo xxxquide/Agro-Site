@@ -1,0 +1,77 @@
+{
+  "_comment": "Three site variations. Content is shared (it is one company); what differs is layout — which hero, which section order, which about/contact treatment, which photographs. This mirrors how the source template's home/about/contact variants differ from each other.",
+
+  "variants": [
+    {
+      "id": "v1",
+      "slug": "",
+      "label": "Варіант 1",
+      "label_en": "Option 1",
+      "note": "Центрований hero з веєром карток-віджетів",
+      "note_en": "Centred hero with a fanned row of widget cards",
+      "hero": "fan",
+      "hero_img": "hero-v1",
+      "hero_align": "center",
+      "accent_widget": "fan",
+      "home_sections": [
+        "logos", "about", "crops", "capacity", "process",
+        "geo", "terms", "testimonials", "faq", "news", "cta"
+      ],
+      "about_layout": "journey",
+      "about_sections": ["intro", "stats", "team", "journey", "cta"],
+      "contact_layout": "split",
+      "services_hero": "tags",
+      "team_style": "cards"
+    },
+    {
+      "id": "v2",
+      "slug": "v2/",
+      "label": "Варіант 2",
+      "label_en": "Option 2",
+      "note": "Текст ліворуч, портрет праворуч, автолента карток під ним",
+      "note_en": "Left-aligned copy, portrait right, auto-scrolling card rail below",
+      "hero": "portrait-right",
+      "hero_img": "hero-v2",
+      "hero_align": "left",
+      "accent_widget": "card-rail",
+      "home_sections": [
+        "about", "logos", "crops", "capacity", "tagmarquee",
+        "terms", "process", "testimonials", "geo", "faq", "news", "cta"
+      ],
+      "about_layout": "journey-testimonials",
+      "about_sections": ["intro", "stats", "team", "journey", "cta", "testimonials"],
+      "contact_layout": "centred-photo",
+      "services_hero": "plain",
+      "team_style": "rail"
+    },
+    {
+      "id": "v3",
+      "slug": "v3/",
+      "label": "Варіант 3",
+      "label_en": "Option 3",
+      "note": "Центрований hero з портретом і скляною лентою логотипів",
+      "note_en": "Centred hero with a portrait and a glass logo bar",
+      "hero": "portrait-centre",
+      "hero_img": "hero-v3",
+      "hero_align": "center",
+      "accent_widget": "logo-bar",
+      "home_sections": [
+        "about", "crops", "testimonials", "capacity", "terms",
+        "process", "geo", "faq", "news", "cta"
+      ],
+      "about_layout": "mission",
+      "about_sections": ["intro", "team", "mission", "stats", "testimonials", "cta"],
+      "contact_layout": "centred-plain",
+      "services_hero": "tags",
+      "team_style": "grid-wide"
+    }
+  ],
+
+  "pages": [
+    { "id": "home",     "file": "index.html",         "nav": false },
+    { "id": "about",    "file": "about/index.html",    "nav": true },
+    { "id": "services", "file": "services/index.html", "nav": true },
+    { "id": "blog",     "file": "blog/index.html",     "nav": true },
+    { "id": "contacts", "file": "contacts/index.html", "nav": true }
+  ]
+}

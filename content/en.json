@@ -160,7 +160,11 @@
           "Elevator"
         ]
       }
-    ]
+    ],
+    "badge": "FULL-CYCLE GRAIN PRODUCER",
+    "rating": "4.9 out of 5 — rated by regular partners",
+    "image_alt_v2": "Company agronomist against a summer sky",
+    "image_alt_v3": "Young company agronomist against a blue sky"
   },
   "marquee": {
     "label": "Who we work with",
@@ -867,5 +871,380 @@
   "a11y": {
     "logo_home": "CENTRAGRO PLUS — back to top of page",
     "chart_caption": "Wheat yield by year, tonnes per hectare"
+  },
+  "nav_pages": {
+    "items": [
+      {
+        "label": "Home",
+        "page": "home"
+      },
+      {
+        "label": "About",
+        "page": "about"
+      },
+      {
+        "label": "Services",
+        "page": "services"
+      },
+      {
+        "label": "News",
+        "page": "blog"
+      },
+      {
+        "label": "Contacts",
+        "page": "contacts"
+      }
+    ]
+  },
+  "partners": {
+    "label": "Trusted by",
+    "items": [
+      {
+        "name": "GRAINTRADE",
+        "kind": "wheat"
+      },
+      {
+        "name": "PODILLIA MILL",
+        "kind": "mill"
+      },
+      {
+        "name": "OLIA PLUS",
+        "kind": "drop"
+      },
+      {
+        "name": "AGROFEED",
+        "kind": "grain"
+      },
+      {
+        "name": "VINN SUGAR",
+        "kind": "beet"
+      },
+      {
+        "name": "GROATS HOUSE",
+        "kind": "box"
+      },
+      {
+        "name": "GRAIN EXPORT",
+        "kind": "ship"
+      },
+      {
+        "name": "HOP BREWERY",
+        "kind": "hop"
+      }
+    ]
+  },
+  "tagmarquee": {
+    "row_a": [
+      "Own land",
+      "Seven crops",
+      "Grain elevator 46,000 t",
+      "Drying 1,200 t/day",
+      "On-site laboratory"
+    ],
+    "row_b": [
+      "Forward contracts",
+      "Rail siding",
+      "Non-GMO soybean",
+      "Separate storage",
+      "A report on every field"
+    ]
+  },
+  "team": {
+    "eyebrow": "TEAM",
+    "title": "The people accountable for every consignment",
+    "lead": "A small team that has worked together for more than ten years — and each of them is someone you will speak to directly.",
+    "items": [
+      {
+        "name": "Bohdan Hrytsenko",
+        "role": "Managing Director",
+        "img": "team-director",
+        "alt": "Portrait of the company director",
+        "bio": "Founded the farm in 2008 with 800 hectares. Leads the negotiations on every long-term agreement."
+      },
+      {
+        "name": "Taras Lozovyi",
+        "role": "Chief Agronomist",
+        "img": "team-agronomist",
+        "alt": "Portrait of the chief agronomist",
+        "bio": "Responsible for the crop rotation, hybrid selection and application maps. Drove the move to no-till."
+      },
+      {
+        "name": "Nataliia Bondar",
+        "role": "Head of Laboratory",
+        "img": "team-lab",
+        "alt": "Portrait of the laboratory manager",
+        "bio": "Draws up the quality certificate for every consignment. Her signature stands behind the figures that travel with the grain."
+      },
+      {
+        "name": "Serhii Kushnir",
+        "role": "Storage and Logistics",
+        "img": "team-logistics",
+        "alt": "Portrait of the storage and logistics manager",
+        "bio": "The grain elevator, the dryers, the weighbridge, the dispatch schedule. Keeps the delivery haul inside 14 km."
+      }
+    ]
+  },
+  "journey": {
+    "eyebrow": "HISTORY",
+    "title": "Eighteen seasons, one direction",
+    "lead": "We did not buy a ready-made business — we grew the farm field by field.",
+    "items": [
+      {
+        "year": "2008",
+        "title": "The first 800 hectares",
+        "text": "Leased land in two villages, one old combine and a contract with the local grain elevator."
+      },
+      {
+        "year": "2012",
+        "title": "Our own machinery",
+        "text": "The first new combine and a wide drill. We stopped depending on contractors at harvest."
+      },
+      {
+        "year": "2016",
+        "title": "Drying complex",
+        "text": "Two dryers rated at 400 t/day. From that point maize went to partners dry, not \"however it came off the field\"."
+      },
+      {
+        "year": "2019",
+        "title": "A 30,000 t grain elevator",
+        "text": "Separate storage by class. We began working with flour mills directly, without a trader in between."
+      },
+      {
+        "year": "2022",
+        "title": "Laboratory and no-till",
+        "text": "Our own laboratory at the elevator. The first 900 hectares moved to no-till."
+      },
+      {
+        "year": "2026",
+        "title": "14,200 hectares",
+        "text": "Seven crops, a 46,000 t grain elevator, drying at 1,200 t/day, exports to 14 countries."
+      }
+    ]
+  },
+  "mission": {
+    "eyebrow": "PRINCIPLES",
+    "title": "Four rules we do not bend",
+    "lead": "They are simpler than they look, and that is exactly why they are still working in their eighteenth season.",
+    "items": [
+      {
+        "icon": "leaf",
+        "title": "The soil matters more than the season",
+        "text": "A seven-field crop rotation, cover crops, no-till on a third of the area. We plan ten years ahead, not one harvest."
+      },
+      {
+        "icon": "flask",
+        "title": "A figure, not a promise",
+        "text": "Every consignment has a laboratory certificate before dispatch. If a figure falls short — we are the first to say so."
+      },
+      {
+        "icon": "handshake",
+        "title": "Agreed means delivered",
+        "text": "A forward price is never reopened. In eighteen seasons we have never failed to deliver a signed volume."
+      },
+      {
+        "icon": "route",
+        "title": "A short haul",
+        "text": "The furthest field is 38 km from the dryer. The grain has no time to spoil between the combine and the store."
+      }
+    ]
+  },
+  "services": {
+    "eyebrow": "SERVICES",
+    "title": "What we do for partners",
+    "lead": "We do not only sell grain. Below is everything you can order from us on its own or as part of a contract.",
+    "cta": "Discuss your requirement",
+    "items": [
+      {
+        "title": "Wholesale grain supply",
+        "img": "ops-logistics",
+        "alt": "Grain truck being loaded at the elevator",
+        "text": "Seven crops from our own fields, consignments from 100 tonnes, dispatch by road and rail throughout the year.",
+        "points": [
+          "Separate storage by class",
+          "Laboratory certificate for the consignment",
+          "Weighbridge open 24 hours in season"
+        ]
+      },
+      {
+        "title": "Growing to order",
+        "img": "ops-soil",
+        "alt": "Young shoots in black soil",
+        "text": "You name the crop, the volume and the quality parameters before drilling — we set aside a block of land for it.",
+        "points": [
+          "Minimum 500 hectares per contract",
+          "Agreed hybrid and growing protocol",
+          "Monthly field report"
+        ]
+      },
+      {
+        "title": "Storage and drying",
+        "img": "ops-elevator",
+        "alt": "Silo complex at dusk",
+        "text": "A 46,000-tonne grain elevator and three drying complexes. We take in grain for storage and for toll drying.",
+        "points": [
+          "Drying 1,200 t/day",
+          "Flat storage 12,000 t",
+          "Temperature monitoring per consignment"
+        ]
+      },
+      {
+        "title": "Laboratory analysis",
+        "img": "ops-lab",
+        "alt": "Grain quality control laboratory",
+        "text": "Protein, moisture, test weight, falling number, foreign matter, oil content. Certificate in half a day.",
+        "points": [
+          "Analysis of third-party consignments",
+          "Independent check before dispatch",
+          "Season-by-season history of results"
+        ]
+      },
+      {
+        "title": "Field crop monitoring",
+        "img": "ops-drone",
+        "alt": "Agronomist launching a drone over a field",
+        "text": "A drone with an NDVI camera, soil analyses, maps of problem zones. We do this for neighbouring farms too.",
+        "points": [
+          "Flyover every two weeks",
+          "Variable-rate application maps",
+          "Agronomist's recommendations"
+        ]
+      },
+      {
+        "title": "Logistics to the port",
+        "img": "ops-combine",
+        "alt": "Combine harvester unloading grain into a trailer",
+        "text": "24 company-owned grain trucks and a rail siding. Proven routes to Odesa and Mykolaiv.",
+        "points": [
+          "Daily consignments to schedule",
+          "Wagon dispatches",
+          "Accompanying documents on the day of dispatch"
+        ]
+      }
+    ]
+  },
+  "why": {
+    "eyebrow": "WHY US",
+    "title": "Four things partners mention first",
+    "items": [
+      {
+        "n": "01",
+        "title": "Declared = actual",
+        "text": "In four years of working with our regular buyers there has not been a single recount on the weighbridge."
+      },
+      {
+        "n": "02",
+        "title": "One party accountable",
+        "text": "The land, the machinery, the dryers and the elevator are ours. There is no chain of five suppliers for quality to get lost in."
+      },
+      {
+        "n": "03",
+        "title": "The price holds",
+        "text": "A forward signed in March is executed in October at the same price. No \"the market has moved\"."
+      },
+      {
+        "n": "04",
+        "title": "Transparent paperwork",
+        "text": "An LLC on the general tax system, VAT registered. The full set of documents on the day of dispatch."
+      }
+    ]
+  },
+  "blog_page": {
+    "eyebrow": "NEWS",
+    "title": "What is happening on the farm",
+    "lead": "Short updates on the season, the machinery, yields and the decisions we take.",
+    "read": "Read",
+    "all_tag": "All",
+    "posts": [
+      {
+        "date": "28 July 2026",
+        "iso": "2026-07-28",
+        "tag": "Harvest",
+        "img": "news-harvest",
+        "alt": "Combine harvesting a wheat field",
+        "title": "Winter wheat harvest finished: 6.4 t/ha across every block",
+        "excerpt": "Our best result in eighteen seasons. We set out what drove the gain: the crop rotation, the drilling date or the weather."
+      },
+      {
+        "date": "14 June 2026",
+        "iso": "2026-06-14",
+        "tag": "Investment",
+        "img": "news-drying",
+        "alt": "Grain drying complex in operation",
+        "title": "Third drying complex reaches 1,200 tonnes per day",
+        "excerpt": "All our maize now goes through drying without queueing. What that changes for partners at peak harvest."
+      },
+      {
+        "date": "3 April 2026",
+        "iso": "2026-04-03",
+        "tag": "Technology",
+        "img": "news-notill",
+        "alt": "Tractor with a no-till drill",
+        "title": "2,100 hectares moved to no-till: what the first season showed",
+        "excerpt": "Fuel use, moisture retention and yield against conventional tillage. The figures with nothing dressed up."
+      },
+      {
+        "date": "19 February 2026",
+        "iso": "2026-02-19",
+        "tag": "Quality",
+        "img": "ops-lab",
+        "alt": "Grain quality control laboratory",
+        "title": "How we measure falling number and why it matters to a mill",
+        "excerpt": "The figure most often argued over on the weighbridge. We go through the method and our tolerances."
+      },
+      {
+        "date": "8 December 2025",
+        "iso": "2025-12-08",
+        "tag": "Logistics",
+        "img": "ops-logistics",
+        "alt": "Queue of grain trucks beside the elevator",
+        "title": "Rail siding: the first wagon dispatches to the port",
+        "excerpt": "We worked out the volume at which a wagon beats the truck fleet, and where the saving starts for the buyer."
+      },
+      {
+        "date": "21 October 2025",
+        "iso": "2025-10-21",
+        "tag": "Soils",
+        "img": "ops-soil",
+        "alt": "Young wheat shoots in black soil",
+        "title": "Soil mapping across all 14,200 hectares: the results",
+        "excerpt": "Two years of sampling. What we found out about phosphorus and why we changed the application plan on a third of the area."
+      }
+    ]
+  },
+  "contact_page": {
+    "eyebrow": "CONTACT",
+    "title": "Let's talk about your volume",
+    "lead": "Send us the crop, the volume and the quality parameters you need — we will come back with a price and a dispatch schedule within one working day.",
+    "photo_alt": "Company office and yard with the grain elevator behind",
+    "social_label": "Reach us on",
+    "social": [
+      {
+        "label": "Telegram",
+        "handle": "@centragro_plus",
+        "href": "#",
+        "icon": "telegram"
+      },
+      {
+        "label": "Viber",
+        "handle": "+380 43 200 00 00",
+        "href": "#",
+        "icon": "phone"
+      },
+      {
+        "label": "LinkedIn",
+        "handle": "centragro-plus",
+        "href": "#",
+        "icon": "linkedin"
+      }
+    ],
+    "visit_label": "How to find us",
+    "visit": "From Vinnytsia — the Haisyn road, then the first right after the village of Soroka to the weighbridge. For trucks — a separate entrance on the elevator side.",
+    "hours_note": "During harvest the weighbridge operates around the clock."
+  },
+  "variants_page": {
+    "title": "Three versions of the site",
+    "lead": "The same content in three different treatments. Open each one and choose whichever is closer.",
+    "open": "Open version",
+    "note": "Demonstration layout. Figures, photographs and testimonials are illustrative."
   }
 }

@@ -5,8 +5,8 @@
  "start_url": "/Agro-Site/",
  "scope": "/Agro-Site/",
  "display": "standalone",
- "background_color": "#F7F6F1",
- "theme_color": "#0E2A1B",
+ "background_color": "#ffffff",
+ "theme_color": "#131313",
  "lang": "uk",
  "dir": "ltr",
  "icons": [

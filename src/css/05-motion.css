@@ -1,36 +1,110 @@
 /* ==========================================================================
    MOTION
-   Every reveal is driven by one IntersectionObserver adding .is-in. Only
-   opacity and transform are animated, so the compositor does the work and the
-   main thread stays free — no scroll listeners, no layout thrash.
+   Scroll-linked motion is driven by GSAP + ScrollTrigger (see src/js/app.js).
+   This file only does three things:
+     1. hide animated elements before GSAP takes over, without hiding them from
+        users who have JS disabled
+     2. describe the word-reveal mechanics that CSS has to own (clipping)
+     3. carry the hover/state transitions, which stay in CSS where they belong
    ========================================================================== */
 
-[data-r] {
-  opacity: 0;
-  transform: translate3d(0, var(--r-y, 1.6rem), 0) scale(var(--r-s, 1));
-  transition: opacity .7s var(--ease), transform .8s var(--ease-out);
-  transition-delay: calc(var(--i, 0) * 70ms);
+/* --- flash guard ---------------------------------------------------------
+   `.js` is set by a tiny inline script in <head>, so a no-JS visitor never
+   sees hidden content. GSAP writes visibility back as it animates. */
+html.js [data-r],
+html.js [data-card],
+html.js [data-split],
+html.js [data-stagger] > * {
+  visibility: hidden;
 }
-[data-r].is-in { opacity: 1; transform: none; }
 
-[data-r="left"]  { transform: translate3d(-1.6rem, 0, 0); }
-[data-r="right"] { transform: translate3d(1.6rem, 0, 0); }
-[data-r="in"]    { --r-y: 0; --r-s: .95; }
-[data-r="none"]  { transform: none; }
+/* If GSAP failed to load, or motion is reduced, show everything immediately. */
+html.no-motion [data-r],
+html.no-motion [data-card],
+html.no-motion [data-split],
+html.no-motion [data-stagger] > * {
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
 
-/* soft continuous drift on the lab widget, so the card never feels static */
-.cap__card--lab .cap__viz .lab__row:nth-child(odd)  { animation: drift 7s var(--ease) infinite alternate; }
-.cap__card--lab .cap__viz .lab__row:nth-child(even) { animation: drift 8.5s var(--ease) infinite alternate-reverse; }
-@keyframes drift { to { transform: translate3d(0, -3px, 0); } }
+/* --- word reveal ---------------------------------------------------------
+   Each word gets a clipping wrapper so the inner span can slide up from
+   underneath. The padding/negative-margin pair keeps descenders (у, р, ц, g)
+   from being clipped by that same overflow. */
+.w {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: .16em;
+  margin-bottom: -.16em;
+}
+.w__i {
+  display: inline-block;
+  will-change: transform;
+}
 
-/* the sticky-header sentinel — zero-height, never painted */
-.sentinel { position: absolute; top: 0; height: 1px; width: 100%; pointer-events: none; }
+/* --- elements GSAP animates from a known start state -------------------- */
+.chart__fill { transform-origin: bottom center; }
+.bars__fill  { transform-origin: left center; }
+.chart__val  { opacity: 0; }
+
+/* --- orbit: continuous rotation, started once revealed ------------------ */
+.orbit__arm,
+.orbit__hold {
+  animation-play-state: paused;
+}
+.orbit.is-spinning .orbit__arm,
+.orbit.is-spinning .orbit__hold {
+  animation-play-state: running;
+}
+.orbit__arm  { animation: orbit-cw var(--d) linear infinite; }
+.orbit__hold { animation: orbit-ccw var(--d) linear infinite; }
+
+@keyframes orbit-cw  { to { transform: rotate(calc(var(--a) + 360deg)); } }
+@keyframes orbit-ccw { to { transform: rotate(calc(-1 * var(--a) - 360deg)); } }
+
+/* --- marquee track ------------------------------------------------------ */
+.marq {
+  position: relative;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.marq__track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+/* --- hero fan: final resting transform, GSAP animates in from below ----- */
+.fan__item {
+  transform:
+    translateY(var(--ty)) translateZ(var(--tz))
+    rotateY(var(--ry)) rotateZ(var(--rz))
+    scale(var(--sc));
+}
+
+/* --- soft continuous drift, for widgets that would otherwise sit dead --- */
+@keyframes drift {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(0, -5px, 0); }
+}
+.drift-a { animation: drift 7s var(--ease-soft) infinite alternate; }
+.drift-b { animation: drift 9s var(--ease-soft) infinite alternate-reverse; }
+
+/* --- the sticky-header sentinel: zero height, never painted ------------- */
+.sentinel {
+  position: absolute;
+  top: 0;
+  height: 1px;
+  width: 100%;
+  pointer-events: none;
+}
 
 /* ==========================================================================
-   REDUCED MOTION
-   Full opt-out: everything is shown in its final state, nothing loops.
+   REDUCED MOTION — full opt-out
    ========================================================================== */
-
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 
@@ -41,20 +115,32 @@
     transition-delay: 0ms !important;
   }
 
-  [data-r] { opacity: 1 !important; transform: none !important; }
-
-  .fan__item {
+  html.js [data-r],
+  html.js [data-card],
+  html.js [data-split],
+  html.js [data-stagger] > * {
+    visibility: visible !important;
     opacity: 1 !important;
-    transform: rotateY(var(--ry)) rotateZ(var(--rz)) translateY(var(--ty)) !important;
+    transform: none !important;
   }
+
+  .w { overflow: visible; padding-bottom: 0; margin-bottom: 0; }
+  .w__i { transform: none !important; }
+
   .chart__fill { transform: scaleY(1) !important; }
-  .chart__val  { opacity: 1 !important; }
   .bars__fill  { transform: scaleX(1) !important; }
-  .orbit__ring, .orbit__hub, .orbit__pill { opacity: 1 !important; transform: none !important; }
+  .chart__val  { opacity: 1 !important; }
+
+  .orbit__ring, .orbit__hub, .orbit__pill {
+    opacity: 1 !important;
+    transform: none !important;
+  }
   .orbit__pill { transform: translate(-50%, -50%) !important; }
   .orbit__arm, .orbit__hold { animation: none !important; }
-  .lab__row { opacity: 1 !important; transform: none !important; }
-  .cap__card { opacity: 1 !important; transform: none !important; }
-  .marquee__track { animation: none !important; transform: none !important; }
-  .marquee { -webkit-mask-image: none; mask-image: none; }
+
+  .marq__track { transform: none !important; }
+  .marq { -webkit-mask-image: none; mask-image: none; }
+  .drift-a, .drift-b { animation: none !important; }
+
+  .fan__item { transform: rotateY(var(--ry)) rotateZ(var(--rz)) !important; }
 }

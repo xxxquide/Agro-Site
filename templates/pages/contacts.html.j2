@@ -1,0 +1,6 @@
+{%- extends "base.html.j2" -%}
+{%- import "blocks.html.j2" as B with context -%}
+{%- block body -%}
+{{ B.contacts_body() }}
+{%- if V.id == 'v1' %}{{ B.sec_faq() }}{% endif %}
+{%- endblock -%}

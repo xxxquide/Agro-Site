@@ -14,6 +14,18 @@ OUT_DIR = "/agent/workspace/agro/assets/img"
 
 # name, source-id prefix, target aspect (w/h), widths to emit
 JOBS = [
+    # --- iteration 2: sky-led heroes, one per site variation --------------
+    ("hero-v1",        "cmsgcjapd0kpc07adoj14wfu4", (16, 9),  [960, 1440, 1920]),
+    ("hero-v2",        "cmsgcjynu0kmk06ad0hlu0pzt", (16, 9),  [960, 1440, 1920]),
+    ("hero-v3",        "cmsgckn0p0kbr07ad6lno8avl", (16, 9),  [960, 1440, 1920]),
+
+    ("team-director",  "cmsgcm1540kcx07ad5b9ibrf8", (4, 5),   [420, 840]),
+    ("team-agronomist","cmsgcmdr10q6807ad114e1tdg", (4, 5),   [420, 840]),
+    ("team-lab",       "cmsgcmq3j0l1l07adcpobysox", (4, 5),   [420, 840]),
+    ("team-logistics", "cmsgcn1lu0l7y07ad8tksbnkc", (4, 5),   [420, 840]),
+
+    ("contact-yard",   "cmsgcnjnp0keo07ad2bdgm6ef", (3, 2),   [700, 1400]),
+
     ("hero-field",     "cmsg8o2y90h4w07adyzsbup48", (16, 9),  [960, 1440, 1920]),
     ("cta-field",      "cmsg8ozlp0h0t07adzpwl7mbr", (21, 9),  [1000, 1600]),
     ("about-team",     "cmsg8qjea0hta07adcupcl1mr", (3, 2),   [640, 1280]),
@@ -51,6 +63,9 @@ QUALITY = {
     "person": (54, 82),
     "news":   (48, 76),
     "about":  (48, 76),
+    "hero":   (46, 74),      # covers hero-v1 / v2 / v3
+    "team":   (54, 82),
+    "contact": (48, 76),
 }
 
 

@@ -1,0 +1,12 @@
+{%- extends "base.html.j2" -%}
+{%- import "blocks.html.j2" as B with context -%}
+{%- block body -%}
+{{ B.hero_page(c.services.eyebrow, c.services.title, c.services.lead,
+               tags=(V.services_hero == 'tags')) }}
+{{ B.sec_services() }}
+{{ B.sec_why() }}
+{%- if V.id != 'v3' %}{{ B.sec_crops() }}{% endif %}
+{{ B.sec_testimonials() }}
+{{ B.sec_faq() }}
+{{ B.sec_cta() }}
+{%- endblock -%}

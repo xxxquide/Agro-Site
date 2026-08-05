@@ -1,0 +1,47 @@
+{#- Standalone chooser page: three options side by side, for showing the owner. -#}
+<!DOCTYPE html>
+<html lang="uk" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ c.variants_page.title }} — {{ c.brand.name }}</title>
+<meta name="description" content="{{ c.variants_page.lead }}">
+<meta name="robots" content="noindex, follow">
+<meta name="theme-color" content="#131313">
+<link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/onest.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/main.css">
+<script>document.documentElement.className="js";</script>
+</head>
+<body>
+<main class="vchoose">
+  <div class="wrap">
+    <div class="head head--center" style="margin-bottom:2.5rem">
+      <svg width="46" height="46" viewBox="0 0 48 48" aria-hidden="true" style="margin-inline:auto">{{ logo_mark }}</svg>
+      <span class="tag tag--lime">{{ c.brand.legal }}</span>
+      <h1>{{ c.variants_page.title }}</h1>
+      <p class="lead">{{ c.variants_page.lead }}</p>
+    </div>
+    <div class="vgrid">
+      {%- for v in variants %}
+      <a class="vcard" href="{{ v.slug or './' }}">
+        <div class="vcard__ph">
+          <picture>
+            <source type="image/avif" srcset="{{ srcset(v.hero_img, 'avif') }}" sizes="(max-width:64rem) 92vw, 30vw">
+            <img src="assets/img/{{ v.hero_img }}-960.webp" width="1920" height="1080" alt="{{ v.label }} — {{ v.note }}" loading="lazy" decoding="async">
+          </picture>
+        </div>
+        <div class="vcard__body">
+          <span class="tag tag--lime">{{ v.label }}</span>
+          <h2>{{ v.note }}</h2>
+          <p>{{ v.detail }}</p>
+          <span class="vcard__go tlink">{{ c.variants_page.open }}</span>
+        </div>
+      </a>
+      {%- endfor %}
+    </div>
+    <p class="text-xs muted" style="text-align:center;margin-top:2rem">{{ c.variants_page.note }}</p>
+  </div>
+</main>
+</body>
+</html>

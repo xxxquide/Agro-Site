@@ -1,0 +1,8 @@
+{%- extends "base.html.j2" -%}
+{%- import "blocks.html.j2" as B with context -%}
+{%- block body -%}
+{{ B.hero() }}
+{%- for s in V.home_sections %}
+{{ B.render(s) }}
+{%- endfor %}
+{%- endblock -%}

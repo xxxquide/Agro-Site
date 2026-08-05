@@ -14,8 +14,23 @@ import sys
 from html.parser import HTMLParser
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PAGES = ["index.html", "en/index.html", "404.html"]
 SUBPATH = "/Agro-Site/"
+
+
+def discover_pages():
+    """Every built HTML page, so adding a variation cannot bypass the checks."""
+    out = []
+    for dirpath, dirnames, filenames in os.walk(ROOT):
+        dirnames[:] = [d for d in dirnames
+                       if d not in ("src", "templates", "tools", "content",
+                                    "build", "docs", "__pycache__", ".git")]
+        for fn in filenames:
+            if fn.endswith(".html"):
+                out.append(os.path.relpath(os.path.join(dirpath, fn), ROOT))
+    return sorted(out)
+
+
+PAGES = discover_pages()
 
 fails, warns = [], []
 
@@ -150,7 +165,7 @@ def check_page(page):
             fail(f'{tag}: input #{iid} has no <label for>')
 
     # --- JSON-LD ---------------------------------------------------------
-    if page != "404.html":
+    if page not in ("404.html", "variants.html"):
         if not s.jsonld:
             fail(f"{tag}: no JSON-LD block")
         for block in s.jsonld:
@@ -160,9 +175,12 @@ def check_page(page):
                 fail(f"{tag}: JSON-LD is not valid JSON — {e}")
                 continue
             types = [n.get("@type") for n in data.get("@graph", [])]
-            for need in ("Organization", "LocalBusiness", "WebSite", "WebPage", "FAQPage"):
+            for need in ("Organization", "LocalBusiness", "WebSite"):
                 if need not in types:
                     fail(f"{tag}: JSON-LD missing @type {need}")
+            page_types = {"WebPage", "AboutPage", "CollectionPage", "ContactPage"}
+            if not page_types & set(types):
+                fail(f"{tag}: JSON-LD has no page-level type {sorted(page_types)}")
 
         # --- head essentials --------------------------------------------
         for pat, label in [
@@ -185,6 +203,15 @@ def check_page(page):
         if desc and not (110 <= len(desc.group(1)) <= 165):
             warn(f"{tag}: meta description is {len(desc.group(1))} chars (aim 110-165)")
 
+    # --- indexability: only variation 1 may be indexed ------------------
+    is_variant = page.startswith(("v2/", "v3/", "en/v2/", "en/v3/"))
+    robots = re.search(r'<meta name="robots" content="([^"]*)"', html)
+    if page not in ("404.html", "variants.html"):
+        if is_variant and (not robots or "noindex" not in robots.group(1)):
+            fail(f"{tag}: duplicate-layout variation must be noindex")
+        if not is_variant and robots and "noindex" in robots.group(1):
+            fail(f"{tag}: primary variation must be indexable")
+
     # --- lazy-loading discipline ----------------------------------------
     eager = [im for im in s.imgs if im.get("loading") != "lazy"]
     if len(eager) > 1:
@@ -202,8 +229,11 @@ def budgets():
     print("  " + "-" * 44)
     rows = []
     for rel_path in ["index.html", "en/index.html", "assets/css/main.css",
-                     "assets/js/app.js", "assets/fonts/manrope.woff2",
-                     "assets/fonts/jbmono.woff2"]:
+                     "assets/js/app.js", "assets/fonts/onest.woff2",
+                     "assets/fonts/geistmono.woff2",
+                     "assets/js/vendor/gsap.min.js",
+                     "assets/js/vendor/ScrollTrigger.min.js",
+                     "assets/js/vendor/lenis.min.js"]:
         p = os.path.join(ROOT, rel_path)
         if not os.path.exists(p):
             fail(f"budget: {rel_path} missing")
@@ -212,24 +242,34 @@ def budgets():
         rows.append((rel_path, raw, g))
         print(f"  {rel_path:24s} {raw/1024:6.1f}K  {g/1024:6.1f}K")
 
-    lcp = os.path.join(ROOT, "assets/img/hero-field-1440.avif")
+    lcp = os.path.join(ROOT, "assets/img/hero-v1-1440.avif")
     lcp_sz = os.path.getsize(lcp) if os.path.exists(lcp) else 0
-    print(f"  {'hero-field-1440.avif':24s} {lcp_sz/1024:6.1f}K       —   (LCP)")
+    print(f"  {'hero-v1-1440.avif':24s} {lcp_sz/1024:6.1f}K       —   (LCP)")
 
     # first-view weight: uk page + css + js + both fonts + hero avif
     keys = {r[0]: r for r in rows}
     first = (
-        keys["index.html"][2] + keys["assets/css/main.css"][2] + keys["assets/js/app.js"][2]
-        + keys["assets/fonts/manrope.woff2"][1] + keys["assets/fonts/jbmono.woff2"][1]
+        keys["index.html"][2] + keys["assets/css/main.css"][2]
+        + keys["assets/js/app.js"][2]
+        + keys["assets/js/vendor/gsap.min.js"][2]
+        + keys["assets/js/vendor/ScrollTrigger.min.js"][2]
+        + keys["assets/js/vendor/lenis.min.js"][2]
+        + keys["assets/fonts/onest.woff2"][1]
+        + keys["assets/fonts/geistmono.woff2"][1]
         + lcp_sz
     )
     print(f"\n  FIRST VIEW (gzip html+css+js, fonts, LCP image): {first/1024:.1f} KB")
-    if first > 350 * 1024:
-        fail(f"budget: first view {first/1024:.0f} KB exceeds 350 KB")
+    # the budget went up deliberately when GSAP + Lenis replaced the hand-rolled
+    # reveal layer, in exchange for scroll-linked motion
+    if first > 420 * 1024:
+        fail(f"budget: first view {first/1024:.0f} KB exceeds 420 KB")
 
-    js_gz = keys["assets/js/app.js"][2]
-    if js_gz > 10 * 1024:
-        fail(f"budget: JS {js_gz/1024:.1f} KB gzip exceeds 10 KB")
+    js_gz = (keys["assets/js/app.js"][2]
+             + keys["assets/js/vendor/gsap.min.js"][2]
+             + keys["assets/js/vendor/ScrollTrigger.min.js"][2]
+             + keys["assets/js/vendor/lenis.min.js"][2])
+    if js_gz > 60 * 1024:
+        fail(f"budget: JS {js_gz/1024:.1f} KB gzip exceeds 60 KB")
 
     total_img = sum(os.path.getsize(f) for f in glob.glob(os.path.join(ROOT, "assets/img/*"))
                     if os.path.isfile(f))

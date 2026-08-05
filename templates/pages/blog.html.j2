@@ -1,0 +1,8 @@
+{%- extends "base.html.j2" -%}
+{%- import "blocks.html.j2" as B with context -%}
+{%- block body -%}
+{{ B.hero_page(c.blog_page.eyebrow, c.blog_page.title, c.blog_page.lead) }}
+{{ B.sec_blog() }}
+{%- if V.id == 'v2' %}{{ B.tag_band() }}{% endif %}
+{{ B.sec_cta() }}
+{%- endblock -%}
