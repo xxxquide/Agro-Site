@@ -746,6 +746,10 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   border-color: var(--black);
   box-shadow: 0 0 0 3px rgba(214, 253, 112, .55);
 }
+.field :is(input, select, textarea):user-invalid {
+  border-color: #b42318;
+  box-shadow: 0 0 0 3px rgba(180, 35, 24, .12);
+}
 .form__note { font-size: var(--fs-xs); color: var(--grey-300); max-width: 46ch; }
 .form__ok {
   display: none;
@@ -788,7 +792,9 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   font-size: var(--fs-sm);
 }
 .subscribe input::placeholder { color: rgba(255, 255, 255, .45); }
-.subscribe input:focus { outline: 0; border-color: var(--lime); }
+.subscribe input:focus { outline: 0; border-color: var(--lime); box-shadow: 0 0 0 3px rgba(214, 253, 112, .18); }
+.subscribe input:user-invalid { border-color: #ff8b82; }
+.form button:disabled, .footer__nl button:disabled { cursor: not-allowed; opacity: .72; }
 .subscribe .btn { position: absolute; right: .3rem; top: 50%; transform: translateY(-50%); }
 .subscribe .btn:hover { transform: translateY(-50%) translateY(-2px); }
 
@@ -947,7 +953,9 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   left: 50%;
   top: 50%;
   animation: partner-circuit 38s linear infinite;
+  animation-play-state: paused;
 }
+.partner-orbit.is-spinning .partner-orbit__node { animation-play-state: running; }
 .partner-orbit__node .pm {
   padding: .62rem .88rem;
   border-radius: var(--r-pill);
@@ -972,4 +980,3 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   outline-offset: 4px;
 }
 .marq[data-marquee-hover]:focus-visible { outline: 2px solid var(--lime-lo); outline-offset: 3px; }
--white); }

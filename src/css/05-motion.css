@@ -46,7 +46,8 @@ html.no-motion [data-stagger] > * {
 
 /* --- elements GSAP animates from a known start state -------------------- */
 .chart__fill { transform-origin: bottom center; }
-.bars__fill  { transform-origin: left center; }
+.bars__fill,
+.svc-signal__track i { transform-origin: left center; }
 .chart__val  { opacity: 0; }
 
 /* --- orbit: continuous rotation, started once revealed ------------------ */
@@ -57,6 +58,16 @@ html.no-motion [data-stagger] > * {
 .orbit.is-spinning .orbit__arm,
 .orbit.is-spinning .orbit__hold {
   animation-play-state: running;
+}
+.orbit.is-spinning:hover .orbit__arm,
+.orbit.is-spinning:hover .orbit__hold,
+.orbit.is-spinning:focus-within .orbit__arm,
+.orbit.is-spinning:focus-within .orbit__hold {
+  animation-play-state: paused;
+}
+.partner-orbit.is-spinning:hover .partner-orbit__node,
+.partner-orbit.is-spinning:focus-within .partner-orbit__node {
+  animation-play-state: paused;
 }
 .orbit__arm  { animation: orbit-cw var(--d) linear infinite; }
 .orbit__hold { animation: orbit-ccw var(--d) linear infinite; }
@@ -142,7 +153,9 @@ html.no-motion [data-stagger] > * {
     transform: none !important;
   }
   .orbit__pill { transform: translate(-50%, -50%) !important; }
-  .orbit__arm, .orbit__hold { animation: none !important; }
+  .orbit__arm, .orbit__hold,
+  .partner-orbit__node { animation: none !important; }
+  .partner-orbit__node { transform: rotate(var(--start)) translateX(var(--radius)) rotate(calc(-1 * var(--start))) !important; }
 
   .marq {
     overflow-x: auto;

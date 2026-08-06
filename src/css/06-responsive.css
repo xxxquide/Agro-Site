@@ -96,7 +96,9 @@
     transform: none !important;
   }
   .hero--pright, .hero--pcentre { min-height: 0; }
+  .hero--pright { padding-top: calc(var(--header-h) + 3rem); }
   .hero--pright .hero__bg img { object-position: 66% 30%; }
+  .hero--pcentre .hero__bg img { object-position: 50% 62%; }
   .proc { grid-template-columns: repeat(2, 1fr); }
   .logo-bar { flex-direction: column; align-items: stretch; }
   .logo-bar__rating { align-self: flex-start; }
@@ -126,9 +128,9 @@
   .news, .blog-grid { grid-template-columns: 1fr; }
   .blog-grid > :first-child { grid-column: span 1; }
   .proc { grid-template-columns: 1fr; }
-  .step { flex-direction: row; gap: var(--s-lg); align-items: flex-start; }
+  .step { flex-direction: row; gap: var(--s-lg); align-items: flex-start; min-width: 0; overflow: clip; }
   .step__ph { flex: 0 0 6.5rem; aspect-ratio: 1; }
-  .step__body { display: flex; flex-direction: column; gap: .4rem; }
+  .step__body { display: flex; flex-direction: column; gap: .4rem; min-width: 0; }
   .step__n::after { display: none; }
   .team { grid-template-columns: 1fr; }
   .team--wide .member { flex-direction: column; align-items: flex-start; }
@@ -157,11 +159,18 @@
     animation: none;
     transform: none !important;
   }
+  .partner-orbit__node { min-width: 0; }
   .partner-orbit__node .pm {
     width: 100%;
+    min-width: 0;
     min-height: 3.4rem;
     justify-content: center;
     border-radius: var(--r-sm);
+  }
+  .partner-orbit__node .pm__t {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .ct1__card { margin-top: -1.5rem; }
@@ -183,12 +192,13 @@
   .logo-bar .marq { width: 100%; max-width: 100%; }
   .fan { padding-inline: 1rem; }
   .fan__item { width: 9.25rem; }
+  .partner-orbit { grid-template-columns: 1fr; width: min(100%, 18rem); }
 
   .head h2, .head-row h2 { font-size: clamp(1.9rem, 9.2vw, 2.25rem); }
   .btn { font-size: .74rem; letter-spacing: .09em; }
   .chart__val { font-size: .58rem; }
   .cap__card { padding: 1rem; }
-  .cap__viz { padding: 1rem; min-height: 12rem; }
+  .cap__viz { padding: 1rem; min-height: 12rem; overflow: clip; }
   .orbit { width: 100%; max-width: 17rem; }
   .orbit__pill { font-size: .62rem; padding: .34rem .56rem; }
   .bars__top { gap: .5rem; }

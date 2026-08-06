@@ -181,6 +181,106 @@
 .v3 .milestone__body::before { display: none; }
 
 /* ==========================================================================
+   INNER-PAGE ART DIRECTION
+   ========================================================================== */
+
+/* V2 keeps the reference's editorial-industrial cadence on pages that do not
+   contain the home-only capacity/terms bands. */
+.v2 #services {
+  background: var(--ink);
+  color: var(--white);
+  margin-top: var(--section);
+  padding-block: var(--section);
+}
+.v2 #services .head h2,
+.v2 #services .svc h3 { color: var(--white); }
+.v2 #services .head .lead,
+.v2 #services .svc__body p { color: var(--on-dark-2); }
+.v2 #services .btn--outline {
+  color: var(--white);
+  box-shadow: inset 0 0 0 1px var(--line-dark-2);
+}
+.v2 #services .svc-list {
+  gap: 1px;
+  background: var(--line-dark);
+  border-block: 1px solid var(--line-dark);
+}
+.v2 #services .svc {
+  position: relative;
+  border: 0;
+  border-radius: 0;
+  background: var(--ink);
+  color: var(--white);
+}
+.v2 #services .svc__ph {
+  aspect-ratio: 16 / 10;
+  filter: saturate(.72) contrast(1.06);
+}
+.v2 #services .svc__body { min-height: 100%; justify-content: center; }
+.v2 #services .svc__index { color: var(--lime); }
+.v2 #services .svc-signal__track { background: rgba(255, 255, 255, .12); }
+.v2 #services .svc-signal__track i { background: var(--white); }
+.v2 #services .svc-signal__track:nth-child(2) i { background: var(--lime); }
+.v2 #services .svc__points svg { color: var(--lime); }
+.v2 #services .svc__points li { color: rgba(255, 255, 255, .88); }
+.v2 .blog-grid {
+  gap: 1px;
+  padding: 1px;
+  background: var(--ink);
+}
+.v2 .blog-grid .post { border-radius: 0; }
+.v2 .blog-grid .post:first-child { border-radius: var(--r-sm) 0 0 0; }
+.v2 .blog-grid .post:nth-child(2) { border-radius: 0 var(--r-sm) 0 0; }
+
+/* V3 is a gallery rather than a flattened V1: services become indexed rows,
+   and the journal becomes one photographic feature beside a quiet index. */
+.v3 #services .head-row { align-items: end; }
+.v3 .svc-list { border-top: 1px solid var(--border); gap: 0; }
+.v3 .svc {
+  grid-template-columns: minmax(12rem, .62fr) minmax(18rem, 1.38fr);
+  border-top: 0;
+  border-bottom: 1px solid var(--border);
+  padding-block: clamp(1.5rem, 3vw, 2.5rem);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+.v3 .svc:nth-child(even) { grid-template-columns: minmax(12rem, .62fr) minmax(18rem, 1.38fr); }
+.v3 .svc:nth-child(even) .svc__ph { order: 0; }
+.v3 .svc__ph,
+.v3 .svc:nth-child(even) .svc__ph { aspect-ratio: 4 / 3; border-radius: var(--r-md); }
+.v3 .svc__body { padding: var(--s-sm) 0; }
+.v3 .svc__index { color: var(--text-2); }
+.v3 .svc-signal { grid-template-columns: repeat(3, 1fr); gap: .4rem; }
+.v3 .blog-grid {
+  grid-template-columns: minmax(0, 1.4fr) minmax(17rem, .6fr);
+  gap: 0 clamp(2rem, 5vw, 5rem);
+}
+.v3 .blog-grid .post:first-child {
+  grid-column: 1;
+  grid-row: 1 / span 5;
+  min-height: 44rem;
+  border-radius: var(--r-lg);
+}
+.v3 .blog-grid .post:not(:first-child) {
+  grid-column: 2;
+  min-height: 0;
+  padding: var(--s-lg) 0;
+  border-radius: 0;
+  border-top: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  overflow: visible;
+}
+.v3 .blog-grid .post:not(:first-child):last-child { border-bottom: 1px solid var(--border); }
+.v3 .blog-grid .post:not(:first-child)::after { display: none; }
+.v3 .blog-grid .post:not(:first-child) picture { display: none; }
+.v3 .blog-grid .post:not(:first-child) h3 { color: var(--text); }
+.v3 .blog-grid .post:not(:first-child) .post__date,
+.v3 .blog-grid .post:not(:first-child) .post__ex { color: var(--text-2); }
+.v3 .blog-grid .post:not(:first-child) .post__go { color: var(--text); }
+.v3 .about__ph--intro { border-radius: 50% 50% var(--r-lg) var(--r-lg); aspect-ratio: 4 / 5; max-width: 30rem; justify-self: end; }
+
+/* ==========================================================================
    Shared: section numbering, used by v2 only
    ========================================================================== */
 
@@ -255,6 +355,24 @@
   .v3 .phero__copy { min-height: auto; padding-block: clamp(2rem, 6vw, 4rem); }
   .v3 .phero__ph { min-height: 18rem; }
   .v2 .phero { min-height: clamp(28rem, 78vw, 39rem); }
+  .v3 .svc,
+  .v3 .svc:nth-child(even) { grid-template-columns: 1fr; gap: var(--s-lg); }
+  .v3 .svc__ph,
+  .v3 .svc:nth-child(even) .svc__ph { order: -1; aspect-ratio: 16 / 9; }
+  .v3 .blog-grid { grid-template-columns: 1fr 1fr; gap: var(--s-lg); }
+  .v3 .blog-grid .post:first-child {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    min-height: 30rem;
+  }
+  .v3 .blog-grid .post:not(:first-child) { grid-column: auto; }
+}
+
+@media (max-width: 48rem) {
+  .v3 .blog-grid { grid-template-columns: 1fr; }
+  .v3 .blog-grid .post:first-child { min-height: 24rem; }
+  .v3 .blog-grid .post:not(:first-child) { grid-column: 1; }
+  .v2 #services { margin-top: var(--section); }
 }
 
 @media (max-width: 35rem) {

@@ -37,6 +37,11 @@
   function one(sel, ctx) { return (ctx || doc).querySelector(sel); }
   function on(el, ev, fn, opt) { el && el.addEventListener(ev, fn, opt || false); }
 
+  // A system preference can change while the page is open. Rebooting is the
+  // safest way to tear down scrubbed timelines and Lenis without leaving stale
+  // transforms behind.
+  on(reducedQuery, 'change', function () { window.location.reload(); });
+
   var refreshFrame = 0;
   function scheduleRefresh() {
     if (!window.ScrollTrigger) return;
@@ -131,7 +136,7 @@
     var ST = window.ScrollTrigger;
 
     /* --- headlines, word by word ----------------------------------------- */
-    all('[data-split]').forEach(function (el) {
+    all('[data-split]:not([data-page-title])').forEach(function (el) {
       var words = splitWords(el);
       if (!words.length) return;
       gsap.set(el, { autoAlpha: 1 });
@@ -197,6 +202,16 @@
           stagger: STAGGER.loose,
           scrollTrigger: { trigger: box, start: 'top 85%', once: true },
         });
+    });
+
+    all('.svc-signal').forEach(function (box) {
+      gsap.from(all('.svc-signal__track i', box), {
+        scaleX: 0,
+        duration: DUR.lg,
+        ease: EASE.expo,
+        stagger: STAGGER.tight,
+        scrollTrigger: { trigger: box, start: 'top 90%', once: true },
+      });
     });
 
     all('[data-chart]').forEach(function (box) {
@@ -413,6 +428,27 @@
     });
   }
 
+  function initPartnerOrbit() {
+    all('[data-partner-orbit]').forEach(function (orbit) {
+      var inView = false;
+      function sync() {
+        orbit.classList.toggle('is-spinning', inView && !doc.hidden);
+      }
+      if (window.ScrollTrigger) {
+        window.ScrollTrigger.create({
+          trigger: orbit,
+          start: 'top bottom',
+          end: 'bottom top',
+          onToggle: function (self) { inView = self.isActive; sync(); },
+        });
+      } else {
+        inView = true;
+        sync();
+      }
+      on(doc, 'visibilitychange', sync);
+    });
+  }
+
   /* =========================================================================
      5. Hero opening sequence — runs on load, not on scroll.
      ========================================================================= */
@@ -581,15 +617,35 @@
       }, { threshold: 0 }).observe(sentinel);
     }
 
-    /* mobile drawer */
+    /* mobile drawer — focus is trapped inside the modal surface and page
+       content is made inert while it is open. */
     var burger = one('.burger');
     var drawer = one('.drawer');
+    var main = one('main');
+    var footerWrap = one('.footer-wrap');
+    var focusBeforeDrawer = null;
+    function drawerFocusables() {
+      if (!drawer) return [];
+      return all('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])', drawer);
+    }
     function setDrawer(open) {
       doc.body.classList.toggle('nav-open', open);
       if (lenis) open ? lenis.stop() : lenis.start();
       doc.body.style.overflow = open ? 'hidden' : '';
-      if (burger) burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (main) main.inert = open;
+      if (footerWrap) footerWrap.inert = open;
+      if (burger) {
+        burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        burger.setAttribute('aria-label', burger.getAttribute(open ? 'data-label-close' : 'data-label-open') || 'Menu');
+      }
       if (drawer) drawer.setAttribute('aria-hidden', open ? 'false' : 'true');
+      if (open) {
+        focusBeforeDrawer = doc.activeElement;
+        var targets = drawerFocusables();
+        requestAnimationFrame(function () { (targets[0] || drawer).focus(); });
+      } else if (focusBeforeDrawer && typeof focusBeforeDrawer.focus === 'function') {
+        focusBeforeDrawer.focus();
+      }
     }
     on(burger, 'click', function () {
       setDrawer(!doc.body.classList.contains('nav-open'));
@@ -598,9 +654,21 @@
       on(a, 'click', function () { setDrawer(false); });
     });
     on(doc, 'keydown', function (e) {
-      if (e.key === 'Escape' && doc.body.classList.contains('nav-open')) {
+      if (!doc.body.classList.contains('nav-open')) return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
         setDrawer(false);
-        burger && burger.focus();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      var targets = drawerFocusables();
+      if (!targets.length) return;
+      var first = targets[0];
+      var last = targets[targets.length - 1];
+      if (e.shiftKey && doc.activeElement === first) {
+        e.preventDefault(); last.focus();
+      } else if (!e.shiftKey && doc.activeElement === last) {
+        e.preventDefault(); first.focus();
       }
     });
 
@@ -646,10 +714,22 @@
       });
     });
 
-    /* demo forms have no backend — say so instead of faking a submit */
+    /* Demo forms have no backend. Native constraint validation still runs; a
+       valid submission then explains the demo state instead of pretending data
+       was sent anywhere. */
     all('[data-demo-form]').forEach(function (form) {
+      on(form, 'input', function () {
+        var ok = one('.form__ok', form);
+        if (ok) ok.classList.remove('is-on');
+      });
       on(form, 'submit', function (e) {
         e.preventDefault();
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          var invalid = one(':invalid', form);
+          if (invalid) invalid.focus();
+          return;
+        }
         var ok = one('.form__ok', form);
         if (ok) { ok.classList.add('is-on'); ok.setAttribute('role', 'status'); }
         var btn = form.querySelector('button[type="submit"]');
@@ -703,11 +783,13 @@
 
     initSmoothScroll();
     initHero();
+    initPageHero();
     revealAll();
     initImageReveal();
     initMagnetic();
     initParallax();
     initMarquees();
+    initPartnerOrbit();
     initCounters();
 
     // late webfont/image sizing changes would otherwise leave triggers stale

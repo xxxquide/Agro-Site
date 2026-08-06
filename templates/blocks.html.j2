@@ -14,7 +14,7 @@
 {%- set m = imgs[name] -%}
 <picture{% if cls %} class="{{ cls }}"{% endif %}>
 <source type="image/avif" srcset="{{ srcset(name, 'avif') }}" sizes="{{ sizes }}">
-<img src="{{ p }}assets/img/{{ name }}-{{ m.widths[0] }}.webp" srcset="{{ srcset(name, 'webp') }}" sizes="{{ sizes }}" width="{{ m.widths[-1] }}" height="{{ m['h' ~ m.widths[-1]] }}" alt="{{ alt }}"{% if priority %} fetchpriority="high" decoding="sync"{% else %} loading="lazy" decoding="async"{% endif %}>
+<img src="{{ p }}assets/img/{{ name }}-{{ m.widths[0] }}.webp" srcset="{{ srcset(name, 'webp') }}" sizes="{{ sizes }}" width="{{ m.widths[-1] }}" height="{{ m['h' ~ m.widths[-1]] }}" alt="{{ alt }}"{% if priority %} fetchpriority="high" loading="eager" decoding="async"{% else %} loading="lazy" decoding="async"{% endif %}>
 </picture>
 {%- endmacro -%}
 
@@ -496,7 +496,7 @@
     </div>
     <div class="news" data-stagger=".1">
       {%- for n in c.news['items'] %}
-      <article class="post">
+      <article class="post" data-post="{{ '%02d' % loop.index }}">
         {{ pic(n.img, n.alt, '(max-width: 35rem) 92vw, (max-width: 64rem) 46vw, 30vw') }}
         <div class="post__meta">
           <span class="chip chip--lime">{{ n.tag }}</span>
@@ -637,8 +637,8 @@
         <p class="lead" data-r>{{ c.about.lead }}</p>
         {%- for para in c.about.body %}<p data-r data-delay=".{{ loop.index }}">{{ para }}</p>{% endfor %}
       </div>
-      <figure class="about__ph" data-r="right">
-        <span data-parallax="8">{{ pic('about-team', c.about.image_alt, '(max-width: 64rem) 92vw, 44vw') }}</span>
+      <figure class="about__ph about__ph--intro" data-r="right">
+        <span data-parallax="8">{{ pic('ops-drone' if V.id == 'v1' else ('ops-soil' if V.id == 'v2' else 'ops-lab'), c.services['items'][4].alt if V.id == 'v1' else (c.services['items'][1].alt if V.id == 'v2' else c.services['items'][3].alt), '(max-width: 64rem) 92vw, 44vw') }}</span>
       </figure>
     </div>
   </div>
@@ -660,11 +660,17 @@
     </div>
     <div class="svc-list">
       {%- for s in c.services['items'] %}
-      <article class="svc" data-card>
+      <article class="svc" data-card data-service="{{ '%02d' % loop.index }}">
         <div class="svc__ph">{{ pic(s.img, s.alt, '(max-width: 64rem) 100vw, 46vw') }}</div>
         <div class="svc__body">
+          <span class="svc__index" aria-hidden="true">{{ '%02d' % loop.index }}</span>
           <h3>{{ s.title }}</h3>
           <p>{{ s.text }}</p>
+          <div class="svc-signal" aria-hidden="true">
+            <span class="svc-signal__track"><i style="--v:{{ 52 + loop.index0 * 6 }}%"></i></span>
+            <span class="svc-signal__track"><i style="--v:{{ 78 - loop.index0 * 4 }}%"></i></span>
+            <span class="svc-signal__track"><i style="--v:{{ 64 + (loop.index0 % 3) * 9 }}%"></i></span>
+          </div>
           <ul class="svc__points">
             {%- for pt in s.points %}<li>{{ I.tick() }}<span>{{ pt }}</span></li>{% endfor %}
           </ul>
@@ -698,7 +704,7 @@
     <h2 id="bg-t" class="sr">{{ c.blog_page.title }}</h2>
     <div class="blog-grid" data-stagger=".09">
       {%- for n in c.blog_page.posts %}
-      <article class="post">
+      <article class="post" data-post="{{ '%02d' % loop.index }}">
         {{ pic(n.img, n.alt, '(max-width: 35rem) 92vw, (max-width: 64rem) 46vw, 30vw') }}
         <div class="post__meta">
           <span class="chip chip--lime">{{ n.tag }}</span>
@@ -717,15 +723,15 @@
 {#- ============================================================ CONTACTS = -#}
 
 {%- macro contact_form(dark=False) -%}
-<form class="form{{ ' form--dark' if dark }}" data-demo-form novalidate>
+<form class="form{{ ' form--dark' if dark }}" data-demo-form>
   <div class="form__grid">
     <div class="field">
       <label for="f-name">{{ c.contact.form.name }}</label>
-      <input id="f-name" name="name" type="text" autocomplete="organization" placeholder="{{ c.contact.form.name_ph }}" required>
+      <input id="f-name" name="name" type="text" autocomplete="name" placeholder="{{ c.contact.form.name_ph }}" required>
     </div>
     <div class="field">
       <label for="f-mail">{{ c.contact.form.email }}</label>
-      <input id="f-mail" name="contact" type="text" autocomplete="email" placeholder="{{ c.contact.form.email_ph }}" required>
+      <input id="f-mail" name="contact" type="email" inputmode="email" autocomplete="email" placeholder="{{ c.contact.form.email_ph }}" required>
     </div>
     <div class="field">
       <label for="f-crop">{{ c.contact.form.crop }}</label>
@@ -742,7 +748,7 @@
       <textarea id="f-msg" name="message" rows="4" placeholder="{{ c.contact.form.message_ph }}"></textarea>
     </div>
   </div>
-  <div class="form__ok">{{ I.tick() }}<span>{{ c.contact.form.demo_notice }}</span></div>
+  <div class="form__ok" aria-live="polite">{{ I.tick() }}<span>{{ c.contact.form.demo_notice }}</span></div>
   <button class="btn" type="submit">{{ c.contact.form.submit }}<span class="btn__badge">{{ I.arrow() }}</span></button>
   <p class="form__note">{{ c.contact.form.note }}</p>
 </form>
@@ -848,7 +854,7 @@
   <p class="tag tag--lime" style="margin-bottom:.75rem">{{ c.contact_page.social_label }}</p>
   <div class="chips">
     {%- for s in c.contact_page.social %}
-    <a href="{{ s.href }}" aria-label="{{ s.label }}">{{ I.icon(s.icon) }}</a>
+    <span class="chips__demo" aria-label="{{ s.label }}" title="{{ s.handle }}">{{ I.icon(s.icon) }}</span>
     {%- endfor %}
     <a href="mailto:{{ c.contact.email }}" aria-label="{{ c.contact.email_label }}">{{ I.icon('mail') }}</a>
   </div>

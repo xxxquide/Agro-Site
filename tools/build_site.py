@@ -35,7 +35,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE = "https://xxxquide.github.io/Agro-Site/"
 SUBPATH = "/Agro-Site/"
 BUILD_YEAR = 2026
-BUILD_DATE = "2026-08-05"
+BUILD_DATE = "2026-08-06"
 
 CSS_PARTS = [
     "assets/css/fonts.css",
