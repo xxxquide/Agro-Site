@@ -207,20 +207,28 @@ def chart_builder():
         for s in series:
             pct = 42 + 58 * (s["v"] - lo) / span
             cls = "chart__col"
-            if s["v"] == hi:
+            peak = s["v"] == hi
+            dip = s["v"] == lo
+            if peak:
                 cls += " chart__col--peak"
-            elif s["v"] == lo:
+            elif dip:
                 cls += " chart__col--dip"
             label = f'{s["v"]:.1f}'.replace(".", DECIMAL)
+            # In the large chart only the record and the bad year are called
+            # out; printing all five turns the reference's clean axis into a
+            # wall of numbers. The rest surface on hover.
+            val = f'<span class="chart__val">{label}</span>'
+            if big and not (peak or dip):
+                val = f'<span class="chart__val chart__val--quiet">{label}</span>'
             cols.append(
                 f'<div class="{cls}" style="--h:{pct:.1f}%">'
-                f'<span class="chart__val">{label}</span>'
-                f'<span class="chart__fill"></span></div>'
+                f'{val}<span class="chart__fill"></span></div>'
             )
             years.append(f"<span>{s['year']}</span>")
         grid = '<span class="chart__grid" aria-hidden="true"><i></i><i></i><i></i><i></i></span>'
         return Markup(
-            '<div class="chart"><div class="chart__plot">' + grid + "".join(cols)
+            '<div class="chart' + (' chart--big' if big else '')
+            + '"><div class="chart__plot">' + grid + "".join(cols)
             + '</div><div class="chart__years">' + "".join(years) + "</div></div>"
         )
     return chart_html

@@ -55,21 +55,13 @@
   box-shadow: none;
   border: 1px solid var(--line-dark);
 }
-.v2 #capacity .cap__viz { background: rgba(0, 0, 0, .22); }
+/* The readouts used to sit bare on the dark band, so each one needed its own
+   inverted palette. They now live inside a self-contained white instrument
+   that sets its own colours, and those overrides would repaint its contents
+   white on white. All that is left for the band to style is the bench the
+   instrument stands on. */
+.v2 #capacity .cap__viz { background: rgba(0, 0, 0, .3); }
 .v2 #capacity .cap__txt p { color: var(--on-dark-2); }
-.v2 #capacity .bars__track { background: rgba(255, 255, 255, .12); }
-.v2 #capacity .bars__fill { background: var(--white); }
-.v2 #capacity .bars__row:first-child .bars__fill { background: var(--lime); }
-.v2 #capacity .bars__val { color: var(--on-dark-2); }
-.v2 #capacity .chart__fill { background: rgba(255, 255, 255, .18); }
-.v2 #capacity .chart__years { border-color: var(--line-dark); }
-.v2 #capacity .chart__years span { color: rgba(255, 255, 255, .45); }
-.v2 #capacity .lab__row { background: rgba(255, 255, 255, .07); }
-.v2 #capacity .radar__ring, .v2 #capacity .radar__cross { stroke: var(--line-dark-2); }
-.v2 #capacity .radar__route { stroke: rgba(255,255,255,.14); }
-.v2 #capacity .radar__node { fill: var(--ink); stroke: var(--lime); }
-.v2 #capacity .radar__hub { background: var(--lime); color: var(--black); }
-.v2 #capacity .radar__pin { background: var(--ink-2, #1c1c1c); color: var(--white); box-shadow: none; border: 1px solid var(--line-dark-2); }
 
 .v2 #terms .plan {
   background: rgba(255, 255, 255, .05);
@@ -514,3 +506,8 @@
 .v3 .stats-card__plot i { background: var(--border); }
 .v3 .stats-card__plot i:nth-child(n+9) { background: var(--ink); }
 .v3 .stats-card--lime .stats-card__plot i:nth-child(n+9) { background: var(--lime-lo); }
+
+/* v3 carries no shadows: the instrument states its edge with a hairline, the
+   same way every other surface in this direction does. */
+.v3 .gauge { box-shadow: none; border: 1px solid var(--border); }
+.v3 .cap__viz { padding: 0; }

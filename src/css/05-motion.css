@@ -60,6 +60,7 @@ h1 .w, .h-iconic .w, .stat__v .w, .post__title .w {
 
 /* --- elements GSAP animates from a known start state -------------------- */
 .chart__fill { transform-origin: bottom center; }
+.frac__seg { transform-origin: left center; }
 .bars__fill,
 .svc-signal__track i { transform-origin: left center; }
 .chart__val  { opacity: 0; }
@@ -155,7 +156,10 @@ h1 .w, .h-iconic .w, .stat__v .w, .post__title .w {
 
   .chart__fill { transform: scaleY(1) !important; }
   .bars__fill  { transform: scaleX(1) !important; }
+  .frac__seg   { transform: scaleX(1) !important; }
   .chart__val  { opacity: 1 !important; }
+  .chart__val--quiet { opacity: .55 !important; }
+  .grow, .gmetric { opacity: 1 !important; transform: none !important; }
 
   .radar__beam, .radar__sweep,
   .partner-orbit__node { animation: none !important; }

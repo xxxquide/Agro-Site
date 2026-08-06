@@ -339,26 +339,54 @@
         <div class="cap__meta"><span class="icon-badge" aria-hidden="true">{{ I.icon(capacity_icons[card.widget]) }}</span><span>{{ '%02d' % loop.index }}</span></div>
         <div class="cap__viz"
              {% if card.widget == 'chart' %}data-chart{% elif card.widget == 'bars' %}data-bars{% elif card.widget == 'orbit' %}data-orbit{% elif card.widget == 'lab' %}data-lab{% endif %}>
+          {#- Every readout sits in the same instrument: white card on the
+              template's 5px module, dark strip across the top with a title, a
+              muted caption and an icon, readout beneath. -#}
+          <div class="gauge">
+            <div class="gauge__head">
+              <span>
+                <b class="gauge__title">{{ card.head }}</b>
+                <small class="gauge__sub">{{ card.sub }}</small>
+              </span>
+              {%- if card.widget == 'chart' %}<span class="delta delta--dark">{{ card.delta }}</span>
+              {%- elif card.widget == 'lab' %}<span class="delta delta--dark">{{ card.badge }}</span>
+              {%- else %}<span class="gauge__icon" aria-hidden="true">{{ I.icon(capacity_icons[card.widget]) }}</span>
+              {%- endif %}
+            </div>
+            <div class="gauge__body">
           {%- if card.widget == 'chart' %}
           <figure><figcaption class="sr">{{ c.a11y.chart_caption }}</figcaption>{{ chart_html(card.series, big=True) }}</figure>
           {%- elif card.widget == 'bars' %}
-          <div class="storage-viz" aria-hidden="true">
-            <span class="storage-viz__grid"></span>
-            <div class="storage-viz__silos">
-              {%- for r in card.rows %}<span class="storage-viz__silo" style="--fill:{{ r.pct }}%"><i></i><b>{{ '%02d' % loop.index }}</b></span>{% endfor %}
+          {#- Capacity as one fraction with a split track, then the three
+              facilities as rows. The old silo strip said the same thing twice
+              and was cropped by the panel doing it. -#}
+          <div class="frac">
+            <div class="frac__nums">
+              <span class="frac__big">{{ card.rows[0].val }}</span>
+              <span class="frac__rest">/ {{ card.total }}&nbsp;{{ card.total_unit }}</span>
             </div>
-            <span class="storage-viz__flow"><i></i></span>
+            <div class="frac__track" aria-hidden="true">
+              <i class="frac__seg" style="--w:79%"></i>
+              <i class="frac__seg frac__seg--alt" style="--w:21%"></i>
+            </div>
+            <div class="frac__key" aria-hidden="true">
+              <span><i></i>{{ card.key_a }}</span><span><i></i>{{ card.key_b }}</span>
+            </div>
           </div>
-          <div class="bars">
+          <div class="grows">
+            {%- set row_icons = ['silo', 'grain', 'clock'] -%}
             {%- for r in card.rows %}
-            <div class="bars__row"><div class="bars__top"><span class="bars__name">{{ r.name }}</span><span class="bars__val">{{ r.val }}</span></div>
-            <span class="bars__track"><span class="bars__fill" style="--w:{{ r.pct }}%"></span></span></div>
+            <div class="grow">
+              <span class="grow__chip" aria-hidden="true">{{ I.icon(row_icons[loop.index0]) }}</span>
+              <span class="grow__info">
+                <span class="grow__name">{{ r.name }}</span>
+                <span class="grow__detail">{{ r.detail }}</span>
+              </span>
+              <span class="grow__val">{{ r.val }}</span>
+            </div>
             {%- endfor %}
           </div>
           {%- elif card.widget == 'orbit' %}
-          {#- Dispatch radar. The hub is absolutely centred and the labels never
-              move; the only motion is light travelling out along each route and
-              a slow sweep behind them. -#}
           <div class="radar">
             <svg class="radar__field" viewBox="0 0 400 220" aria-hidden="true" focusable="false">
               {%- for r in [(62, 34), (112, 62), (162, 90)] %}
@@ -378,21 +406,25 @@
             <span class="radar__sweep" aria-hidden="true"></span>
             <span class="radar__hub">{{ card.center }}</span>
             {%- for it in card['items'] %}{% set n = radar[loop.index0] %}
-            <span class="radar__pin radar__pin--{{ n.side }}" style="--l:{{ n.left }}%;--t:{{ n.top }}%">{{ it }}</span>
+            <span class="radar__pin radar__pin--{{ n.side }}" style="--l:{{ n.left }}%;--t:{{ n.top }}%"><b>{{ it }}</b></span>
             {%- endfor %}
           </div>
           {%- elif card.widget == 'lab' %}
-          <div class="lab">
-            <div class="lab__summary" aria-hidden="true"><span>{{ card.rows|length }}/{{ card.rows|length }}</span><i></i><small>QC</small></div>
+          {#- A 2x2 of measured values rather than a fourth list: the block
+              already has one, and four figures read faster side by side. -#}
+          <div class="gmetrics">
             {%- for r in card.rows %}
-            <div class="lab__row{{ ' drift-a' if loop.index0 % 2 == 0 else ' drift-b' }}">
-              <span class="lab__name">{{ r.name }}</span>
-              <span class="lab__right"><span class="lab__val">{{ r.val }}</span>
-              <span class="chip {{ 'chip--down' if '−' in r.trend or '-' in r.trend else 'chip--up' }}">{{ r.trend }}</span></span>
+            <div class="gmetric">
+              <span class="gmetric__n">{{ r.name }}</span>
+              <span class="gmetric__v">{{ r.val }}
+                <span class="delta{{ ' delta--down' if '−' in r.trend or '-' in r.trend }}">{{ r.trend }}</span>
+              </span>
             </div>
             {%- endfor %}
           </div>
           {%- endif %}
+            </div>
+          </div>
         </div>
         <div class="cap__txt"><h3>{{ card.title }}</h3><p>{{ card.text }}</p></div>
       </article>

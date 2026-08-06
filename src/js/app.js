@@ -223,16 +223,17 @@
     });
 
     all('[data-bars]').forEach(function (box) {
-      var fills = all('.bars__fill', box);
-      gsap.fromTo(fills,
+      // The template's own storage panel: the split track wipes open from the
+      // left, then the facility rows slide in from the right behind it.
+      var tl = gsap.timeline({
+        scrollTrigger: { trigger: box, start: 'top 85%', once: true },
+      });
+      tl.fromTo(all('.frac__seg', box),
         { scaleX: 0 },
-        {
-          scaleX: 1,
-          duration: DUR.xl,
-          ease: EASE.expo,
-          stagger: STAGGER.loose,
-          scrollTrigger: { trigger: box, start: 'top 85%', once: true },
-        });
+        { scaleX: 1, duration: .9, ease: 'power2.inOut', stagger: .12 });
+      tl.fromTo(all('.grow', box),
+        { x: 20, autoAlpha: 0 },
+        { x: 0, autoAlpha: 1, duration: .4, ease: EASE.soft, stagger: .1 }, '-=.35');
     });
 
     all('.svc-signal').forEach(function (box) {
@@ -333,7 +334,9 @@
 
     all('[data-chart]').forEach(function (box) {
       var cols = all('.chart__fill', box);
-      var vals = all('.chart__val', box);
+      // The quiet years stay hidden until hovered; fading them in here would
+      // override the CSS that keeps them out of the way.
+      var vals = all('.chart__val:not(.chart__val--quiet)', box);
       var tl = gsap.timeline({
         scrollTrigger: { trigger: box, start: 'top 85%', once: true },
       });
@@ -370,14 +373,14 @@
 
     /* --- lab rows -------------------------------------------------------- */
     all('[data-lab]').forEach(function (box) {
-      gsap.fromTo(all('.lab__row', box),
-        { x: 26, autoAlpha: 0 },
+      gsap.fromTo(all('.gmetric', box),
+        { y: 12, autoAlpha: 0 },
         {
-          x: 0,
+          y: 0,
           autoAlpha: 1,
-          duration: DUR.lg,
+          duration: DUR.md,
           ease: EASE.out,
-          stagger: STAGGER.normal,
+          stagger: .08,
           scrollTrigger: { trigger: box, start: 'top 86%', once: true },
         });
     });

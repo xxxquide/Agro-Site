@@ -209,8 +209,20 @@
   .chart__val { font-size: .58rem; }
   .cap__card { padding: 1rem; }
   .cap__viz { padding: 1rem; min-height: 12rem; overflow: clip; }
-  .radar__hub { width: 3.6rem; height: 3.6rem; font-size: .5rem; }
-  .radar__pin { font-size: .6rem; padding: .26rem .5rem; }
+  /* The label is the <b> inside the pin now — the pin itself is a zero-sized
+     anchor, so sizing the pin did nothing and the pills ran out of the
+     instrument by 6-10px. The body also gives back most of its side padding
+     here: the radar's labels reach further than any other readout's. */
+  .radar__hub { width: 3.4rem; height: 3.4rem; font-size: .46rem; }
+  .radar__pin b { font-size: .52rem; padding: .2rem .4rem; }
+  .radar__pin--l { padding-right: .28rem; }
+  .radar__pin--r { padding-left: .28rem; }
+  .gauge__body:has(.radar) { padding-inline: .25rem; }
+  /* The radar holds a fixed 400x220 field, and at this width the panel's own
+     ratio left it 30px short — the field spilled out of the instrument. */
+  /* One column at this width: let the panel take the height its instrument
+     needs instead of deriving it from a ratio. */
+  .cap__viz { aspect-ratio: auto; min-height: 19.5rem; }
   .bars__top { gap: .5rem; }
   .bars__name { min-width: 0; }
   .bars__val { flex: none; }
