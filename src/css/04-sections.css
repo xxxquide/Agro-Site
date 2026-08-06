@@ -7,16 +7,30 @@
 
 .hero {
   position: relative;
-  padding-top: calc(var(--header-h) + clamp(2rem, 5vw, 4.5rem));
-  padding-bottom: clamp(1.5rem, 4vw, 3rem);
+  /* The opening screen owns the whole viewport: the visitor sees the headline,
+     the call to action and the widget fan as one composition, and everything
+     else starts strictly below the fold. `svh` rather than `vh` so a mobile
+     browser's collapsing address bar cannot make the section taller than the
+     screen it is measured against. */
+  min-height: 100svh;
+  padding-top: calc(var(--header-h) + clamp(1.5rem, 4vh, 3.5rem));
+  padding-bottom: clamp(1.25rem, 3vh, 2.5rem);
   display: flex;
   flex-direction: column;
-  gap: clamp(2rem, 4.5vw, 3.5rem);
-  overflow: hidden;
+  gap: clamp(1.5rem, 3.5vh, 3rem);
+  overflow: clip;
   isolation: isolate;
   color: var(--white);
   background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 55%, var(--sky-low) 100%);
 }
+@supports (min-height: 100dvh) {
+  .hero { min-height: 100dvh; }
+}
+/* Auto margins on the copy block absorb whatever height is left over, so the
+   headline sits optically centred while the fan / logo bar stays pinned to the
+   bottom edge — at any window height, without a media query per size. */
+.hero__in { margin-block: auto; }
+.hero__fan, .hero__foot { flex: none; }
 .hero__bg { position: absolute; inset: 0; z-index: -2; overflow: hidden; }
 .hero__bg picture { width: 100%; height: 100%; }
 .hero__bg img { width: 100%; height: 100%; object-fit: cover; will-change: transform; transform-origin: center center; }
@@ -54,9 +68,8 @@
 
 /* variation 2 — copy left, portrait right */
 .hero--pright {
-  min-height: min(100svh, 54rem);
   justify-content: center;
-  padding-top: calc(var(--header-h) + clamp(3.75rem, 7vh, 6rem));
+  padding-top: calc(var(--header-h) + clamp(2.5rem, 6vh, 5rem));
 }
 .hero--pright .hero__in { align-items: flex-start; text-align: left; max-width: 33rem; gap: var(--s-md); }
 .hero--pright h1 { max-width: 17ch; font-size: clamp(2.75rem, 1.2rem + 4.7vw, 4.5rem); }
@@ -71,8 +84,7 @@
 }
 
 /* variation 3 — centred, portrait rising from the bottom, glass logo bar */
-.hero--pcentre { min-height: min(100svh, 56rem); }
-.hero--pcentre .hero__in { align-items: center; text-align: center; margin-top: clamp(.5rem, 2vw, 1.75rem); }
+.hero--pcentre .hero__in { align-items: center; text-align: center; }
 .hero--pcentre h1 { max-width: 20ch; text-wrap: balance; }
 .hero--pcentre .lead { max-width: 48ch; }
 .hero--pcentre .hero__cta { justify-content: center; }
@@ -83,8 +95,6 @@
   background:
     linear-gradient(180deg, rgba(6, 26, 44, .56) 0%, rgba(6, 26, 44, .22) 34%, transparent 58%, rgba(6, 26, 44, .35) 100%);
 }
-.hero--pcentre .hero__foot { margin-top: auto; }
-
 /* --- hero widget: fanned cards ------------------------------------------ */
 
 .fan {
@@ -95,9 +105,20 @@
   perspective: 1600px;
   perspective-origin: 50% 40%;
   padding-inline: var(--gutter);
+  /* The outermost cards are pushed ~50px below the flex baseline by their fan
+     transform, and each carries a 13px shadow. Without this reserve the hero's
+     clip cut the bottom off the outer cards — the single most visible fault on
+     the opening screen. */
+  padding-bottom: 4.25rem;
   transform-style: preserve-3d;
 }
 .fan__item { flex: none; width: clamp(8.5rem, 12vw, 11.5rem); z-index: var(--z); }
+/* Short windows: shrink the fan rather than letting it eat the headline. */
+@media (max-height: 46rem) and (min-width: 64rem) {
+  .fan__item { width: clamp(7.25rem, 10vw, 9.5rem); }
+  .fcard { height: 10.5rem; }
+  .fan { padding-bottom: 3.25rem; }
+}
 
 .fcard {
   border-radius: var(--r-md);
@@ -162,6 +183,14 @@
 /* --- hero widget: auto-scrolling card rail (variation 2) ---------------- */
 
 .card-rail { position: relative; }
+/* The marquee clips on both axes, so the cards travelling through it need
+   vertical room for their shadow or it is shaved into a hard line along the
+   top and bottom of the rail. The negative margin returns the space so the
+   hero's spacing is untouched. */
+.card-rail .marq {
+  padding-block: 1.25rem;
+  margin-block: -1.25rem;
+}
 .card-rail .marq__track { gap: var(--s-md); align-items: stretch; }
 .card-rail .fcard { width: clamp(9.5rem, 13vw, 12.5rem); flex: none; height: 12rem; }
 
@@ -194,10 +223,21 @@
 .tagband {
   display: flex;
   flex-direction: column;
-  gap: .5rem;
+  /* Two tracks running opposite ways need to read as two tracks, not one
+     thicket — and the band as a whole needs air above it or it fuses with the
+     hero card sitting directly on top of it. */
+  gap: .85rem;
   padding-block: var(--s-huge);
+  margin-top: clamp(3rem, 6vw, 5.5rem);
+  border-top: 1px solid var(--border);
   background: var(--grey-100);
   overflow: hidden;
+}
+/* Fade both ends into the band instead of guillotining the pills at the
+   viewport edge. */
+.tagband .marq {
+  -webkit-mask-image: linear-gradient(90deg, #0000 0, #000 6%, #000 94%, #0000 100%);
+  mask-image: linear-gradient(90deg, #0000 0, #000 6%, #000 94%, #0000 100%);
 }
 
 /* --- about -------------------------------------------------------------- */
@@ -242,6 +282,9 @@
 .cap {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  /* Equal rows, so the four cards line up as a block instead of each one
+     ending wherever its own copy happens to stop. */
+  grid-auto-rows: 1fr;
   gap: var(--s-lg);
   margin-top: clamp(2.25rem, 4vw, 3.5rem);
 }
@@ -254,16 +297,22 @@
   flex-direction: column;
   gap: var(--s-xl);
 }
+/* One ratio for all four visualizations. Sized by ratio rather than by content
+   means the illustration frame cannot grow or shrink with the length of the
+   copy underneath, and the four titles land on the same line across the grid. */
 .cap__viz {
   background: var(--grey-100);
   border-radius: var(--r-md);
   padding: clamp(1.1rem, 2vw, 1.6rem);
+  aspect-ratio: 400 / 232;
   min-height: 13.5rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  overflow: clip;
 }
-.cap__txt { display: flex; flex-direction: column; gap: var(--s-sm); }
+/* Pinned to the bottom of the card, so every card's heading sits on one line. */
+.cap__txt { display: flex; flex-direction: column; gap: var(--s-sm); margin-top: auto; }
 .cap__txt p { font-size: var(--fs-sm); color: var(--text-2); }
 
 /* --- process ------------------------------------------------------------ */
@@ -372,9 +421,16 @@
 .post img {
   position: absolute; inset: 0; z-index: -2;
   width: 100%; height: 100%; object-fit: cover;
-  transition: transform var(--dur-xl) var(--ease-out);
+  border-radius: inherit;
+  /* The hover zoom rides the independent `scale` property rather than
+     `transform`: GSAP owns `transform` for the parallax scrub and would
+     overwrite a transform-based hover outright. These two compose. */
+  scale: 1;
+  transition: scale var(--dur-xl) var(--ease-out);
+  will-change: transform;
 }
-.post:hover img { transform: scale(1.06); }
+.post:hover img,
+.post:focus-within img { scale: 1.05; }
 .post::after {
   content: "";
   position: absolute; inset: 0; z-index: -1;
@@ -396,9 +452,20 @@
 .post__go svg { width: .62rem; height: .62rem; }
 .post:hover .post__go { gap: .75rem; }
 
-/* blog page: first post spans two columns */
-.blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-lg); }
-.blog-grid > :first-child { grid-column: span 2; min-height: 24rem; }
+/* blog page: first post spans two columns.
+   `grid-auto-rows: 1fr` plus stretched items is what keeps the feature card and
+   the card beside it the same height — previously the feature carried a taller
+   min-height of its own and its neighbour simply stopped short, leaving the row
+   visibly ragged. */
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
+  align-items: stretch;
+  gap: var(--s-lg);
+}
+.blog-grid > * { min-height: 24rem; height: 100%; }
+.blog-grid > :first-child { grid-column: span 2; }
 .blog-grid > :first-child .post__title { font-size: var(--fs-h3); }
 
 /* --- team --------------------------------------------------------------- */
@@ -1216,22 +1283,58 @@
   box-shadow: var(--shadow);
   color: var(--ink);
   padding: clamp(.75rem, 2vw, 1.5rem);
+  /* The card stretches to the height of the distance list beside it, so centre
+     the map inside rather than letting it sit at the top with a void below. */
+  display: flex;
+  align-items: center;
 }
 .ukraine-map { display:block; width:100%; height:auto; overflow:visible; }
-.ukraine-map__land { fill:url(#map-fill); stroke:var(--ink); stroke-width:1.2; vector-effect:non-scaling-stroke; }
-.ukraine-map__topo { fill:url(#topo); stroke:none; color:var(--ink); }
+
+/* Oblasts, not a silhouette. Every region is its own path, filled from a
+   shared gradient so the country still reads as one shape, separated by
+   hairlines that stay 1px at any render size. The home oblast is the only one
+   that carries colour — the point of the map is where the grain starts. */
+.ukraine-map__oblast {
+  fill: url(#map-fill);
+  stroke: var(--grey-300);
+  stroke-width: .7;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  transition: fill var(--dur-sm) var(--ease);
+}
+.ukraine-map__oblast.is-home { fill: var(--lime-hi); stroke: var(--ink); stroke-width: 1.2; }
+@media (hover: hover) and (pointer: fine) {
+  .ukraine-map__oblast:hover { fill: var(--grey-200); }
+  .ukraine-map__oblast.is-home:hover { fill: var(--lime); }
+}
+/* One darker pass around the whole country, drawn from the same paths, so the
+   national border reads heavier than the internal ones. */
+.ukraine-map__oblasts { paint-order: fill stroke; }
+
 .ukraine-map__route {
-  fill:none; stroke:var(--lime-lo); stroke-width:4; stroke-linecap:round;
+  fill:none; stroke:var(--lime-lo); stroke-width:3.4; stroke-linecap:round;
   stroke-dasharray:1; stroke-dashoffset:1; vector-effect:non-scaling-stroke;
   filter:url(#route-glow);
 }
-.ukraine-map__route--north { stroke:var(--sky); stroke-width:3; }
+.ukraine-map__route--north { stroke:var(--sky); }
+/* The two short hops need to hold their own beside the glowing long hauls
+   without shouting: solid ink for the oblast capital, dashed for the local
+   run, both at a weight that survives the glow filter around them. */
+.ukraine-map__route--regional { stroke:var(--ink); stroke-width:2.6; opacity:.8; }
+.ukraine-map__route--local { stroke:var(--ink); stroke-width:2.6; opacity:.8; }
+/* A short bright segment that keeps travelling once the route has drawn, so
+   the map stays alive without ever moving anything the eye has to read. */
+.ukraine-map__spark {
+  fill:none; stroke:var(--white); stroke-width:4; stroke-linecap:round;
+  vector-effect:non-scaling-stroke; opacity:0;
+  stroke-dasharray:.04 .96; stroke-dashoffset:1;
+}
 .ukraine-map__point circle:not(.ukraine-map__pulse) { fill:var(--ink); stroke:var(--lime); stroke-width:2; vector-effect:non-scaling-stroke; }
-.ukraine-map__point text { font:500 14px/1 var(--font); fill:var(--ink); paint-order:stroke; stroke:var(--white); stroke-width:4px; stroke-linejoin:round; }
+.ukraine-map__point text { font:500 14px/1 var(--font); fill:var(--ink); paint-order:stroke; stroke:var(--white); stroke-width:4.5px; stroke-linejoin:round; }
 .ukraine-map__point .ukraine-map__km { font:11px/1 var(--mono); fill:var(--grey-500); }
 .ukraine-map__pulse { fill:var(--lime); opacity:.22; transform-box:fill-box; transform-origin:center; animation:map-pulse 2.4s var(--ease-out) infinite; }
-.ukraine-map__hub circle { fill:var(--lime); stroke:var(--ink); stroke-width:1.5; vector-effect:non-scaling-stroke; }
-.ukraine-map__hub text { font:700 10px/1 var(--mono); letter-spacing:.08em; fill:var(--ink); }
+.ukraine-map__pulse--hub { animation-duration:3.2s; }
+.ukraine-map__hub circle:not(.ukraine-map__pulse) { fill:var(--lime); stroke:var(--ink); stroke-width:1.5; vector-effect:non-scaling-stroke; }
 @keyframes map-pulse { 0%,100%{transform:scale(.72);opacity:.28} 55%{transform:scale(1.45);opacity:0} }
 
 /* ==========================================================================
