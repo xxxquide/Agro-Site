@@ -72,7 +72,14 @@
   padding-top: calc(var(--header-h) + clamp(2.5rem, 6vh, 5rem));
 }
 .hero--pright .hero__in { align-items: flex-start; text-align: left; max-width: 33rem; gap: var(--s-md); }
-.hero--pright h1 { max-width: 17ch; font-size: clamp(2.75rem, 1.2rem + 4.7vw, 4.5rem); }
+/* Capped at 3.5rem, not 4.5rem: at the larger size "Вирощуємо зерно" could not
+   fit the 33rem copy column and broke after the first word, so the headline
+   opened on five ragged lines beside the portrait. */
+.hero--pright h1 { max-width: 18ch; font-size: clamp(2.5rem, 1.1rem + 3.4vw, 3.5rem); }
+/* The opening phrase and its glyph stay on one line wherever there is room. */
+@media (min-width: 48rem) {
+  .hero--pright h1 > .hero-lead-in { white-space: nowrap; }
+}
 .hero--pright .lead { max-width: 42ch; }
 .hero--pright .hero__bg img { object-position: 72% 40%; }
 .hero--pright .hero__bg::after {
@@ -217,6 +224,12 @@
   white-space: nowrap;
   margin-left: .5rem;
 }
+
+/* A section whose last element is a shadowed card needs its own bottom room:
+   the section system gives spacing through the NEXT section's padding-top, and
+   a shadow with a 53px offset and 32px blur reaches straight into that — where
+   the next section's own background then cuts it off as a hard dark line. */
+.section--room { padding-bottom: clamp(3.25rem, 6vw, 6rem); }
 
 /* --- tag marquee band --------------------------------------------------- */
 
@@ -1325,9 +1338,20 @@
 /* A short bright segment that keeps travelling once the route has drawn, so
    the map stays alive without ever moving anything the eye has to read. */
 .ukraine-map__spark {
-  fill:none; stroke:var(--white); stroke-width:4; stroke-linecap:round;
+  fill:none; stroke:var(--white); stroke-width:5; stroke-linecap:round;
   vector-effect:non-scaling-stroke; opacity:0;
-  stroke-dasharray:.04 .96; stroke-dashoffset:1;
+  stroke-dasharray:.07 .93; stroke-dashoffset:1;
+  filter:url(#route-glow);
+}
+/* Scale about each circle's own centre. Without fill-box an SVG transform
+   resolves against the user-space origin, and GSAP compensates with a
+   translation that does not unwind — the markers ended up above and left of
+   their coordinates while the routes stayed put, which is exactly why every
+   line looked like it stopped short of its city. */
+.ukraine-map__point circle,
+.ukraine-map__hub circle {
+  transform-box: fill-box;
+  transform-origin: center;
 }
 .ukraine-map__point circle:not(.ukraine-map__pulse) { fill:var(--ink); stroke:var(--lime); stroke-width:2; vector-effect:non-scaling-stroke; }
 .ukraine-map__point text { font:500 14px/1 var(--font); fill:var(--ink); paint-order:stroke; stroke:var(--white); stroke-width:4.5px; stroke-linejoin:round; }

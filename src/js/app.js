@@ -261,55 +261,67 @@
 
     all('[data-route-map]').forEach(function (map) {
       var routes = all('.ukraine-map__route', map);
-      // Slow and deliberate: the routes are the content of this section, and at
-      // 2.2s with expo easing they snapped to full length in the first third of
-      // the tween. 2.6s on power2.inOut with a wider stagger lets the eye
-      // actually follow each one out of the elevator.
-      gsap.to(routes, {
-        strokeDashoffset: 0,
-        duration: 2.6,
-        ease: 'power2.inOut',
-        stagger: .45,
-        scrollTrigger: { trigger: map, start: 'top 80%', once: true },
-      });
-      gsap.fromTo(all('.ukraine-map__point, .ukraine-map__hub', map),
-        { scale: .6, autoAlpha: 0 },
-        {
-          scale: 1,
-          autoAlpha: 1,
-          transformOrigin: 'center center',
-          duration: DUR.md,
-          ease: EASE.back,
-          stagger: .09,
-          delay: .5,
-          scrollTrigger: { trigger: map, start: 'top 80%', once: true },
-        });
+      var points = all('.ukraine-map__point', map);
+      var hub = one('.ukraine-map__hub', map);
 
-      // Once a route has drawn, a short bright segment keeps running along it.
-      // Cloning the path means the travelling light follows the same arc
-      // exactly, and each clone gets its own unhurried period so the four
-      // never pulse in unison.
+      // NOTE: never tween a transform on the marker <g> elements. Each one is
+      // positioned by transform="translate(x y)", and GSAP takes ownership of
+      // `transform` the moment it touches it — the markers drifted up and left
+      // of their own coordinates, which is what made every route look like it
+      // stopped short of its city. Opacity on the group, scale on the inner
+      // circles (which carry transform-box: fill-box), and the translate is
+      // never in play.
+      function popMarker(g, at) {
+        tl.fromTo(g, { autoAlpha: 0 }, { autoAlpha: 1, duration: DUR.sm }, at);
+        tl.fromTo(all('circle', g), { scale: 0.4 },
+          { scale: 1, duration: DUR.md, ease: EASE.back }, at);
+      }
+
+      var tl = gsap.timeline({
+        // Later than the old 'top 80%': the map has to be properly in view
+        // before anything starts, or the drawing is over before it is looked at.
+        scrollTrigger: { trigger: map, start: 'top 68%', once: true },
+      });
+
+      if (hub) popMarker(hub, 0);
+
+      // Each route draws, and its city lands as the line arrives — so the
+      // sequence reads as grain leaving the elevator rather than four lines
+      // switching on. Slow on purpose: 3.2s each, 0.75s apart.
+      var DRAW = 3.2;
+      var STEP = 0.75;
+      routes.forEach(function (route, i) {
+        var at = 0.35 + i * STEP;
+        tl.fromTo(route, { strokeDashoffset: 1 },
+          { strokeDashoffset: 0, duration: DRAW, ease: 'power1.inOut' }, at);
+        // Pair by place, never by document order: the generator emits the four
+        // routes in dispatch order and the four labels in reading order, so
+        // index-matching lit up Vinnytsia when the Kyiv line arrived.
+        var place = route.getAttribute('data-place');
+        var marker = place
+          ? one('.ukraine-map__point[data-place="' + place + '"]', map)
+          : points[i];
+        if (marker) popMarker(marker, at + DRAW * 0.82);
+      });
+
+      // Once drawn, a bright segment keeps running the length of each arc on
+      // its own period, so the map is never quite still.
       var periods = [9, 11.5, 13, 10.5];
+      var tail = 0.35 + routes.length * STEP + DRAW;
       routes.forEach(function (route, i) {
         var spark = route.cloneNode(false);
         spark.setAttribute('class', 'ukraine-map__spark');
         spark.removeAttribute('filter');
         route.parentNode.insertBefore(spark, route.nextSibling);
         gsap.set(spark, { autoAlpha: 0 });
-        var loop = gsap.timeline({
-          repeat: -1,
-          delay: 2.4 + i * .45,
-          paused: true,
-        });
-        loop.set(spark, { autoAlpha: .9, strokeDashoffset: 1 });
-        loop.to(spark, { strokeDashoffset: 0, duration: periods[i % 4] * .34, ease: 'none' });
+        var loop = gsap.timeline({ repeat: -1, delay: tail + i * 0.5, paused: true });
+        loop.set(spark, { autoAlpha: .95, strokeDashoffset: 1 });
+        loop.to(spark, { strokeDashoffset: 0, duration: periods[i % 4] * .38, ease: 'none' });
         loop.set(spark, { autoAlpha: 0 });
-        loop.to({}, { duration: periods[i % 4] * .66 });
+        loop.to({}, { duration: periods[i % 4] * .62 });
         if (ST) {
           ST.create({
-            trigger: map,
-            start: 'top bottom',
-            end: 'bottom top',
+            trigger: map, start: 'top bottom', end: 'bottom top',
             onToggle: function (self) {
               if (self.isActive && !doc.hidden) loop.play();
               else loop.pause();

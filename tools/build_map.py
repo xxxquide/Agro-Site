@@ -255,11 +255,11 @@ def main() -> int:
 
     for key, kind, d in routes:
         out.append(f'<path class="ukraine-map__route ukraine-map__route--{kind}" '
-                   f'pathLength="1" d="{d}"/>\n')
+                   f'data-place="{key}" pathLength="1" d="{d}"/>\n')
 
     for i, (key, (x, y), dx, dy, anchor) in enumerate(labels):
         out.append(
-            f'<g class="ukraine-map__point ukraine-map__point--{key}" transform="translate({x} {y})">'
+            f'<g class="ukraine-map__point ukraine-map__point--{key}" data-place="{key}" transform="translate({x} {y})">'
             f'<circle class="ukraine-map__pulse" r="9"/><circle r="4"/>'
             f'<text x="{dx}" y="{dy}" text-anchor="{anchor}">{{{{ c.geo.distances[{i}].to }}}}</text>'
             f'<text class="ukraine-map__km" x="{dx}" y="{dy + 17}" text-anchor="{anchor}">'

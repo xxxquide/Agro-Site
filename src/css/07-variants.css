@@ -106,6 +106,44 @@
 /* subtle canvas alternation so the light sections do not run together */
 .v2 #crops, .v2 #faq { background: var(--grey-100); padding-bottom: var(--section); }
 
+/* v2 removes every card surface, so the shared card-lift dropped a soft shadow
+   from an invisible rectangle — a grey smudge hanging around bare text with no
+   edge to explain it. In this direction the hover has to be *drawn*: a hairline
+   frame and a white ground fade in behind the card. The surface lives on a
+   pseudo-element inset beyond the card's own box, so nothing in the grid moves
+   when it appears. */
+.v2 .member {
+  position: relative;
+  isolation: isolate;
+}
+.v2 .member::before {
+  content: "";
+  position: absolute;
+  inset: -.9rem -.9rem -1.1rem;
+  z-index: -1;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  transition: border-color var(--dur-sm) var(--ease),
+              background var(--dur-sm) var(--ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .v2 .member.card-lift:hover,
+  .v2 .member.card-lift:focus-visible {
+    box-shadow: none;
+    transform: translateY(-5px);
+  }
+  .v2 .member:hover::before,
+  .v2 .member:focus-visible::before {
+    border-color: var(--border);
+    background: var(--white);
+  }
+}
+/* Tonal stat tiles keep their fill in v2; the hairline border has to follow the
+   fill or it reads as a stray outline on a dark tile. */
+.v2 .stats-card--ink { border-color: var(--ink); }
+.v2 .stats-card--lime { border-color: var(--lime); }
+
 /* --- tighter, wider imagery -------------------------------------------- */
 .v2 .about__ph { border-radius: var(--r-sm); }
 .v2 .post { border-radius: var(--r-sm); }
@@ -454,3 +492,25 @@
   }
   .v2 .phero__ph img { object-position: 58% 35%; }
 }
+
+/* v3 strips every card surface — which left the ink tile painting white text
+   and 18%-white bars onto the page's white canvas: "Відвантажено за сезон" was
+   simply invisible, and two thirds of its twelve-step climb with it. In a
+   direction built on rules and air, a tonal tile states its accent through the
+   rule above it and the weight of its figure, never through a fill. */
+.v3 .stats-card--ink,
+.v3 .stats-card--lime { color: inherit; }
+.v3 .stats-card--ink .stat__l, .v3 .stats-card--ink .stat__u,
+.v3 .stats-card--lime .stat__l, .v3 .stats-card--lime .stat__u { color: var(--text-2); }
+.v3 .stats-card--ink .stats-card__index,
+.v3 .stats-card--lime .stats-card__index { color: var(--grey-300); }
+.v3 .stats-card--ink { border-top: 2px solid var(--ink); }
+.v3 .stats-card--lime { border-top: 2px solid var(--lime-lo); }
+.v3 .stats-card--ink .icon-badge { --badge-bg: var(--ink); --badge-fg: var(--white); box-shadow: none; }
+.v3 .stats-card--lime .icon-badge { --badge-bg: var(--lime); --badge-fg: var(--ink); box-shadow: none; }
+
+/* The twelve-step climb on the wide tiles never got a v3 treatment at all. */
+.v3 .stats-card__plot { border-top-color: var(--border); }
+.v3 .stats-card__plot i { background: var(--border); }
+.v3 .stats-card__plot i:nth-child(n+9) { background: var(--ink); }
+.v3 .stats-card--lime .stats-card__plot i:nth-child(n+9) { background: var(--lime-lo); }

@@ -50,7 +50,7 @@
   <div class="wrap">
     <div class="hero__in">
       <span class="tag" data-hero-item>{{ c.hero.badge }}</span>
-      <h1 id="hero-t" data-hero-title>{{ c.hero.title_1 }} <span class="hero-glyph hero-glyph--sky" aria-hidden="true">{{ I.icon('drone') }}</span> <span class="soft">{{ c.hero.title_2 }}</span></h1>
+      <h1 id="hero-t" data-hero-title><span class="hero-lead-in">{{ c.hero.title_1 }} <span class="hero-glyph hero-glyph--sky" aria-hidden="true">{{ I.icon('drone') }}</span></span> <span class="soft">{{ c.hero.title_2 }}</span></h1>
       <p class="lead" data-hero-item>{{ c.hero.lead }}</p>
       <div class="hero__cta" data-hero-item>
         {{ btn(c.hero.cta_primary, url_for('contacts')) }}
@@ -424,7 +424,7 @@
 {%- endmacro -%}
 
 {%- macro sec_geo() -%}
-<section class="section" id="geo" aria-labelledby="geo-t">
+<section class="section section--room" id="geo" aria-labelledby="geo-t">
   <div class="wrap">
     <div class="head">
       <span class="tag tag--lime" data-r>{{ c.geo.eyebrow }}</span>
@@ -729,7 +729,7 @@
 {%- endmacro -%}
 
 {%- macro sec_why() -%}
-<section class="section" aria-labelledby="why-t">
+<section class="section section--room" aria-labelledby="why-t">
   <div class="wrap">
     <div class="head">
       <span class="tag tag--lime" data-r>{{ c.why.eyebrow }}</span>

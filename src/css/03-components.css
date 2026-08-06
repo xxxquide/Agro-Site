@@ -705,9 +705,12 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
      block padding is the room the shadow needs; the negative margin gives it
      back to the layout so the section spacing is unchanged. */
   /* Sized against the largest card shadow any variation uses — v3's is a 32px
-     blur, so 16px of clearance still cut it into a line. */
-  padding-block: 1.75rem calc(var(--s-xl) + .75rem);
-  margin-block: -1.75rem calc((var(--s-xl) + .75rem) * -1);
+     blur, so 16px of clearance still cut it into a line. The bottom padding is
+     NOT pulled back by a negative margin: that reserved the room inside the
+     scroller but handed it straight back to the layout, so the next section
+     still began on the cards' bottom edge and clipped the shadow there. */
+  padding-block: 1.75rem 3.25rem;
+  margin-block: -1.75rem 0;
   scrollbar-width: none;
   overscroll-behavior-inline: contain;
   touch-action: pan-x pan-y;
