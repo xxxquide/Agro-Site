@@ -457,6 +457,283 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 .bars__fill { display: block; height: 100%; width: var(--w); border-radius: inherit; background: var(--ink); }
 .bars__row:first-child .bars__fill { background: var(--lime-lo); }
 
+/* ==========================================================================
+   INSTRUMENT PRIMITIVES
+
+   Lifted from the reference template's card system, which builds every widget
+   the same way: a white card on a 5px module carrying the three-layer shadow,
+   a dark rounded strip across the top holding a title, a muted caption and an
+   icon, and the readout beneath it. Radii nest as they go inwards — 1rem for
+   the card, .7rem for the dark strip and the lists, .5rem for the rows and
+   badges — which is what stops the corners looking accidental.
+
+   The capacity block used to drop its charts straight onto a flat grey panel
+   with no heading at all. These give each of the four an instrument to sit in.
+   ========================================================================== */
+
+.gauge {
+  --gauge-pad: .4rem;
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gauge-pad);
+  padding: var(--gauge-pad);
+  border-radius: var(--r-md);
+  background: var(--white);
+  /* The instrument owns its colour context. It is dropped onto a dark band in
+     v2 and onto bare canvas in v3, and without this it inherited whatever the
+     band was using — which turned the readouts white on a white panel. */
+  color: var(--black);
+  box-shadow: var(--shadow);
+  isolation: isolate;
+}
+.gauge__head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-md);
+  padding: .5rem .75rem;
+  border-radius: .7rem;
+  background: var(--ink);
+  color: var(--white);
+}
+.gauge__title {
+  display: block;
+  font-size: .82rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: -.03em;
+  line-height: 1.25;
+}
+.gauge__sub {
+  display: block;
+  margin-top: .1rem;
+  font-family: var(--mono);
+  font-size: .55rem;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  /* the reference's muted caption is white at 40 percent, not a grey token */
+  color: rgba(255, 255, 255, .42);
+}
+.gauge__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.7rem; height: 1.7rem;
+  border-radius: .5rem;
+  background: rgba(255, 255, 255, .1);
+  color: var(--lime);
+}
+.gauge__icon svg { width: .95rem; height: .95rem; }
+.gauge__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: .5rem;
+  padding: .3rem .7rem .55rem;
+}
+/* A chart has to fill the instrument, not float in the middle of it: the
+   figure wrapper had no height of its own, so the chart's height:100% resolved
+   against auto and collapsed to its content. */
+.gauge__body > figure { flex: 1 1 auto; min-height: 0; display: flex; }
+.gauge__body > figure > .chart { flex: 1 1 auto; min-height: 0; }
+
+/* --- delta badge --------------------------------------------------------- */
+/* The reference pairs a pale ground with a saturated text of the same hue. Its
+   green is foreign here, so the same recipe is mixed from the brand lime. */
+.delta {
+  display: inline-flex;
+  align-items: center;
+  padding: .14rem .38rem;
+  border-radius: .5rem;
+  background: #e8f7c8;
+  color: #4c6a10;
+  font-family: var(--mono);
+  font-size: .6rem;
+  letter-spacing: -.01em;
+  white-space: nowrap;
+}
+.delta--down { background: #fbf0c8; color: #6f5406; }
+.delta--dark { background: rgba(214, 253, 112, .14); color: var(--lime); }
+
+/* --- readout rows -------------------------------------------------------- */
+.grows { display: flex; flex-direction: column; gap: .3rem; flex: 1 1 auto; min-height: 0; justify-content: center; }
+.grow {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  padding: .4rem .55rem .4rem .45rem;
+  border-radius: .5rem;
+  background: var(--grey-100);
+}
+.grow__chip {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.65rem; height: 1.65rem;
+  border-radius: .42rem;
+  background: var(--white);
+  color: var(--ink);
+}
+.grow__chip svg { width: .85rem; height: .85rem; }
+.grow__info { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.grow__name {
+  font-size: .74rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: -.02em;
+  line-height: 1.3;
+}
+.grow__detail {
+  font-family: var(--mono);
+  font-size: .55rem;
+  letter-spacing: .06em;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+.grow__val {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  font-size: .76rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: -.02em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* --- fraction + track ---------------------------------------------------- */
+/* "46 000 / 58 000 т": the achieved figure at full weight, the total greyed
+   back so the ratio is legible before either number is read. */
+.frac { display: flex; flex-direction: column; gap: .45rem; }
+.frac__nums { display: flex; align-items: baseline; gap: .3rem; white-space: nowrap; }
+.frac__big {
+  font-size: clamp(1.45rem, .9rem + 1.5vw, 2.05rem);
+  font-weight: var(--fw-medium);
+  letter-spacing: -.055em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.frac__rest {
+  font-size: clamp(.9rem, .7rem + .5vw, 1.1rem);
+  letter-spacing: -.03em;
+  color: rgba(19, 19, 19, .24);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.frac__track {
+  display: flex;
+  height: .55rem;
+  border-radius: .55rem;
+  background: var(--grey-200);
+  overflow: hidden;
+}
+.frac__seg {
+  width: var(--w);
+  height: 100%;
+  transform-origin: left center;
+  background: var(--lime);
+}
+.frac__seg--alt { background: var(--ink); }
+.frac__key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .2rem .8rem;
+  font-family: var(--mono);
+  font-size: .55rem;
+  letter-spacing: .06em;
+  color: var(--text-2);
+}
+.frac__key i {
+  display: inline-block;
+  width: .45rem; height: .45rem;
+  margin-right: .3rem;
+  border-radius: .12rem;
+  background: var(--lime);
+  font-style: normal;
+}
+.frac__key span:nth-child(2) i { background: var(--ink); }
+
+/* --- large chart: the reference's axis, not a wall of numbers ------------ */
+/* Narrow rounded columns on a single hairline baseline, years underneath, one
+   accent bar. The template's own chart is exactly this and nothing more. */
+.chart--big { gap: .5rem; height: 100%; }
+.chart--big .chart__plot {
+  height: auto;
+  flex: 1 1 auto;
+  min-height: 4.5rem;
+  gap: clamp(.35rem, 1.4vw, .8rem);
+  /* Room above the tallest column for its value, which otherwise renders
+     outside the plot and is clipped by the instrument. */
+  padding-top: 1.15rem;
+  padding-bottom: .45rem;
+  border-bottom: 1px solid var(--border);
+}
+.chart--big .chart__grid { display: none; }
+.chart--big .chart__col { justify-content: center; }
+.chart--big .chart__fill {
+  width: clamp(1.05rem, 3.2vw, 1.55rem);
+  margin-inline: auto;
+  border-radius: .3rem;
+  background: var(--grey-200);
+}
+.chart--big .chart__col--peak .chart__fill { background: var(--lime); }
+.chart--big .chart__col--dip  .chart__fill { background: var(--yellow); }
+.chart--big .chart__val {
+  font-size: .66rem;
+  font-weight: var(--fw-medium);
+  bottom: calc(var(--h) + .35rem);
+}
+/* The three ordinary years stay quiet until asked for. */
+.chart--big .chart__val--quiet { opacity: 0; transition: opacity var(--dur-xs) var(--ease); }
+.chart--big .chart__col:hover .chart__val--quiet,
+.chart--big .chart__col:focus-within .chart__val--quiet { opacity: .55; }
+.chart--big .chart__years { border-top: 0; padding-top: .2rem; }
+.chart--big .chart__years span { font-size: .58rem; }
+
+/* --- 2x2 measured values ------------------------------------------------- */
+/* The laboratory card gets a grid rather than a fourth list: the block already
+   has one, and four figures compare faster side by side than stacked. */
+.gmetrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  gap: .3rem;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.gmetric {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: .12rem;
+  padding: .42rem .55rem .48rem;
+  border-radius: .5rem;
+  background: var(--grey-100);
+}
+.gmetric__n {
+  font-family: var(--mono);
+  font-size: .53rem;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gmetric__v {
+  display: flex;
+  align-items: baseline;
+  gap: .35rem;
+  font-size: .92rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: -.03em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
 /* --- widget: dispatch radar --------------------------------------------- */
 
 /* Replaces the orbiting-pill widget. Two things were wrong with that: text that
@@ -468,10 +745,19 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 
 .radar {
   position: relative;
-  width: 100%;
   /* Authored at 400x220 and locked to it, so the ellipses in the SVG stay true
-     circles-in-perspective and the label percentages line up with the nodes. */
+     circles-in-perspective and the label percentages line up with the nodes.
+     max-height lets the field letterbox itself when the instrument is shorter
+     than the ratio wants — without it the radar simply overflowed the card,
+     which is what it did at 390px. */
   aspect-ratio: 400 / 220;
+  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  height: auto;
+  margin: auto;
+  flex: 0 1 auto;
+  min-height: 0;
   isolation: isolate;
 }
 .radar__field {
@@ -492,12 +778,13 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 }
 .radar__ring {
   fill: none;
-  stroke: var(--border);
+  /* On the instrument's white ground the old --border hairline all but vanished. */
+  stroke: var(--grey-200);
   stroke-width: 1.2;
   vector-effect: non-scaling-stroke;
 }
 .radar__cross {
-  stroke: var(--border);
+  stroke: var(--grey-200);
   stroke-width: 1;
   stroke-dasharray: 3 5;
   vector-effect: non-scaling-stroke;
@@ -506,6 +793,7 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 .radar__route {
   fill: none;
   stroke: var(--grey-300);
+  /* the node is drawn after the route, so the line can run under the pill */
   stroke-width: 1.5;
   stroke-linecap: round;
   vector-effect: non-scaling-stroke;
@@ -539,9 +827,9 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   border-radius: 50%;
   background: conic-gradient(from 0deg,
     rgba(209, 255, 92, 0) 0deg,
-    rgba(209, 255, 92, .05) 26deg,
-    rgba(209, 255, 92, .3) 46deg,
-    rgba(209, 255, 92, 0) 52deg);
+    rgba(209, 255, 92, .04) 24deg,
+    rgba(209, 255, 92, .2) 47deg,
+    rgba(209, 255, 92, 0) 54deg);
   animation: radar-sweep 11s linear infinite;
   animation-play-state: paused;
   pointer-events: none;
@@ -569,14 +857,29 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   padding: .3rem;
   box-shadow: var(--shadow);
 }
+/* Positioned without a transform of any kind. GSAP writes `translate: none`
+   onto every element it animates — it nulls the independent transform
+   properties so they cannot fight its own matrix — so a pill centred with
+   `translate: -100% -50%` silently lost its offset the moment it animated in,
+   and every label sat on top of its node.
+
+   Instead the pin is a zero-sized flex box pinned at the node. `align-items:
+   center` on a zero-height box centres the label on the node's line, and
+   `direction: rtl` makes a left-hand label overflow leftwards out of a
+   zero-width box. No transform involved, nothing for GSAP to overwrite. */
 .radar__pin {
   position: absolute;
   left: var(--l); top: var(--t);
   z-index: 3;
-  /* Same reasoning as the hub, solved the other way: the offset rides the
-     independent `translate` property, which composes with — rather than being
-     replaced by — the `transform` GSAP writes when the label animates in. */
-  display: inline-flex; align-items: center; gap: .4rem;
+  width: 0; height: 0;
+  display: flex;
+  align-items: center;
+}
+.radar__pin--l { direction: rtl; padding-right: .6rem; }
+.radar__pin--r { direction: ltr; padding-left: .6rem; }
+.radar__pin b {
+  direction: ltr;
+  flex: none;
   padding: .34rem .66rem;
   border-radius: var(--r-pill);
   background: var(--white);
@@ -585,17 +888,9 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   font-weight: var(--fw-medium);
   white-space: nowrap;
 }
-/* Labels grow away from the centre, so a long one can never reach across the
-   hub or collide with the label opposite. */
-.radar__pin--l { translate: calc(-100% + .9rem) -50%; flex-direction: row-reverse; }
-.radar__pin--r { translate: -.9rem -50%; }
-.radar__pin::before {
-  content: "";
-  width: .4rem; height: .4rem;
-  border-radius: 50%;
-  background: var(--lime-lo);
-  flex: none;
-}
+/* No dot on the pill: the SVG node at the route's end already marks the point,
+   and two markers a few pixels apart read as a mistake. */
+.radar__node { fill: var(--lime); stroke: var(--ink); stroke-width: 1.4; }
 
 @keyframes radar-beam { to { stroke-dashoffset: 0; } }
 @keyframes radar-sweep { to { transform: rotate(360deg); } }

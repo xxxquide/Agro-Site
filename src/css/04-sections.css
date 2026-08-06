@@ -313,16 +313,24 @@
 /* One ratio for all four visualizations. Sized by ratio rather than by content
    means the illustration frame cannot grow or shrink with the length of the
    copy underneath, and the four titles land on the same line across the grid. */
+/* The grey panel is the bench the instrument sits on — it is what lets a white
+   card with a soft shadow read at all. Padding is asymmetric on purpose: the
+   shadow falls downwards, so the bottom needs more room than the top, and the
+   panel no longer clips, because a clipped shadow is exactly the dark line this
+   pass has been removing everywhere else. */
 .cap__viz {
   background: var(--grey-100);
   border-radius: var(--r-md);
-  padding: clamp(1.1rem, 2vw, 1.6rem);
-  aspect-ratio: 400 / 232;
-  min-height: 13.5rem;
+  padding: clamp(.9rem, 1.7vw, 1.3rem) clamp(.9rem, 1.7vw, 1.3rem) clamp(1.3rem, 2.4vw, 1.9rem);
+  aspect-ratio: 400 / 250;
+  min-height: 14.5rem;
+  /* An aspect-ratio box derives whichever dimension is not constrained — with a
+     min-height tall enough to bind, it starts inflating its own WIDTH and pushes
+     the page into a horizontal scroll. The cap keeps the ratio advisory. */
+  max-width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  overflow: clip;
+  justify-content: stretch;
 }
 /* Pinned to the bottom of the card, so every card's heading sits on one line. */
 .cap__txt { display: flex; flex-direction: column; gap: var(--s-sm); margin-top: auto; }

@@ -459,7 +459,10 @@
             "year": "2025",
             "v": 6.4
           }
-        ]
+        ],
+        "head": "Wheat",
+        "sub": "t/ha · 2021–2025",
+        "delta": "+18.5% over 5 years"
       },
       {
         "widget": "bars",
@@ -469,19 +472,28 @@
           {
             "name": "Grain elevator",
             "val": "46,000 t",
-            "pct": 100
+            "pct": 100,
+            "detail": "79% of total capacity"
           },
           {
             "name": "Flat storage",
             "val": "12,000 t",
-            "pct": 26
+            "pct": 26,
+            "detail": "21% of total capacity"
           },
           {
             "name": "Drying",
             "val": "1,200 t/day",
-            "pct": 62
+            "pct": 62,
+            "detail": "three complexes"
           }
-        ]
+        ],
+        "head": "Capacity",
+        "sub": "elevator and stores",
+        "total": "58,000",
+        "total_unit": "t",
+        "key_a": "Elevator",
+        "key_b": "Floor stores"
       },
       {
         "widget": "orbit",
@@ -493,7 +505,9 @@
           "Rail",
           "Port 380 km",
           "Vinnytsia 85 km"
-        ]
+        ],
+        "head": "Delivery reach",
+        "sub": "from the elevator"
       },
       {
         "widget": "lab",
@@ -520,7 +534,10 @@
             "val": "268 s",
             "trend": "+12"
           }
-        ]
+        ],
+        "head": "Lot protocol",
+        "sub": "every dispatch",
+        "badge": "4/4"
       }
     ],
     "title_rich": "Why grain arrives [[shield]] at the quality we weighed it at"
