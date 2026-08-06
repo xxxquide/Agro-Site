@@ -71,7 +71,7 @@
     <p class="lead" data-hero-item>{{ c.hero.lead }}</p>
     <div class="hero__cta" data-hero-item>{{ btn(c.hero.cta_primary, url_for('contacts')) }}</div>
   </div>
-  <div class="hero__foot" data-hero-item>
+  <div class="hero__foot">
     <div class="wrap">
       <div class="logo-bar">
         <div class="logo-bar__rating">
@@ -103,7 +103,7 @@
       {%- if lead %}<p class="lead" data-page-item>{{ lead }}</p>{% endif %}
       <div data-page-item>{{ avatars() }}</div>
     </div>
-    <div class="phero__ph" data-page-media>{{ pic(img, alt or title, '(max-width: 64rem) 100vw, 50vw', priority=True) }}</div>
+    <div class="phero__ph media-frame" data-page-media>{{ pic(img, alt or title, '(max-width: 64rem) 100vw, 50vw', priority=True) }}</div>
   </div>
 </section>
 {%- if tags %}{{ tag_band() }}{% endif %}
@@ -231,7 +231,7 @@
         {%- for para in c.about.body %}<p data-r data-delay=".{{ loop.index }}">{{ para }}</p>{% endfor %}
         <div class="about__cta" data-r>{{ btn(c.about.cta, url_for('services'), 'dark') }}</div>
       </div>
-      <figure class="about__ph" data-r="right">
+      <figure class="about__ph media-frame" data-r="right">
         <span data-parallax="8">{{ pic('about-team', c.about.image_alt, '(max-width: 64rem) 92vw, 44vw') }}</span>
         <figcaption class="about__badge">
           <span class="itile" aria-hidden="true">{{ I.icon('chart') }}</span>
@@ -244,15 +244,25 @@
 </section>
 {%- endmacro -%}
 
+{%- macro stat_card(s, idx) -%}
+{%- set icons = ['wheat', 'grain', 'silo', 'truck', 'clock', 'ship'] -%}
+<article class="stat stats-card" data-stat-card>
+  <div class="stats-card__top">
+    <span class="icon-badge icon-badge--sm" aria-hidden="true">{{ I.icon(icons[idx % (icons|length)]) }}</span>
+    <span class="stats-card__index">{{ '%02d' % (idx + 1) }}</span>
+  </div>
+  <span class="stat__v" data-count="{{ s.value }}" data-suffix="{{ s.suffix }}">0{{ s.suffix }}</span>
+  <span class="stat__l">{{ s.label }}</span>
+  <span class="stats-card__spark" aria-hidden="true">
+    {%- for h in [44 + idx * 3, 62 - idx * 2, 50 + (idx % 3) * 8, 72 - idx, 58 + idx * 2] %}<i style="--h:{{ h }}%"></i>{% endfor %}
+  </span>
+</article>
+{%- endmacro -%}
+
 {%- macro sec_stats(inner=False) -%}
 {%- if not inner %}<section class="section" aria-label="{{ c.about.eyebrow }}"><div class="wrap">{% endif %}
 <div class="stats about__stats" data-stagger=".08">
-  {%- for s in c.about.stats %}
-  <div class="stat">
-    <span class="stat__v" data-count="{{ s.value }}" data-suffix="{{ s.suffix }}">0{{ s.suffix }}</span>
-    <span class="stat__l">{{ s.label }}</span>
-  </div>
-  {%- endfor %}
+  {%- for s in c.about.stats %}{{ stat_card(s, loop.index0) }}{% endfor %}
 </div>
 {%- if not inner %}</div></section>{% endif %}
 {%- endmacro -%}
@@ -304,13 +314,22 @@
       <p class="lead" data-r>{{ c.capacity.lead }}</p>
     </div>
     <div class="cap">
+      {%- set capacity_icons = {'chart':'chart', 'bars':'silo', 'orbit':'route', 'lab':'flask'} -%}
       {%- for card in c.capacity.cards %}
-      <article class="cap__card" data-card>
+      <article class="cap__card" data-card data-capacity-card="{{ card.widget }}">
+        <div class="cap__meta"><span class="icon-badge" aria-hidden="true">{{ I.icon(capacity_icons[card.widget]) }}</span><span>{{ '%02d' % loop.index }}</span></div>
         <div class="cap__viz"
              {% if card.widget == 'chart' %}data-chart{% elif card.widget == 'bars' %}data-bars{% elif card.widget == 'orbit' %}data-orbit{% elif card.widget == 'lab' %}data-lab{% endif %}>
           {%- if card.widget == 'chart' %}
           <figure><figcaption class="sr">{{ c.a11y.chart_caption }}</figcaption>{{ chart_html(card.series, big=True) }}</figure>
           {%- elif card.widget == 'bars' %}
+          <div class="storage-viz" aria-hidden="true">
+            <span class="storage-viz__grid"></span>
+            <div class="storage-viz__silos">
+              {%- for r in card.rows %}<span class="storage-viz__silo" style="--fill:{{ r.pct }}%"><i></i><b>{{ '%02d' % loop.index }}</b></span>{% endfor %}
+            </div>
+            <span class="storage-viz__flow"><i></i></span>
+          </div>
           <div class="bars">
             {%- for r in card.rows %}
             <div class="bars__row"><div class="bars__top"><span class="bars__name">{{ r.name }}</span><span class="bars__val">{{ r.val }}</span></div>
@@ -319,6 +338,8 @@
           </div>
           {%- elif card.widget == 'orbit' %}
           <div class="orbit">
+            <span class="orbit__cross" aria-hidden="true"></span>
+            <span class="orbit__legend" aria-hidden="true"><i>N</i><i>E</i><i>S</i><i>W</i></span>
             {%- for ins in ['4%', '20%', '36%'] %}<span class="orbit__ring" style="--inset:{{ ins }}" aria-hidden="true"></span>{% endfor %}
             <span class="orbit__hub">{{ card.center }}</span>
             {%- for it in card['items'] %}{% set o = orbit[loop.index0] %}
@@ -331,6 +352,7 @@
           </div>
           {%- elif card.widget == 'lab' %}
           <div class="lab">
+            <div class="lab__summary" aria-hidden="true"><span>{{ card.rows|length }}/{{ card.rows|length }}</span><i></i><small>QC</small></div>
             {%- for r in card.rows %}
             <div class="lab__row{{ ' drift-a' if loop.index0 % 2 == 0 else ' drift-b' }}">
               <span class="lab__name">{{ r.name }}</span>
@@ -361,7 +383,7 @@
       {%- for s in c.process.steps %}
       <li class="step">
         <span class="step__n">{{ s.n }}</span>
-        <div class="step__ph">{{ pic(s.img, s.alt, '(max-width: 35rem) 6.5rem, (max-width: 56.25rem) 46vw, 18vw') }}</div>
+        <div class="step__ph media-frame">{{ pic(s.img, s.alt, '(max-width: 35rem) 6.5rem, (max-width: 56.25rem) 46vw, 18vw') }}</div>
         <div class="step__body"><h3>{{ s.title }}</h3><p>{{ s.text }}</p></div>
       </li>
       {%- endfor %}
@@ -379,15 +401,8 @@
       <p class="lead" data-r>{{ c.geo.lead }}</p>
     </div>
     <div class="geo__grid">
-      <div class="plan-map" data-r="left">
-        {%- for cl in c.geo.clusters %}
-        <div class="parcel">
-          {{ pic(geo_imgs[loop.index0], cl.name ~ ' — ' ~ cl.role, '(max-width: 35rem) 92vw, 40vw') }}
-          <span class="parcel__ha">{{ fmt_num(cl.area) }} {{ ha }}</span>
-          <span class="parcel__n">{{ cl.name }}</span>
-          <span class="parcel__r">{{ cl.role }}</span>
-        </div>
-        {%- endfor %}
+      <div class="ukraine-map-card" data-r="left" data-route-map>
+        {% include "ukraine-map.svg.j2" %}
       </div>
       <div class="geo__side">
         <div class="dists" data-r="right">
@@ -448,8 +463,8 @@
   <div class="wrap">
     <div class="rail" data-rail data-stagger=".1">
       {%- for t in c.testimonials['items'] %}
-      <figure class="quote">
-        <div class="quote__ph">{{ pic(t.img, t.alt, '23.5rem') }}</div>
+      <figure class="quote card-lift">
+        <div class="quote__ph media-frame">{{ pic(t.img, t.alt, '23.5rem') }}</div>
         <div class="quote__body">
           <span class="quote__mark" aria-hidden="true">&bdquo;</span>
           <blockquote class="quote__txt">{{ t.quote }}</blockquote>
@@ -484,6 +499,16 @@
 </section>
 {%- endmacro -%}
 
+{%- macro story_card(n, idx) -%}
+<a class="post card-lift" href="{{ article_url(n.slug) }}" data-post="{{ '%02d' % idx }}" aria-label="{{ n.title }}">
+  {{ pic(n.img, n.alt, '(max-width: 35rem) 92vw, (max-width: 64rem) 46vw, 30vw') }}
+  <span class="post__meta"><span class="chip chip--lime">{{ n.tag }}</span><time class="post__date" datetime="{{ n.iso }}">{{ n.date }}</time></span>
+  <span class="post__title">{{ n.title }}</span>
+  {%- if n.excerpt %}<span class="post__ex">{{ n.excerpt }}</span>{% endif %}
+  <span class="post__go">{{ c.blog_page.read if c.blog_page is defined else c.news.read }}{{ I.arrow() }}</span>
+</a>
+{%- endmacro -%}
+
 {%- macro sec_news() -%}
 <section class="section" id="news" aria-labelledby="news-t">
   <div class="wrap">
@@ -495,17 +520,7 @@
       <div data-r>{{ btn(c.news.cta, url_for('blog'), 'outline') }}</div>
     </div>
     <div class="news" data-stagger=".1">
-      {%- for n in c.news['items'] %}
-      <article class="post" data-post="{{ '%02d' % loop.index }}">
-        {{ pic(n.img, n.alt, '(max-width: 35rem) 92vw, (max-width: 64rem) 46vw, 30vw') }}
-        <div class="post__meta">
-          <span class="chip chip--lime">{{ n.tag }}</span>
-          <time class="post__date" datetime="{{ n.iso }}">{{ n.date }}</time>
-        </div>
-        <h3>{{ n.title }}</h3>
-        <span class="post__go">{{ c.news.read }}{{ I.arrow() }}</span>
-      </article>
-      {%- endfor %}
+      {%- for n in c.blog_page.posts[:3] %}{{ story_card(n, loop.index) }}{% endfor %}
     </div>
   </div>
 </section>
@@ -540,24 +555,24 @@
     {%- if style == 'rail' %}
     <div class="rail" style="margin-top:2.5rem" data-stagger=".09">
       {%- for m in c.team['items'] %}
-      <div class="member" style="width:min(17rem,74vw)">
-        <div class="member__ph">{{ pic(m.img, m.alt, '17rem') }}<span class="member__role">{{ m.role }}</span></div>
+      <a class="member card-lift" href="{{ profile_url(m.slug) }}" style="width:min(17rem,74vw)" aria-label="{{ m.name }} — {{ m.role }}">
+        <div class="member__ph media-frame">{{ pic(m.img, m.alt, '17rem') }}<span class="member__role">{{ m.role }}</span></div>
         <div class="member__body"><span class="member__n">{{ m.name }}</span><p class="member__bio">{{ m.bio }}</p></div>
-      </div>
+      </a>
       {%- endfor %}
     </div>
     {%- else %}
     <div class="team{{ ' team--wide' if style == 'grid-wide' }}" data-stagger=".09">
       {%- for m in c.team['items'] %}
-      <div class="member member--top">
+      <a class="member member--top card-lift" href="{{ profile_url(m.slug) }}" aria-label="{{ m.name }} — {{ m.role }}">
         <div class="member__head">
           <span class="member__n">{{ m.name }}</span>
           <span class="member__r">{{ m.role }}</span>
         </div>
         <span class="member__go" aria-hidden="true">{{ I.arrow() }}</span>
-        <div class="member__ph">{{ pic(m.img, m.alt, '(max-width: 35rem) 92vw, (max-width: 75rem) 46vw, 22vw') }}</div>
+        <div class="member__ph media-frame">{{ pic(m.img, m.alt, '(max-width: 35rem) 92vw, (max-width: 75rem) 46vw, 22vw') }}</div>
         <p class="member__bio">{{ m.bio }}</p>
-      </div>
+      </a>
       {%- endfor %}
     </div>
     {%- endif %}
@@ -637,7 +652,7 @@
         <p class="lead" data-r>{{ c.about.lead }}</p>
         {%- for para in c.about.body %}<p data-r data-delay=".{{ loop.index }}">{{ para }}</p>{% endfor %}
       </div>
-      <figure class="about__ph about__ph--intro" data-r="right">
+      <figure class="about__ph about__ph--intro media-frame" data-r="right">
         <span data-parallax="8">{{ pic('ops-drone' if V.id == 'v1' else ('ops-soil' if V.id == 'v2' else 'ops-lab'), c.services['items'][4].alt if V.id == 'v1' else (c.services['items'][1].alt if V.id == 'v2' else c.services['items'][3].alt), '(max-width: 64rem) 92vw, 44vw') }}</span>
       </figure>
     </div>
@@ -661,7 +676,7 @@
     <div class="svc-list">
       {%- for s in c.services['items'] %}
       <article class="svc" data-card data-service="{{ '%02d' % loop.index }}">
-        <div class="svc__ph">{{ pic(s.img, s.alt, '(max-width: 64rem) 100vw, 46vw') }}</div>
+        <div class="svc__ph media-frame">{{ pic(s.img, s.alt, '(max-width: 64rem) 100vw, 46vw') }}</div>
         <div class="svc__body">
           <span class="svc__index" aria-hidden="true">{{ '%02d' % loop.index }}</span>
           <h3>{{ s.title }}</h3>
@@ -703,18 +718,7 @@
   <div class="wrap">
     <h2 id="bg-t" class="sr">{{ c.blog_page.title }}</h2>
     <div class="blog-grid" data-stagger=".09">
-      {%- for n in c.blog_page.posts %}
-      <article class="post" data-post="{{ '%02d' % loop.index }}">
-        {{ pic(n.img, n.alt, '(max-width: 35rem) 92vw, (max-width: 64rem) 46vw, 30vw') }}
-        <div class="post__meta">
-          <span class="chip chip--lime">{{ n.tag }}</span>
-          <time class="post__date" datetime="{{ n.iso }}">{{ n.date }}</time>
-        </div>
-        <h3>{{ n.title }}</h3>
-        <p class="post__ex">{{ n.excerpt }}</p>
-        <span class="post__go">{{ c.blog_page.read }}{{ I.arrow() }}</span>
-      </article>
-      {%- endfor %}
+      {%- for n in c.blog_page.posts %}{{ story_card(n, loop.index) }}{% endfor %}
     </div>
   </div>
 </section>

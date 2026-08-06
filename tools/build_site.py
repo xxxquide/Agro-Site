@@ -174,7 +174,7 @@ def iconic(text):
     """
     def sub(m):
         tone, path = ICON_CHIP.get(m.group(1), ("lime", ""))
-        cls = "ichip" + ("" if tone == "lime" else f" ichip--{tone}")
+        cls = "ichip icon-badge icon-badge--inline" + ("" if tone == "lime" else f" ichip--{tone}")
         return (f'<span class="{cls}" aria-hidden="true">'
                 f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" '
                 f'stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'
@@ -247,7 +247,20 @@ def page_seo(c, page_id, variant):
             "og_title": src[0], "og_description": desc}
 
 
-def build_jsonld(c, lang, canonical, page_id, seo):
+def detail_seo(c, item, kind):
+    brand = c["brand"]["name"]
+    title = item.get("seo_title", item["title"]) if kind == "article" else f'{item["name"]} — {item["role"]}'
+    description = item.get("seo_description", item["excerpt"]) if kind == "article" else item["intro"]
+    description = " ".join(description.split())
+    if len(description) > 165:
+        description = description[:162].rsplit(" ", 1)[0] + "…"
+    return {
+        "title": f"{title} — {brand}", "description": description,
+        "keywords": None, "og_title": title, "og_description": description,
+    }
+
+
+def build_jsonld(c, lang, canonical, page_id, seo, entity=None):
     org_id = BASE + "#org"
     addr = {
         "@type": "PostalAddress",
@@ -310,7 +323,8 @@ def build_jsonld(c, lang, canonical, page_id, seo):
             "inLanguage": ["uk", "en"]}
 
     page_type = {"home": "WebPage", "about": "AboutPage", "services": "WebPage",
-                 "blog": "CollectionPage", "contacts": "ContactPage"}[page_id]
+                 "blog": "CollectionPage", "contacts": "ContactPage",
+                 "article": "WebPage", "profile": "ProfilePage"}[page_id]
     page = {
         "@type": page_type, "@id": canonical + "#page", "url": canonical,
         "name": seo["title"], "description": seo["description"],
@@ -358,6 +372,32 @@ def build_jsonld(c, lang, canonical, page_id, seo):
                 for i, m in enumerate(c["journey"]["items"])
             ],
         })
+
+    if page_id == "article" and entity:
+        article = {
+            "@type": "Article", "@id": canonical + "#article",
+            "headline": entity["title"], "description": entity["excerpt"],
+            "datePublished": entity["iso"], "dateModified": entity["iso"],
+            "mainEntityOfPage": {"@id": canonical + "#page"},
+            "image": BASE + f'assets/img/{entity["img"]}-880.webp',
+            "author": {"@id": org_id}, "publisher": {"@id": org_id},
+            "inLanguage": lang,
+        }
+        graph.append(article)
+        page["mainEntity"] = {"@id": article["@id"]}
+        page["primaryImageOfPage"] = {"@type": "ImageObject", "url": article["image"]}
+
+    if page_id == "profile" and entity:
+        person = {
+            "@type": "Person", "@id": canonical + "#person",
+            "name": entity["name"], "jobTitle": entity["role"],
+            "description": entity["intro"],
+            "image": BASE + f'assets/img/{entity["img"]}-840.webp',
+            "worksFor": {"@id": org_id}, "knowsLanguage": ["uk", "en"],
+        }
+        graph.append(person)
+        page["mainEntity"] = {"@id": person["@id"]}
+        page["primaryImageOfPage"] = {"@type": "ImageObject", "url": person["image"]}
 
     return json.dumps({"@context": "https://schema.org", "@graph": graph},
                       ensure_ascii=False, separators=(",", ":"))
@@ -416,7 +456,7 @@ def indexed_urls_alt(loc, lang, all_urls):
     else:
         uk_tail, en_tail = tail, "en/" + tail
     return [("uk", BASE + uk_tail), ("en", BASE + en_tail),
-            ("x-default", BASE + en_tail)]
+            ("x-default", BASE + uk_tail)]
 
 
 def build_404(uk):
@@ -501,6 +541,16 @@ def main():
                     r = posixpath.relpath(tgt_dir or ".", _dir or ".")
                     return "./" if r == "." else r + "/"
 
+                def article_url(slug, _dir=page_dir, _lp=lang_prefix, _v=V):
+                    target = f'{_lp}{_v["slug"]}blog/{slug}'
+                    r = posixpath.relpath(target, _dir or ".")
+                    return "./" if r == "." else r + "/"
+
+                def profile_url(slug, _dir=page_dir, _lp=lang_prefix, _v=V):
+                    target = f'{_lp}{_v["slug"]}about/team/{slug}'
+                    r = posixpath.relpath(target, _dir or ".")
+                    return "./" if r == "." else r + "/"
+
                 canonical = BASE + posixpath.dirname(out_path)
                 canonical = canonical.rstrip("/") + "/" if posixpath.dirname(out_path) else BASE
                 seo = page_seo(c, pg["id"], V)
@@ -534,7 +584,7 @@ def main():
                     fmt_num=lambda n, _t=thousands: f"{n:,}".replace(",", _t),
                     ha="га" if lang == "uk" else "ha",
                     tel="+" + re.sub(r"\D", "", c["contact"]["phone"]),
-                    url_for=url_for,
+                    url_for=url_for, article_url=article_url, profile_url=profile_url,
                     alt_uk=uk_url, alt_en=en_url,
                     alt_uk_rel=(other_rel if lang == "en" else "./"),
                     alt_en_rel=(other_rel if lang == "uk" else "./"),
@@ -547,6 +597,77 @@ def main():
                 html = protect_numbers(html)
                 html = re.sub(r"\n{3,}", "\n\n", html)
                 written.append((out_path, write(out_path, html)))
+
+            # Article and team detail pages use the same shared shell and art
+            # direction as their parent variation. They are generated from the
+            # locale JSON, never copied by hand.
+            for kind, items, parent_id, folder, template_name in [
+                ("article", c["blog_page"]["posts"], "blog", "blog", "article"),
+                ("profile", c["team"]["items"], "about", "about/team", "profile"),
+            ]:
+                for item in items:
+                    detail_file = f'{folder}/{item["slug"]}/index.html'
+                    out_path = f"{lang_prefix}{V['slug']}{detail_file}"
+                    page_dir = posixpath.dirname(out_path)
+                    depth = len([s for s in page_dir.split("/") if s])
+                    prefix = "../" * depth
+
+                    def detail_url_for(target, _dir=page_dir, _lp=lang_prefix, _v=V):
+                        tgt_dir = posixpath.dirname(f"{_lp}{_v['slug']}{page_files[target]}")
+                        r = posixpath.relpath(tgt_dir or ".", _dir or ".")
+                        return "./" if r == "." else r + "/"
+
+                    def article_url(slug, _dir=page_dir, _lp=lang_prefix, _v=V):
+                        target = f'{_lp}{_v["slug"]}blog/{slug}'
+                        r = posixpath.relpath(target, _dir or ".")
+                        return "./" if r == "." else r + "/"
+
+                    def profile_url(slug, _dir=page_dir, _lp=lang_prefix, _v=V):
+                        target = f'{_lp}{_v["slug"]}about/team/{slug}'
+                        r = posixpath.relpath(target, _dir or ".")
+                        return "./" if r == "." else r + "/"
+
+                    canonical = BASE + posixpath.dirname(out_path).rstrip("/") + "/"
+                    seo = detail_seo(c, item, kind)
+                    uk_url = BASE + f'{V["slug"]}{folder}/{item["slug"]}/'
+                    en_url = BASE + f'en/{V["slug"]}{folder}/{item["slug"]}/'
+                    other_out = f'{"en/" if lang == "uk" else ""}{V["slug"]}{folder}/{item["slug"]}'
+                    other_rel = posixpath.relpath(other_out, page_dir or ".")
+                    other_rel = "./" if other_rel == "." else other_rel + "/"
+                    noindex = (V["id"] != "v1")
+                    if not noindex:
+                        indexed.append((canonical, lang))
+
+                    if kind == "article":
+                        related = [c["blog_page"]["posts"][i] for i in item["related"]]
+                    else:
+                        related = [c["blog_page"]["posts"][i] for i in item["related"]]
+
+                    variants_rel = posixpath.relpath("variants.html", page_dir or ".")
+                    html = env.get_template(f"pages/{template_name}.html.j2").render(
+                        c=c, V=V, p=prefix, imgs=imgs, item=item, related=related,
+                        base=BASE, canonical=canonical, seo=seo, noindex=noindex,
+                        page_id=parent_id, schema_page_id=kind, year=BUILD_YEAR,
+                        logo_mark=Markup(logo_inner), srcset=make_srcset(imgs, prefix),
+                        chart_html=chart_html, iconic=iconic,
+                        fan=fan_transforms(len(c["hero"]["cards"])),
+                        orbit=ORBIT, geo_imgs=GEO_IMGS,
+                        fmt_num=lambda n, _t=thousands: f"{n:,}".replace(",", _t),
+                        ha="га" if lang == "uk" else "ha",
+                        tel="+" + re.sub(r"\D", "", c["contact"]["phone"]),
+                        url_for=detail_url_for, article_url=article_url,
+                        profile_url=profile_url,
+                        alt_uk=uk_url, alt_en=en_url,
+                        alt_uk_rel=(other_rel if lang == "en" else "./"),
+                        alt_en_rel=(other_rel if lang == "uk" else "./"),
+                        hero_img=None, light_header=True,
+                        variants_url=variants_rel,
+                        variant_switch_label=(V["label"] if lang == "uk" else V["label_en"]),
+                        jsonld=Markup(build_jsonld(c, lang, canonical, kind, seo, item)),
+                    )
+                    html = protect_numbers(html)
+                    html = re.sub(r"\n{3,}", "\n\n", html)
+                    written.append((out_path, write(out_path, html)))
 
     # chooser page
     uk = content["uk"]

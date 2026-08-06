@@ -192,7 +192,7 @@
   .logo-bar .marq { width: 100%; max-width: 100%; }
   .fan { padding-inline: 1rem; }
   .fan__item { width: 9.25rem; }
-  .partner-orbit { grid-template-columns: 1fr; width: min(100%, 18rem); }
+  .partner-orbit { grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
 
   .head h2, .head-row h2 { font-size: clamp(1.9rem, 9.2vw, 2.25rem); }
   .btn { font-size: .74rem; letter-spacing: .09em; }

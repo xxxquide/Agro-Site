@@ -8,7 +8,7 @@
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/"/>
   </url>
   <url>
     <loc>https://xxxquide.github.io/Agro-Site/about/</loc>
@@ -17,7 +17,7 @@
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/about/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/about/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/en/about/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/about/"/>
   </url>
   <url>
     <loc>https://xxxquide.github.io/Agro-Site/services/</loc>
@@ -26,7 +26,7 @@
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/services/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/services/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/en/services/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/services/"/>
   </url>
   <url>
     <loc>https://xxxquide.github.io/Agro-Site/blog/</loc>
@@ -35,7 +35,7 @@
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/blog/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/blog/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/en/blog/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/blog/"/>
   </url>
   <url>
     <loc>https://xxxquide.github.io/Agro-Site/contacts/</loc>
@@ -44,7 +44,97 @@
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/contacts/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/contacts/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/en/contacts/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/contacts/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/blog/winter-wheat-harvest/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/blog/winter-wheat-harvest/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/blog/winter-wheat-harvest/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/blog/winter-wheat-harvest/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/blog/third-drying-complex/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/blog/third-drying-complex/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/blog/third-drying-complex/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/blog/third-drying-complex/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/blog/no-till-first-season/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/blog/no-till-first-season/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/blog/no-till-first-season/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/blog/no-till-first-season/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/blog/falling-number-quality/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/blog/falling-number-quality/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/blog/falling-number-quality/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/blog/falling-number-quality/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/blog/rail-dispatches-port/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/blog/rail-dispatches-port/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/blog/rail-dispatches-port/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/blog/rail-dispatches-port/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/blog/soil-mapping-results/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/blog/soil-mapping-results/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/blog/soil-mapping-results/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/blog/soil-mapping-results/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/about/team/bohdan-hrytsenko/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/about/team/bohdan-hrytsenko/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/about/team/bohdan-hrytsenko/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/about/team/bohdan-hrytsenko/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/about/team/taras-lozovyi/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/about/team/taras-lozovyi/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/about/team/taras-lozovyi/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/about/team/taras-lozovyi/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/about/team/nataliia-bondar/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/about/team/nataliia-bondar/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/about/team/nataliia-bondar/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/about/team/nataliia-bondar/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/about/team/serhii-kushnir/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/about/team/serhii-kushnir/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/about/team/serhii-kushnir/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/about/team/serhii-kushnir/"/>
   </url>
   <url>
     <loc>https://xxxquide.github.io/Agro-Site/en/</loc>
@@ -53,7 +143,7 @@
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/"/>
   </url>
   <url>
     <loc>https://xxxquide.github.io/Agro-Site/en/about/</loc>
@@ -62,7 +152,7 @@
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/about/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/about/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/en/about/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/about/"/>
   </url>
   <url>
     <loc>https://xxxquide.github.io/Agro-Site/en/services/</loc>
@@ -71,7 +161,7 @@
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/services/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/services/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/en/services/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/services/"/>
   </url>
   <url>
     <loc>https://xxxquide.github.io/Agro-Site/en/blog/</loc>
@@ -80,7 +170,7 @@
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/blog/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/blog/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/en/blog/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/blog/"/>
   </url>
   <url>
     <loc>https://xxxquide.github.io/Agro-Site/en/contacts/</loc>
@@ -89,6 +179,96 @@
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/contacts/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/contacts/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/en/contacts/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/contacts/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/en/blog/winter-wheat-harvest/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/blog/winter-wheat-harvest/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/blog/winter-wheat-harvest/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/blog/winter-wheat-harvest/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/en/blog/third-drying-complex/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/blog/third-drying-complex/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/blog/third-drying-complex/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/blog/third-drying-complex/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/en/blog/no-till-first-season/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/blog/no-till-first-season/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/blog/no-till-first-season/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/blog/no-till-first-season/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/en/blog/falling-number-quality/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/blog/falling-number-quality/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/blog/falling-number-quality/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/blog/falling-number-quality/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/en/blog/rail-dispatches-port/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/blog/rail-dispatches-port/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/blog/rail-dispatches-port/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/blog/rail-dispatches-port/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/en/blog/soil-mapping-results/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/blog/soil-mapping-results/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/blog/soil-mapping-results/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/blog/soil-mapping-results/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/en/about/team/bohdan-hrytsenko/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/about/team/bohdan-hrytsenko/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/about/team/bohdan-hrytsenko/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/about/team/bohdan-hrytsenko/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/en/about/team/taras-lozovyi/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/about/team/taras-lozovyi/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/about/team/taras-lozovyi/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/about/team/taras-lozovyi/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/en/about/team/nataliia-bondar/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/about/team/nataliia-bondar/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/about/team/nataliia-bondar/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/about/team/nataliia-bondar/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/en/about/team/serhii-kushnir/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/about/team/serhii-kushnir/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/about/team/serhii-kushnir/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/about/team/serhii-kushnir/"/>
   </url>
 </urlset>

@@ -231,6 +231,7 @@
 .v2 .blog-grid .post { border-radius: 0; }
 .v2 .blog-grid .post:first-child { border-radius: var(--r-sm) 0 0 0; }
 .v2 .blog-grid .post:nth-child(2) { border-radius: 0 var(--r-sm) 0 0; }
+.v2 .blog-grid .post:last-child { grid-column: 1 / -1; min-height: 24rem; border-radius: 0 0 var(--r-sm) var(--r-sm); }
 
 /* V3 is a gallery rather than a flattened V1: services become indexed rows,
    and the journal becomes one photographic feature beside a quiet index. */
@@ -274,11 +275,68 @@
 .v3 .blog-grid .post:not(:first-child):last-child { border-bottom: 1px solid var(--border); }
 .v3 .blog-grid .post:not(:first-child)::after { display: none; }
 .v3 .blog-grid .post:not(:first-child) picture { display: none; }
-.v3 .blog-grid .post:not(:first-child) h3 { color: var(--text); }
+.v3 .blog-grid .post:not(:first-child) .post__title { color: var(--text); }
 .v3 .blog-grid .post:not(:first-child) .post__date,
 .v3 .blog-grid .post:not(:first-child) .post__ex { color: var(--text-2); }
 .v3 .blog-grid .post:not(:first-child) .post__go { color: var(--text); }
 .v3 .about__ph--intro { border-radius: 50% 50% var(--r-lg) var(--r-lg); aspect-ratio: 4 / 5; max-width: 30rem; justify-self: end; }
+
+/* ==========================================================================
+   PASS-2 ACCEPTANCE FIXES
+   ========================================================================== */
+
+.v1 .strip--orbit { overflow: clip; box-shadow: none; margin-bottom: clamp(1.5rem,3vw,3rem); }
+.v1 .partner-orbit__node .pm { min-width: 8.6rem; justify-content: center; transform: translateZ(0); }
+.v1 .partner-orbit__node .pm__t { text-align: center; }
+.v1 .about__ph, .v1 .phero__ph { background: transparent; }
+.v1 .stats-card { border: 1px solid rgba(229,232,224,.72); }
+
+.v2 .phero .tag { color: rgba(255,255,255,.72); }
+.v2 .phero .tag::before { background: var(--lime); }
+.v2 #capacity .chip--up, .v2 #capacity .chip--down { color: var(--white); background: rgba(255,255,255,.12); }
+.v2 #capacity .icon-badge { --badge-bg:var(--lime); --badge-fg:var(--ink); }
+.v2 .stats-card .icon-badge { --badge-bg:var(--ink); --badge-fg:var(--lime); }
+.v2 .tagband { margin-top: clamp(1.5rem,3vw,3rem); }
+.v2 #services + .section { padding-top: calc(var(--section) * 1.18); }
+.v2 .detail-hero__copy {
+  max-width:none; width:100%; padding:clamp(2rem,5vw,4.5rem);
+  border-radius:var(--r-sm); background:var(--ink); color:var(--white);
+}
+.v2 .detail-hero__copy h1, .v2 .profile-hero__copy h1 { color:var(--white); }
+.v2 .detail-hero__copy .lead, .v2 .detail-meta, .v2 .detail-back,
+.v2 .profile-hero__copy .lead, .v2 .profile-hero__copy .detail-back { color:var(--on-dark-2); }
+.v2 .profile-hero__copy { padding:clamp(2rem,5vw,4.5rem); border-radius:var(--r-sm); background:var(--ink); color:var(--white); border-top:0; }
+.v2 .detail-hero__media, .v2 .profile-hero__media { --media-radius:var(--r-sm); }
+
+.v3 .logo-bar {
+  background-color: rgba(224,237,246,.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  transform:translateZ(0);
+}
+.v3 .stats-card { min-height: 12.5rem; }
+.v3 .stats-card .icon-badge { --badge-bg:transparent; --badge-fg:var(--ink); box-shadow:inset 0 0 0 1px var(--border); }
+.v3 .stats-card::after { display:none; }
+.v3 .stats-card__spark i { background:var(--border); }
+.v3 .stats-card__spark i:nth-child(4), .v3 .stats-card__spark i:nth-child(5) { background:var(--ink); }
+.v3 .head-row {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,40rem) minmax(0,1fr);
+  align-items:end;
+  width:100%;
+}
+.v3 .head-row .head { grid-column:2; }
+.v3 .head-row > :last-child:not(.head) { grid-column:3; justify-self:end; }
+.v3 .quote {
+  background:var(--white);
+  border:1px solid var(--border);
+  box-shadow:0 12px 32px -25px rgba(15,30,20,.48);
+  overflow:hidden;
+}
+.v3 .quote__body { padding:var(--s-lg); min-height:13.5rem; }
+.v3 .rail-btns { margin-top:var(--s-sm); }
+.v3 .detail-hero__copy, .v3 .profile-hero__copy { border-top:1px solid var(--border); padding-top:var(--s-xl); }
+.v3 .profile-quote { box-shadow:none; border:1px solid var(--border); }
 
 /* ==========================================================================
    Shared: section numbering, used by v2 only
@@ -369,6 +427,8 @@
 }
 
 @media (max-width: 48rem) {
+  .v3 .head-row { grid-template-columns:1fr; gap:var(--s-xl); }
+  .v3 .head-row .head, .v3 .head-row > :last-child:not(.head) { grid-column:1; justify-self:center; }
   .v3 .blog-grid { grid-template-columns: 1fr; }
   .v3 .blog-grid .post:first-child { min-height: 24rem; }
   .v3 .blog-grid .post:not(:first-child) { grid-column: 1; }

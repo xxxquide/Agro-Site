@@ -1011,28 +1011,80 @@
         "role": "Managing Director",
         "img": "team-director",
         "alt": "Portrait of the company director",
-        "bio": "Founded the farm in 2008 with 800 hectares. Leads the negotiations on every long-term agreement."
+        "bio": "Founded the farm in 2008 with 800 hectares. Leads the negotiations on every long-term agreement.",
+        "slug": "bohdan-hrytsenko",
+        "intro": "From 800 hectares and one combine to a full-cycle agricultural business. Bohdan owns the long-term direction, key agreements and the promise that what a partner is told matches what is delivered.",
+        "responsibilities": [
+          "Land-bank and investment strategy",
+          "Long-term agreements and partnerships",
+          "Final accountability for delivery"
+        ],
+        "quote": "We do not sell a figure in a presentation. We sell a consignment we can show in the field, laboratory and weighbridge.",
+        "related": [
+          0,
+          1,
+          4
+        ]
       },
       {
         "name": "Taras Lozovyi",
         "role": "Chief Agronomist",
         "img": "team-agronomist",
         "alt": "Portrait of the chief agronomist",
-        "bio": "Responsible for the crop rotation, hybrid selection and application maps. Drove the move to no-till."
+        "bio": "Responsible for the crop rotation, hybrid selection and application maps. Drove the move to no-till.",
+        "slug": "taras-lozovyi",
+        "intro": "Taras builds the rotation, selects hybrids and turns field data into precise machinery tasks. His team led the first no-till season.",
+        "responsibilities": [
+          "Rotation and crop protocols",
+          "Crop monitoring, NDVI and application maps",
+          "Quality of field operations"
+        ],
+        "quote": "Precision farming starts not with a drone, but with the right question for the field.",
+        "related": [
+          2,
+          5,
+          0
+        ]
       },
       {
         "name": "Nataliia Bondar",
         "role": "Head of Laboratory",
         "img": "team-lab",
         "alt": "Portrait of the laboratory manager",
-        "bio": "Draws up the quality certificate for every consignment. Her signature stands behind the figures that travel with the grain."
+        "bio": "Draws up the quality certificate for every consignment. Her signature stands behind the figures that travel with the grain.",
+        "slug": "nataliia-bondar",
+        "intro": "Nataliia leads the elevator laboratory and prepares the certificate that travels with every consignment. Her responsibility runs from a representative sample to a clear answer for the partner.",
+        "responsibilities": [
+          "Intake and pre-dispatch quality control",
+          "Protein, moisture, test weight and falling-number methods",
+          "Control-sample and certificate archive"
+        ],
+        "quote": "Quality should not become a surprise at the buyer’s weighbridge. We show it before the consignment is assembled.",
+        "related": [
+          3,
+          0,
+          1
+        ]
       },
       {
         "name": "Serhii Kushnir",
         "role": "Storage and Logistics",
         "img": "team-logistics",
         "alt": "Portrait of the storage and logistics manager",
-        "bio": "The grain elevator, the dryers, the weighbridge, the dispatch schedule. Keeps the delivery haul inside 14 km."
+        "bio": "The grain elevator, the dryers, the weighbridge, the dispatch schedule. Keeps the delivery haul inside 14 km.",
+        "slug": "serhii-kushnir",
+        "intro": "Serhii joins the elevator, dryers, weighbridge, truck fleet and rail siding into one schedule. His job is to prevent grain losing time or quality between field and partner.",
+        "responsibilities": [
+          "Intake, drying and segregated storage",
+          "Road and rail dispatch scheduling",
+          "Documents and in-transit consignment status"
+        ],
+        "quote": "The best logistics is the one in which the partner already knows where the grain is and when it will be ready.",
+        "related": [
+          1,
+          4,
+          0
+        ]
       }
     ],
     "title_rich": "The people [[handshake]] accountable for every consignment"
@@ -1217,7 +1269,42 @@
         "img": "news-harvest",
         "alt": "Combine harvesting a wheat field",
         "title": "Winter wheat harvest finished: 6.4 t/ha across every block",
-        "excerpt": "Our best result in eighteen seasons. We set out what drove the gain: the crop rotation, the drilling date or the weather."
+        "excerpt": "Our best result in eighteen seasons. We set out what drove the gain: the crop rotation, the drilling date or the weather.",
+        "slug": "winter-wheat-harvest",
+        "body": [
+          {
+            "heading": "The season result",
+            "paragraphs": [
+              "Winter wheat was harvested across every production block at an average 6.4 t/ha. It is the farm’s strongest result in eighteen seasons, but the more useful result is how evenly the fields performed.",
+              "The spread between the strongest and weakest cluster narrowed. A longer rotation, drilling at measured soil moisture and variable-rate nutrition all contributed."
+            ]
+          },
+          {
+            "heading": "What drove the gain",
+            "paragraphs": [
+              "We do not attribute the result to one intervention. Wheat followed oilseed rape and soy, drilling dates reflected actual moisture, and nitrogen was allocated to the potential of each management zone."
+            ],
+            "items": [
+              "Fields after oilseed rape produced the most consistent protein.",
+              "Early drilling worked only where the moisture reserve supported it.",
+              "NDVI data prevented unnecessary nitrogen on weaker zones."
+            ]
+          },
+          {
+            "heading": "What it means for a partner",
+            "paragraphs": [
+              "Consignments are stored separately by class and field of origin. Before dispatch, the buyer receives protein, moisture, test weight and falling-number results, allowing a required volume to be assembled without blending unlike qualities."
+            ]
+          }
+        ],
+        "related": [
+          1,
+          2,
+          3
+        ],
+        "reading_minutes": 4,
+        "seo_title": "Winter wheat harvest 2026",
+        "seo_description": "Our best result in eighteen seasons. We set out what drove the gain: the crop rotation, the drilling date or the weather. Winter wheat was harvested across every…"
       },
       {
         "date": "14 June 2026",
@@ -1226,7 +1313,42 @@
         "img": "news-drying",
         "alt": "Grain drying complex in operation",
         "title": "Third drying complex reaches 1,200 tonnes per day",
-        "excerpt": "All our maize now goes through drying without queueing. What that changes for partners at peak harvest."
+        "excerpt": "All our maize now goes through drying without queueing. What that changes for partners at peak harvest.",
+        "slug": "third-drying-complex",
+        "body": [
+          {
+            "heading": "Why a third complex was needed",
+            "paragraphs": [
+              "At peak harvest, maize arrived faster than two existing lines could handle without a queue. The third dryer removed the bottleneck between field, laboratory and silo.",
+              "Combined throughput reached 1,200 tonnes a day. Every consignment follows a separate route with incoming and outgoing moisture recorded."
+            ]
+          },
+          {
+            "heading": "What changed operationally",
+            "paragraphs": [
+              "Flows are separated by crop and moisture, so dry grain no longer waits behind high-moisture loads. Controls record air temperature, residence time and fuel use."
+            ],
+            "items": [
+              "Less truck waiting during harvest.",
+              "Dedicated settings for maize, sunflower and soy.",
+              "A predictable readiness time for each consignment."
+            ]
+          },
+          {
+            "heading": "For partners",
+            "paragraphs": [
+              "Grain can be booked by volume and by readiness window. The manager confirms the schedule after laboratory intake, and documents are prepared on the day of dispatch."
+            ]
+          }
+        ],
+        "related": [
+          2,
+          3,
+          4
+        ],
+        "reading_minutes": 4,
+        "seo_title": "The third grain drying complex",
+        "seo_description": "All our maize now goes through drying without queueing. What that changes for partners at peak harvest. At peak harvest, maize arrived faster than two existing…"
       },
       {
         "date": "3 April 2026",
@@ -1235,7 +1357,42 @@
         "img": "news-notill",
         "alt": "Tractor with a no-till drill",
         "title": "2,100 hectares moved to no-till: what the first season showed",
-        "excerpt": "Fuel use, moisture retention and yield against conventional tillage. The figures with nothing dressed up."
+        "excerpt": "Fuel use, moisture retention and yield against conventional tillage. The figures with nothing dressed up.",
+        "slug": "no-till-first-season",
+        "body": [
+          {
+            "heading": "A first season without deep tillage",
+            "paragraphs": [
+              "We moved 2,100 hectares with the greatest moisture-loss risk to no-till. The purpose was not to showcase a method but to test it in our black soils and real rotation.",
+              "Fuel, field time, moisture through the metre profile and yield were compared with neighbouring conventionally tilled fields."
+            ]
+          },
+          {
+            "heading": "What the figures showed",
+            "paragraphs": [
+              "Fuel use fell and soil retained moisture longer after spring rain. Yield did not rise automatically: compacted zones depended on prior levelling and strong weed control."
+            ],
+            "items": [
+              "Fewer machinery passes.",
+              "Better moisture retention through dry weeks.",
+              "Greater demand for drill accuracy and weed mapping."
+            ]
+          },
+          {
+            "heading": "The next step",
+            "paragraphs": [
+              "The method will not be scaled mechanically. Each new field is assessed for compaction, crop history and moisture reserve. For contract-grown crops, the protocol is agreed before drilling."
+            ]
+          }
+        ],
+        "related": [
+          3,
+          4,
+          5
+        ],
+        "reading_minutes": 4,
+        "seo_title": "First no-till season on 2,100 hectares",
+        "seo_description": "Fuel use, moisture retention and yield against conventional tillage. The figures with nothing dressed up. We moved 2,100 hectares with the greatest moisture-loss…"
       },
       {
         "date": "19 February 2026",
@@ -1244,7 +1401,42 @@
         "img": "ops-lab",
         "alt": "Grain quality control laboratory",
         "title": "How we measure falling number and why it matters to a mill",
-        "excerpt": "The figure most often argued over on the weighbridge. We go through the method and our tolerances."
+        "excerpt": "The figure most often argued over on the weighbridge. We go through the method and our tolerances.",
+        "slug": "falling-number-quality",
+        "body": [
+          {
+            "heading": "What falling number measures",
+            "paragraphs": [
+              "Falling number indicates enzyme activity in grain and helps predict how flour will behave in production. A low result often follows pre-harvest sprouting after rain.",
+              "We measure it in our own laboratory using a standard procedure and duplicate tests around acceptance thresholds."
+            ]
+          },
+          {
+            "heading": "How the certificate is built",
+            "paragraphs": [
+              "The sample is tied to a specific consignment, weight and silo. Falling number sits beside protein, moisture, test weight, foreign matter and oil content where relevant."
+            ],
+            "items": [
+              "A control sample is retained until the agreement is complete.",
+              "Results are available before dispatch.",
+              "A disputed result is repeated on a new composite sample."
+            ]
+          },
+          {
+            "heading": "Why it matters to a mill",
+            "paragraphs": [
+              "The result affects milling blends and dough consistency. Agreeing a threshold before the consignment is assembled reduces disputes at intake and lets the mill plan the blend in advance."
+            ]
+          }
+        ],
+        "related": [
+          4,
+          5,
+          0
+        ],
+        "reading_minutes": 4,
+        "seo_title": "Falling number and grain quality",
+        "seo_description": "The figure most often argued over on the weighbridge. We go through the method and our tolerances. Falling number indicates enzyme activity in grain and helps…"
       },
       {
         "date": "8 December 2025",
@@ -1253,7 +1445,42 @@
         "img": "ops-logistics",
         "alt": "Queue of grain trucks beside the elevator",
         "title": "Rail siding: the first wagon dispatches to the port",
-        "excerpt": "We worked out the volume at which a wagon beats the truck fleet, and where the saving starts for the buyer."
+        "excerpt": "We worked out the volume at which a wagon beats the truck fleet, and where the saving starts for the buyer.",
+        "slug": "rail-dispatches-port",
+        "body": [
+          {
+            "heading": "The first wagon consignments",
+            "paragraphs": [
+              "The rail siding lets us assemble large consignments without an extra transfer through an intermediate store. The first departures ran to the port terminals in Odesa.",
+              "Every wagon is weighed, sealed and issued its accompanying documents on the day of departure."
+            ]
+          },
+          {
+            "heading": "When rail is more efficient",
+            "paragraphs": [
+              "For small urgent volumes, the truck fleet remains more flexible. Rail becomes efficient when a buyer consolidates a stable volume and can receive it in one delivery window."
+            ],
+            "items": [
+              "Fewer intermediate grain-handling operations.",
+              "More stable unit cost over long distances.",
+              "One laboratory and document trail."
+            ]
+          },
+          {
+            "heading": "Route control",
+            "paragraphs": [
+              "The manager tracks the consignment from silo to destination station. If an infrastructure slot changes, the partner is updated before departure rather than after a delay."
+            ]
+          }
+        ],
+        "related": [
+          5,
+          0,
+          1
+        ],
+        "reading_minutes": 4,
+        "seo_title": "First rail consignments to the port",
+        "seo_description": "We worked out the volume at which a wagon beats the truck fleet, and where the saving starts for the buyer. The rail siding lets us assemble large consignments…"
       },
       {
         "date": "21 October 2025",
@@ -1262,7 +1489,42 @@
         "img": "ops-soil",
         "alt": "Young wheat shoots in black soil",
         "title": "Soil mapping across all 14,200 hectares: the results",
-        "excerpt": "Two years of sampling. What we found out about phosphorus and why we changed the application plan on a third of the area."
+        "excerpt": "Two years of sampling. What we found out about phosphorus and why we changed the application plan on a third of the area.",
+        "slug": "soil-mapping-results",
+        "body": [
+          {
+            "heading": "Two years of sampling",
+            "paragraphs": [
+              "We divided 14,200 hectares into management zones and sampled them on a stable grid. Acidity, phosphorus, potassium, organic matter and compaction indicators were analysed.",
+              "The map showed that one average rate across a whole block hid both deficient and over-supplied zones."
+            ]
+          },
+          {
+            "heading": "How the application plan changed",
+            "paragraphs": [
+              "Base rates were revised on a third of the area. Where phosphorus reserves were sufficient, inputs moved to weaker zones; liming is scheduled only where acidity is confirmed."
+            ],
+            "items": [
+              "Less input without measurable effect.",
+              "A separate prescription for every management zone.",
+              "Repeat analysis at the same coordinates."
+            ]
+          },
+          {
+            "heading": "The practical result",
+            "paragraphs": [
+              "The soil map works beside yield and NDVI data. It does not replace the agronomist; it gives them a precise basis for decisions and a clear report for partners when a crop is grown to order."
+            ]
+          }
+        ],
+        "related": [
+          0,
+          1,
+          2
+        ],
+        "reading_minutes": 4,
+        "seo_title": "Soil mapping across 14,200 hectares",
+        "seo_description": "Two years of sampling. What we found out about phosphorus and why we changed the application plan on a third of the area. We divided 14,200 hectares into…"
       }
     ]
   },
@@ -1309,5 +1571,15 @@
     "lead": "The same content in three different treatments. Open each one and choose whichever is closer.",
     "open": "Open version",
     "note": "Demonstration layout. Figures, photographs and testimonials are illustrative."
+  },
+  "detail_labels": {
+    "back_blog": "All news",
+    "back_about": "Back to team",
+    "related": "Related stories",
+    "profile_related": "Related work",
+    "responsibilities": "Responsibilities",
+    "reading": "min read",
+    "profile_eyebrow": "Team",
+    "article_eyebrow": "Farm journal"
   }
 }

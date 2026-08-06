@@ -27,6 +27,9 @@ html.no-motion [data-stagger] > * {
   opacity: 1 !important;
   transform: none !important;
 }
+html.no-motion .ukraine-map__route { stroke-dashoffset: 0 !important; }
+html.no-motion .storage-viz__flow i,
+html.no-motion .ukraine-map__pulse { animation: none !important; }
 
 /* --- word reveal ---------------------------------------------------------
    Each word gets a clipping wrapper so the inner span can slide up from
@@ -78,7 +81,11 @@ html.no-motion [data-stagger] > * {
 /* --- marquee track ------------------------------------------------------ */
 .marq {
   position: relative;
+  width: 100%;
+  min-width: 0;
   overflow: hidden;
+  isolation: isolate;
+  contain: layout paint;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
@@ -109,6 +116,10 @@ html.no-motion [data-stagger] > * {
 }
 .drift-a { animation: drift 7s var(--ease-soft) infinite alternate; }
 .drift-b { animation: drift 9s var(--ease-soft) infinite alternate-reverse; }
+.cap__card .drift-a, .cap__card .drift-b,
+.cap__card .storage-viz__flow i { animation-play-state: paused; }
+.cap__card.is-active .drift-a, .cap__card.is-active .drift-b,
+.cap__card.is-active .storage-viz__flow i { animation-play-state: running; }
 
 /* --- the sticky-header sentinel: zero height, never painted ------------- */
 .sentinel {
@@ -166,7 +177,11 @@ html.no-motion [data-stagger] > * {
   }
   .marq__track { transform: none !important; }
   .marq__group[aria-hidden="true"] { display: none !important; }
-  .drift-a, .drift-b { animation: none !important; }
+  .drift-a, .drift-b,
+  .storage-viz__flow i,
+  .ukraine-map__pulse { animation: none !important; }
+  .ukraine-map__route { stroke-dashoffset: 0 !important; }
+  .stats-card__spark i { transform: none !important; }
 
   .fan__item { transform: rotateY(var(--ry)) rotateZ(var(--rz)) !important; }
 }

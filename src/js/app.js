@@ -190,7 +190,17 @@
       });
     });
 
-    /* --- progress bars, chart columns, orbit ----------------------------- */
+    /* --- capacity lifecycle and data visualizations ---------------------- */
+    all('[data-capacity-card]').forEach(function (card) {
+      var inView = false;
+      function syncCapacity() { card.classList.toggle('is-active', inView && !doc.hidden); }
+      if (ST) ST.create({
+        trigger: card, start: 'top bottom', end: 'bottom top',
+        onToggle: function (self) { inView = self.isActive; syncCapacity(); },
+      });
+      on(doc, 'visibilitychange', syncCapacity);
+    });
+
     all('[data-bars]').forEach(function (box) {
       var fills = all('.bars__fill', box);
       gsap.fromTo(fills,
@@ -211,6 +221,35 @@
         ease: EASE.expo,
         stagger: STAGGER.tight,
         scrollTrigger: { trigger: box, start: 'top 90%', once: true },
+      });
+    });
+
+    all('[data-stat-card]').forEach(function (card) {
+      gsap.from(all('.stats-card__spark i', card), {
+        scaleY: 0,
+        duration: DUR.lg,
+        ease: EASE.back,
+        stagger: STAGGER.tight,
+        scrollTrigger: { trigger: card, start: 'top 90%', once: true },
+      });
+    });
+
+    all('[data-route-map]').forEach(function (map) {
+      gsap.to(all('.ukraine-map__route', map), {
+        strokeDashoffset: 0,
+        duration: 2.2,
+        ease: EASE.expo,
+        stagger: .24,
+        scrollTrigger: { trigger: map, start: 'top 82%', once: true },
+      });
+      gsap.from(all('.ukraine-map__point, .ukraine-map__hub', map), {
+        scale: .6,
+        autoAlpha: 0,
+        transformOrigin: 'center center',
+        duration: DUR.md,
+        ease: EASE.back,
+        stagger: .09,
+        scrollTrigger: { trigger: map, start: 'top 82%', once: true },
       });
     });
 
@@ -385,10 +424,19 @@
 
       function build() {
         if (tween) tween.kill();
+        all('[data-auto-clone]', track).forEach(function (clone) { clone.remove(); });
         var styles = window.getComputedStyle(track);
         var gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
         loop = group.getBoundingClientRect().width + gap;
         if (!loop) return;
+        var safety = 0;
+        while (track.scrollWidth < row.clientWidth * 2.15 && safety < 12) {
+          var clone = group.cloneNode(true);
+          clone.setAttribute('aria-hidden', 'true');
+          clone.setAttribute('data-auto-clone', '');
+          track.appendChild(clone);
+          safety += 1;
+        }
         gsap.set(track, { x: dir < 0 ? 0 : -loop });
         tween = gsap.to(track, {
           x: dir < 0 ? -loop : 0,
@@ -402,10 +450,12 @@
 
       if (typeof window.ResizeObserver !== 'undefined') {
         var resizeTimer = 0;
-        new window.ResizeObserver(function () {
+        var marqueeObserver = new window.ResizeObserver(function () {
           clearTimeout(resizeTimer);
           resizeTimer = setTimeout(build, 120);
-        }).observe(group);
+        });
+        marqueeObserver.observe(group);
+        marqueeObserver.observe(row);
       } else {
         on(window, 'resize', build, { passive: true });
       }
@@ -707,10 +757,51 @@
       sync();
     });
 
-    /* accordion (FAQ) uses <details>; keep ScrollTrigger in sync on toggle */
-    all('details').forEach(function (d) {
-      on(d, 'toggle', function () {
-        scheduleRefresh();
+    /* Exclusive, animated FAQ accordion. Opening one item closes the previous
+       item in the same group; native details semantics remain intact. */
+    all('.faq').forEach(function (group) {
+      var details = all('details', group);
+      function setExpanded(detail, expanded) {
+        var summary = one('summary', detail);
+        if (summary) summary.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      }
+      function animateDetail(detail, openState) {
+        var panel = one('.faq__a', detail);
+        if (!panel) { detail.open = openState; setExpanded(detail, openState); return; }
+        if (detail._faqAnimation) detail._faqAnimation.cancel();
+        if (REDUCED || typeof panel.animate !== 'function') {
+          detail.open = openState; setExpanded(detail, openState); scheduleRefresh(); return;
+        }
+        if (openState) detail.open = true;
+        var from = openState ? 0 : panel.scrollHeight;
+        var to = openState ? panel.scrollHeight : 0;
+        panel.style.overflow = 'hidden';
+        detail._faqAnimation = panel.animate(
+          [{ height: from + 'px', opacity: openState ? 0 : 1 },
+           { height: to + 'px', opacity: openState ? 1 : 0 }],
+          { duration: 420, easing: 'cubic-bezier(.16,1,.3,1)' }
+        );
+        setExpanded(detail, openState);
+        detail._faqAnimation.onfinish = function () {
+          if (!openState) detail.open = false;
+          panel.style.height = '';
+          panel.style.overflow = '';
+          panel.style.opacity = '';
+          detail._faqAnimation = null;
+          scheduleRefresh();
+        };
+      }
+      details.forEach(function (detail) {
+        setExpanded(detail, detail.open);
+        var summary = one('summary', detail);
+        on(summary, 'click', function (e) {
+          e.preventDefault();
+          var shouldOpen = !detail.open;
+          if (shouldOpen) details.forEach(function (other) {
+            if (other !== detail && other.open) animateDetail(other, false);
+          });
+          animateDetail(detail, shouldOpen);
+        });
       });
     });
 

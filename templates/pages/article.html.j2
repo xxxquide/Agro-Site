@@ -1,0 +1,51 @@
+{% extends "base.html.j2" %}
+{%- import "blocks.html.j2" as B with context -%}
+{% block body %}
+<section class="detail-hero wrap" aria-labelledby="detail-t" data-page-hero>
+  <a class="detail-back" href="{{ url_for('blog') }}">{{ I.chevron('left') }}<span>{{ c.detail_labels.back_blog }}</span></a>
+  <div class="detail-hero__copy">
+    <div class="detail-meta" data-page-item>
+      <span class="chip chip--lime">{{ item.tag }}</span>
+      <time datetime="{{ item.iso }}">{{ item.date }}</time>
+      <span>{{ item.reading_minutes }} {{ c.detail_labels.reading }}</span>
+    </div>
+    <h1 id="detail-t" data-page-title>{{ item.title }}</h1>
+    <p class="lead" data-page-item>{{ item.excerpt }}</p>
+  </div>
+  <div class="detail-hero__media media-frame" data-page-media>
+    {{ B.pic(item.img, item.alt, '(max-width: 48rem) 100vw, 80rem', priority=True) }}
+  </div>
+</section>
+
+<section class="section detail-content" aria-label="{{ item.title }}">
+  <div class="wrap wrap--narrow">
+    <article class="article-body">
+      {%- for section in item.body %}
+      <section class="article-section" data-r>
+        <h2>{{ section.heading }}</h2>
+        {%- for paragraph in section.paragraphs %}<p>{{ paragraph }}</p>{% endfor %}
+        {%- if section.get('items') %}
+        <ul>{% for point in section['items'] %}<li>{{ I.tick() }}<span>{{ point }}</span></li>{% endfor %}</ul>
+        {%- endif %}
+      </section>
+      {%- endfor %}
+    </article>
+  </div>
+</section>
+
+<section class="section detail-related" aria-labelledby="related-t">
+  <div class="wrap">
+    <div class="head-row">
+      <div class="head">
+        <span class="tag tag--lime">{{ c.detail_labels.article_eyebrow }}</span>
+        <h2 id="related-t">{{ c.detail_labels.related }}</h2>
+      </div>
+      <a class="btn btn--outline" href="{{ url_for('blog') }}">{{ c.detail_labels.back_blog }}<span class="btn__badge">{{ I.arrow() }}</span></a>
+    </div>
+    <div class="news detail-related__grid">
+      {%- for post in related %}{{ B.story_card(post, loop.index) }}{% endfor %}
+    </div>
+  </div>
+</section>
+{{ B.sec_cta() }}
+{% endblock %}
