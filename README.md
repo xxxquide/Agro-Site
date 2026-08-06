@@ -108,7 +108,14 @@ x-height), кириллица полная. Итого из двух шрифт�
 
 Добавлено то, чего не было, а в шаблоне есть: автолента карточек под hero (V2),
 стеклянная лента логотипов (V3), две ленты тегов навстречу друг другу, параллакс
-на фото, непрерывная орбита. Есть полная ветка `prefers-reduced-motion: reduce`.
+на фото, непрерывная орбита и отдельная композиция motion для внутренних hero.
+
+Все бесконечные ленты и орбиты приостанавливаются вне viewport, при скрытой
+вкладке и при взаимодействии с содержимым. `prefers-reduced-motion: reduce`
+убирает scrub, autoplay и reveal-трансформации, но оставляет весь контент видимым.
+Изменение системной настройки во время открытой страницы безопасно перезапускает
+motion-слой. Мобильный drawer получает focus trap, делает основной контент
+`inert` и возвращает фокус на кнопку после закрытия.
 
 ## Замеренный вес
 
@@ -116,23 +123,27 @@ x-height), кириллица полная. Итого из двух шрифт�
 
 | Ресурс | Raw | Gzip |
 |---|---:|---:|
-| `index.html` (V1, uk) | 85.5 KB | **15.9 KB** |
-| `assets/css/main.css` | 55.7 KB | **11.1 KB** |
-| `assets/js/app.js` | 11.2 KB | **3.8 KB** |
+| `index.html` (V1, uk) | 84.5 KB | **16.2 KB** |
+| `assets/css/main.css` | 83.4 KB | **16.1 KB** |
+| `assets/js/app.js` | 17.6 KB | **5.5 KB** |
 | GSAP + ScrollTrigger + Lenis | 127.7 KB | **48.8 KB** |
 | `onest.woff2` + `geistmono.woff2` | 51.2 KB | — |
 | LCP `hero-v1-1440.avif` | 36.2 KB | — |
-| **Первый экран целиком** | | **167 KB** |
+| **Первый экран целиком** | | **174.0 KB** |
 
-Прошлая итерация давала 118 KB. Прирост — цена GSAP + Lenis и шрифтов шаблона;
-обмен сознательный, он и был задачей этой итерации.
+Checkpoint до финального quality pass давал 172.4 KB. Текущие +1.6 KB — это
+более самостоятельные V2/V3, валидируемые формы, focus trap и управление
+непрерывным motion; новых runtime-библиотек не добавлено. Первый экран остаётся
+ниже внутреннего бюджета 180 KB.
 
 Изображений в репозитории 6.9 MB — 128 файлов, все плотности и форматы; браузер
 грузит из них единицы. AVIF + WebP через `<picture>`, `width`/`height` на каждом
 `<img>` (CLS ≈ 0), `preload` только на LCP-картинке.
 
-**Не замерено:** Lighthouse и реальные Core Web Vitals — нужен живой хостинг.
-Цифры выше это вес ассетов, а не LCP/INP на устройстве.
+`tools/measure_runtime.py` даёт воспроизводимую локальную диагностику CLS,
+локального LCP, long tasks и frame interval p50/p95/p99 для трёх вариантов на
+desktop и mobile. Это не field Core Web Vitals: Lighthouse и реальные
+LCP/INP всё равно нужно повторить на живом HTTPS-хостинге и физических устройствах.
 
 ## SEO
 
@@ -201,6 +212,29 @@ python3 tools/build_site.py && python3 tools/verify.py
 `tools/build_preview.py` собирает страницу в один self-contained HTML со
 встроенными CSS, JS, шрифтами и картинками — удобно отправить файлом.
 
+### Browser QA
+
+Визуальные и интерактивные проверки используют Playwright только как dev-зависимость:
+
+```bash
+pip install playwright
+python3 -m playwright install chromium
+
+python3 tools/visual_smoke.py
+python3 tools/interaction_smoke.py
+python3 tools/measure_runtime.py
+```
+
+`visual_smoke.py` снимает детерминированные скриншоты с reduced motion на 320,
+375, 390, 768, 1024, 1440 и 1920 px, проверяет горизонтальный overflow, один
+`h1`, загрузку видимых изображений и отсутствие скрытого после boot контента.
+Артефакты пишутся в игнорируемую папку `.visual-regression/`.
+
+`interaction_smoke.py` проверяет mobile drawer, focus trap, возврат фокуса,
+`inert`, валидацию demo-форм и reduced-motion fallback. `measure_runtime.py`
+записывает локальные диагностические p50/p95/p99 в
+`.visual-regression/runtime.json` и явно не выдаёт их за field CWV.
+
 ### Что где править
 
 | Задача | Файл |
@@ -214,8 +248,9 @@ python3 tools/build_site.py && python3 tools/verify.py
 | Домен | `BASE` и `SUBPATH` в `tools/build_site.py` |
 
 `verify.py` проверяет паритет структуры `uk.json` и `en.json`, отсутствие битых
-ссылок, дубли `id`, `alt` и размеры у картинок, порядок заголовков, валидность
-JSON-LD, `noindex` у вариаций и бюджеты веса.
+ссылок, дубли `id`, `alt` и размеры у картинок, порядок заголовков, типы e-mail
+полей, сохранение native form validation, валидность JSON-LD, `noindex` у
+вариаций и бюджеты веса.
 
 ## Деплой
 

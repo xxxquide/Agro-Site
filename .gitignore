@@ -1,6 +1,7 @@
 # build/ holds the self-contained preview bundles (~1 MB each) — regenerate with
 # tools/build_preview.py instead of committing them
 build/
+.visual-regression/
 
 __pycache__/
 *.pyc

@@ -51,7 +51,7 @@ class Scan(HTMLParser):
         self.imgs = []
         self.refs = []
         self.jsonld = []
-        self.labels, self.inputs = [], []
+        self.labels, self.inputs, self.forms = [], [], []
         self.in_ld = False
         self.h1 = 0
         self.langs = []
@@ -99,6 +99,8 @@ class Scan(HTMLParser):
             self.labels.append(a.get("for"))
         if tag in ("input", "select", "textarea"):
             self.inputs.append(a)
+        if tag == "form":
+            self.forms.append(a)
 
         if tag == "html" and "lang" in a:
             self.langs.append(a["lang"])
@@ -124,7 +126,9 @@ def check_page(page):
     s.feed(html)
     tag = page
 
-    # --- ids -------------------------------------------------------------
+    # --- ids and dead controls ------------------------------------------
+    if 'href="#"' in html:
+        fail(f"{tag}: contains dead href=\"#\" control")
     if s.dupe_ids:
         fail(f"{tag}: duplicate id(s) {sorted(set(s.dupe_ids))}")
 
@@ -163,6 +167,11 @@ def check_page(page):
         iid = inp.get("id")
         if iid and iid not in s.labels:
             fail(f'{tag}: input #{iid} has no <label for>')
+        if inp.get("name") in ("email", "contact") and inp.get("type") != "email":
+            fail(f'{tag}: email field #{iid or "?"} must use type="email"')
+    for form in s.forms:
+        if "data-demo-form" in form and "novalidate" in form:
+            fail(f"{tag}: demo form disables native validation")
 
     # --- JSON-LD ---------------------------------------------------------
     if page not in ("404.html", "variants.html"):
