@@ -1,6 +1,42 @@
 # Changelog
 
-## Unreleased — reference-grade completion pass
+## Unreleased — client-ready UI/UX pass 2
+
+### Shared system
+
+- Added reusable MediaFrame, StatsCard, IconBadge, CardLift, seamless marquee, exclusive accordion and touch-rail primitives.
+- Replaced repeated one-off stats, media, capacity, news and team markup with shared Jinja macros and data-driven variants.
+- Added strict visual checks for clipped text, media coverage inside rounded masks and marquee overlap.
+
+### Visual and interaction polish
+
+- Rebuilt V1 partner ecosystem mobile layout, shared stats and four agricultural capacity visualizations.
+- Added a local animated Ukraine route map with Vinnytsia, Haisyn, Kyiv and the Port of Odesa.
+- Fixed V2 dark-surface labels, team media masks, article treatment, double marquee coverage and the incomplete News grid.
+- Removed the V3 glass-bar first-paint flash and improved quiet stats, centred headings and testimonial surfaces.
+- Added exclusive animated FAQ closing, lifecycle-managed capacity motion and verified horizontal testimonial swipe on every V3 page that contains the rail.
+- Added accessible hover/focus lift to news, testimonial and team cards.
+
+### Detail routes
+
+- Added six full UA/EN articles and four UA/EN team profiles for every variation.
+- Added Article and ProfilePage templates based on the supplied reading-blog reference.
+- Added 36 Article and 24 Person detail routes with semantic card links, canonical, hreflang, Article/Person JSON-LD and related content.
+- Clean build now produces 91 content/chooser pages plus 404, for 92 HTML files total; only the 30 V1 UA/EN routes are indexed.
+
+### Quality assurance
+
+- Visual smoke covers 24 representative main/detail pages at 320, 375, 390, 768, 1024, 1440 and 1920 px.
+- Interaction smoke covers drawer focus, all V3 testimonial rails, V2 double marquee, exclusive accordion, hover lift, article/profile routes, forms, reduced motion and no-JS.
+- Static verify checks 92-page output, 36 Article routes, 24 Person routes, locale parity, internal links, SEO and asset budgets with zero warnings.
+
+### Measured checkpoint
+
+- First-view budget: 181.5 KB including gzipped HTML/CSS/JS, vendor JS, fonts and V1 LCP AVIF.
+- Local repeated diagnostics: CLS approximately 0–0.0274; mobile frame interval p95 16.7–16.8 ms; desktop p95 around 33 ms in the stable run.
+- These remain local diagnostics, not field Core Web Vitals.
+
+## Previous — reference-grade completion pass
 
 ### Art direction
 

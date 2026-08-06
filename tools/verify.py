@@ -7,6 +7,7 @@ broken heading order, malformed JSON-LD, and payload budgets.
 """
 import glob
 import gzip
+import html as html_lib
 import json
 import os
 import re
@@ -84,6 +85,9 @@ class Scan(HTMLParser):
         if tag == "source" and "srcset" in a:
             self.refs += [s.strip().split()[0] for s in a["srcset"].split(",") if s.strip()]
 
+        if tag == "a" and "href" in a:
+            self.refs.append(a["href"])
+
         if tag == "link":
             if "href" in a and a.get("rel") not in ("canonical", "alternate"):
                 self.refs.append(a["href"])
@@ -154,7 +158,9 @@ def check_page(page):
     for ref in s.refs:
         if ref.startswith(("http://", "https://", "data:", "#", "mailto:", "tel:")):
             continue
-        clean = ref.split("?")[0]
+        clean = re.split(r"[?#]", ref, maxsplit=1)[0]
+        if not clean:
+            continue
         if clean.startswith(SUBPATH):          # domain-absolute, as 404.html needs
             target = os.path.normpath(os.path.join(ROOT, clean[len(SUBPATH):]))
         else:
@@ -187,9 +193,13 @@ def check_page(page):
             for need in ("Organization", "LocalBusiness", "WebSite"):
                 if need not in types:
                     fail(f"{tag}: JSON-LD missing @type {need}")
-            page_types = {"WebPage", "AboutPage", "CollectionPage", "ContactPage"}
+            page_types = {"WebPage", "AboutPage", "CollectionPage", "ContactPage", "ProfilePage"}
             if not page_types & set(types):
                 fail(f"{tag}: JSON-LD has no page-level type {sorted(page_types)}")
+            if re.search(r'(^|/)blog/[^/]+/index\.html$', page) and "Article" not in types:
+                fail(f"{tag}: article detail page has no Article JSON-LD")
+            if "/about/team/" in "/" + page and "Person" not in types:
+                fail(f"{tag}: profile detail page has no Person JSON-LD")
 
         # --- head essentials --------------------------------------------
         for pat, label in [
@@ -209,8 +219,10 @@ def check_page(page):
         desc = re.search(r'<meta name="description" content="(.*?)">', html, re.S)
         if title and len(title.group(1)) > 70:
             warn(f"{tag}: <title> is {len(title.group(1))} chars (>70 may be truncated)")
-        if desc and not (110 <= len(desc.group(1)) <= 165):
-            warn(f"{tag}: meta description is {len(desc.group(1))} chars (aim 110-165)")
+        if desc:
+            desc_text = html_lib.unescape(desc.group(1))
+            if not (110 <= len(desc_text) <= 165):
+                warn(f"{tag}: meta description is {len(desc_text)} chars (aim 110-165)")
 
     # --- indexability: only variation 1 may be indexed ------------------
     is_variant = page.startswith(("v2/", "v3/", "en/v2/", "en/v3/"))
@@ -318,6 +330,14 @@ def check_third_party():
 
 
 def main():
+    if len(PAGES) != 92:
+        fail(f"page count: expected 92 generated HTML pages including 404, found {len(PAGES)}")
+    article_pages = [p for p in PAGES if re.search(r'(^|/)blog/[^/]+/index\.html$', p)]
+    profile_pages = [p for p in PAGES if "/about/team/" in "/" + p]
+    if len(article_pages) != 36:
+        fail(f"article detail count: expected 36, found {len(article_pages)}")
+    if len(profile_pages) != 24:
+        fail(f"profile detail count: expected 24, found {len(profile_pages)}")
     for page in PAGES:
         check_page(page)
     check_parity()

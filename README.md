@@ -9,7 +9,7 @@
 
 <p>
 <img alt="stack" src="https://img.shields.io/badge/stack-HTML%20%2B%20CSS%20%2B%20GSAP-131313?style=flat-square">
-<img alt="pages" src="https://img.shields.io/badge/pages-31-d6fd70?style=flat-square&labelColor=131313">
+<img alt="pages" src="https://img.shields.io/badge/pages-92-d6fd70?style=flat-square&labelColor=131313">
 <img alt="variations" src="https://img.shields.io/badge/variations-3-d6fd70?style=flat-square&labelColor=131313">
 <img alt="locales" src="https://img.shields.io/badge/locales-uk%20%C2%B7%20en-131313?style=flat-square">
 <img alt="third-party" src="https://img.shields.io/badge/third--party%20requests-0-d6fd70?style=flat-square&labelColor=131313">
@@ -38,8 +38,9 @@
 с одинаковой обработкой поверхностей три вариации читались как один сайт,
 переставленный местами.
 
-У каждой вариации 5 страниц (главная, про нас, услуги, новости, контакты) в двух
-локалях — **30 страниц** плюс `variants.html` для выбора и `404.html`.
+У каждой вариации есть 5 основных страниц, 6 полноценных статей и 4 профиля
+команды в двух локалях: **90 локализованных страниц**, `variants.html` для выбора
+и `404.html`. Всего в clean build — **92 HTML-файла**.
 
 **Живая версия:** https://xxxquide.github.io/Agro-Site/ ·
 [выбор вариаций](https://xxxquide.github.io/Agro-Site/variants.html) ·
@@ -115,7 +116,9 @@ x-height), кириллица полная. Итого из двух шрифт�
 убирает scrub, autoplay и reveal-трансформации, но оставляет весь контент видимым.
 Изменение системной настройки во время открытой страницы безопасно перезапускает
 motion-слой. Мобильный drawer получает focus trap, делает основной контент
-`inert` и возвращает фокус на кнопку после закрытия.
+`inert` и возвращает фокус на кнопку после закрытия. FAQ работает как
+эксклюзивный accordion с animated close, testimonial rails принимают touch swipe,
+а hover-lift карточек имеет эквивалентный `focus-visible` state.
 
 ## Замеренный вес
 
@@ -123,18 +126,18 @@ motion-слой. Мобильный drawer получает focus trap, дела
 
 | Ресурс | Raw | Gzip |
 |---|---:|---:|
-| `index.html` (V1, uk) | 84.5 KB | **16.2 KB** |
-| `assets/css/main.css` | 83.4 KB | **16.1 KB** |
-| `assets/js/app.js` | 17.6 KB | **5.5 KB** |
+| `index.html` (V1, uk) | 97.0 KB | **20.3 KB** |
+| `assets/css/main.css` | 96.7 KB | **18.9 KB** |
+| `assets/js/app.js` | 20.2 KB | **6.2 KB** |
 | GSAP + ScrollTrigger + Lenis | 127.7 KB | **48.8 KB** |
 | `onest.woff2` + `geistmono.woff2` | 51.2 KB | — |
 | LCP `hero-v1-1440.avif` | 36.2 KB | — |
-| **Первый экран целиком** | | **174.0 KB** |
+| **Первый экран целиком** | | **181.5 KB** |
 
-Checkpoint до финального quality pass давал 172.4 KB. Текущие +1.6 KB — это
-более самостоятельные V2/V3, валидируемые формы, focus trap и управление
-непрерывным motion; новых runtime-библиотек не добавлено. Первый экран остаётся
-ниже внутреннего бюджета 180 KB.
+Checkpoint первого quality pass давал 174.0 KB. Прирост 7.5 KB приходится на
+локальную карту Украины, общие StatsCard/MediaFrame/IconBadge компоненты,
+расширенную проверяемую motion-логику и ссылки на detail routes. Новых
+runtime-библиотек и сторонних запросов не добавлено.
 
 Изображений в репозитории 6.9 MB — 128 файлов, все плотности и форматы; браузер
 грузит из них единицы. AVIF + WebP через `<picture>`, `width`/`height` на каждом
@@ -147,14 +150,14 @@ LCP/INP всё равно нужно повторить на живом HTTPS-х
 
 ## SEO
 
-- Свои `title` / `description` на каждую из 30 страниц, `canonical`, `hreflang` uk/en/x-default
+- Свои `title` / `description`, `canonical` и `hreflang` uk/en/x-default на всех 90 локализованных страницах
 - Open Graph + Twitter Card, свои OG-картинки 1200×630 на локаль
 - JSON-LD по типу страницы: `Organization` (+`hasOfferCatalog` по семи культурам,
   +`employee`), `LocalBusiness`, `WebSite`, и далее `WebPage` / `AboutPage` /
-  `CollectionPage` / `ContactPage`, `FAQPage`, `ItemList` для новостей и истории
+  `CollectionPage` / `ContactPage` / `ProfilePage`, `Article`, `Person`, `FAQPage` и `ItemList`
 - **Вариации 2 и 3 помечены `noindex, follow`.** Это один и тот же контент в другой
   вёрстке; три проиндексированные копии сайта одной компании конкурировали бы
-  между собой. В `sitemap.xml` попадает только V1 — 10 URL.
+  между собой. В `sitemap.xml` попадает только V1 — 30 URL: основные страницы, статьи и профили в UA/EN.
 - `robots.txt`, `sitemap.xml`, `site.webmanifest`, `theme-color`
 - Один `h1` на страницу, непрерывная иерархия заголовков, landmarks, `alt` везде,
   skip-link, `:focus-visible`, `aria-expanded`, `<time datetime>` в ISO
@@ -164,9 +167,11 @@ LCP/INP всё равно нужно повторить на живом HTTPS-х
 ## Структура
 
 ```
-├── index.html  about/  services/  blog/  contacts/     ← V1, uk
-├── v2/ …  v3/ …                                        ← V2, V3
-├── en/ …  en/v2/ …  en/v3/ …                           ← те же в EN
+├── index.html  about/  services/  blog/  contacts/     ← основные V1, uk
+├── blog/<slug>/                                         ← 6 статей на вариант и локаль
+├── about/team/<slug>/                                   ← 4 профиля на вариант и локаль
+├── v2/ …  v3/ …                                        ← те же routes для V2, V3
+├── en/ …  en/v2/ …  en/v3/ …                           ← полный набор в EN
 ├── variants.html · 404.html · robots.txt · sitemap.xml
 ├── assets/
 │   ├── css/main.css        ← сборка из src/css/*, минифицировано
@@ -181,7 +186,8 @@ LCP/INP всё равно нужно повторить на живом HTTPS-х
 │   ├── base.html.j2        ← общая обёртка
 │   ├── blocks.html.j2      ← библиотека секций (макросы)
 │   ├── icons.html.j2       ← свой набор иконок
-│   └── pages/*.html.j2     ← пять типов страниц
+│   ├── ukraine-map.svg.j2  ← локальный CC0-контур и route overlay
+│   └── pages/*.html.j2     ← основные, article и profile templates
 └── tools/
 ```
 
@@ -199,7 +205,7 @@ python3 tools/build_logo.py       # логотип, favicon, apple-touch-icon
 python3 tools/build_images.py      # AVIF + WebP (нужны исходные кадры)
 python3 tools/build_og.py          # OG-картинки
 python3 tools/extend_content.py    # добавляет блоки страниц в uk.json
-python3 tools/build_site.py        # 31 HTML + CSS/JS bundle + robots/sitemap
+python3 tools/build_site.py        # 91 content HTML + 404 + CSS/JS + robots/sitemap
 python3 tools/verify.py            # проверки и бюджеты; ненулевой код = FAIL
 ```
 
@@ -225,13 +231,15 @@ python3 tools/interaction_smoke.py
 python3 tools/measure_runtime.py
 ```
 
-`visual_smoke.py` снимает детерминированные скриншоты с reduced motion на 320,
-375, 390, 768, 1024, 1440 и 1920 px, проверяет горизонтальный overflow, один
-`h1`, загрузку видимых изображений и отсутствие скрытого после boot контента.
+`visual_smoke.py` снимает детерминированные скриншоты основных и representative
+detail pages с reduced motion на 320, 375, 390, 768, 1024, 1440 и 1920 px.
+Проверяются horizontal overflow, один `h1`, clipped text, media coverage внутри
+rounded masks, marquee overlap, видимые изображения и скрытый после boot контент.
 Артефакты пишутся в игнорируемую папку `.visual-regression/`.
 
-`interaction_smoke.py` проверяет mobile drawer, focus trap, возврат фокуса,
-`inert`, валидацию demo-форм и reduced-motion fallback. `measure_runtime.py`
+`interaction_smoke.py` проверяет mobile drawer, focus trap, все V3 testimonial
+rails, double marquee, exclusive accordion, hover lift, detail routes, demo-формы,
+reduced-motion и no-JS fallback. `measure_runtime.py`
 записывает локальные диагностические p50/p95/p99 в
 `.visual-regression/runtime.json` и явно не выдаёт их за field CWV.
 
@@ -239,18 +247,27 @@ python3 tools/measure_runtime.py
 
 | Задача | Файл |
 |---|---|
-| Текст, цифры, команда, история, услуги, новости | `content/uk.json` + `content/en.json` |
+| Текст, статьи, профили, цифры, команда, услуги | `content/uk.json` + `content/en.json` |
 | Состав и порядок секций вариации | `content/variants.json` |
 | Цвета, шрифтовая шкала, отступы, тени | `src/css/01-tokens.css` |
 | Тайминги и кривые анимаций | `DUR` / `EASE` в начале `src/js/app.js` |
-| Разметка секции | `templates/blocks.html.j2` |
+| Разметка секции и shared components | `templates/blocks.html.j2` |
+| Article / profile layouts | `templates/pages/article.html.j2` + `profile.html.j2` |
+| Карта и источник | `templates/ukraine-map.svg.j2` + `docs/map-source.md` |
 | Иконки | `templates/icons.html.j2` |
 | Домен | `BASE` и `SUBPATH` в `tools/build_site.py` |
 
 `verify.py` проверяет паритет структуры `uk.json` и `en.json`, отсутствие битых
 ссылок, дубли `id`, `alt` и размеры у картинок, порядок заголовков, типы e-mail
-полей, сохранение native form validation, валидность JSON-LD, `noindex` у
-вариаций и бюджеты веса.
+полей, сохранение native form validation, 92-page count, 36 Article и 24 Person
+routes, валидность JSON-LD, внутренние ссылки, `noindex` и бюджеты веса.
+
+## Карта
+
+Geography использует локальный inline SVG без tile API и runtime-запросов.
+Контур получен из Natural Earth Admin 0 1:10m, упрощён и дополнен точками
+Винницы, Гайсина, Киева и порта Одессы. Источник, commit, координаты и
+public-domain/CC0 условия зафиксированы в `docs/map-source.md`.
 
 ## Деплой
 
@@ -263,4 +280,6 @@ GitHub Pages, режим **Deploy from a branch** — workflow не нужен, 
 
 Код свободен к использованию. **Onest** и **Geist Mono** — SIL Open Font License 1.1.
 **GSAP** — стандартная лицензия GreenSock (бесплатна для этого типа использования),
-**Lenis** — MIT. Изображения сгенерированы для этого макета.
+**Lenis** — MIT. Natural Earth boundary data — public domain; GeoJSON conversion
+and map provenance are documented in `docs/map-source.md`. Изображения
+сгенерированы для этого макета.

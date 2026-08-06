@@ -44,7 +44,15 @@ DEFAULT_PAGES = [
     "v3/services/index.html",
     "v3/blog/index.html",
     "v3/contacts/index.html",
+    "blog/winter-wheat-harvest/index.html",
+    "about/team/bohdan-hrytsenko/index.html",
+    "v2/blog/third-drying-complex/index.html",
+    "v2/about/team/nataliia-bondar/index.html",
+    "v3/blog/soil-mapping-results/index.html",
+    "v3/about/team/taras-lozovyi/index.html",
     "en/index.html",
+    "en/blog/no-till-first-season/index.html",
+    "en/about/team/serhii-kushnir/index.html",
 ]
 VIEWPORTS = {
     "compact": (320, 568),
@@ -136,7 +144,19 @@ def main() -> int:
                       h1: document.querySelectorAll('h1').length,
                       hiddenAnimated: [...document.querySelectorAll('[data-r],[data-card],[data-split]')]
                         .filter(el => getComputedStyle(el).visibility === 'hidden').length,
-                      invalidImages: [...document.images].filter(img => img.getClientRects().length && (!img.complete || img.naturalWidth === 0)).length
+                      invalidImages: [...document.images].filter(img => img.getClientRects().length && (!img.complete || img.naturalWidth === 0)).length,
+                      clippedText: [...document.querySelectorAll('h1,h2,h3,p,.stat__v,.post__title,.quote__txt,.member__n,.svc__body')]
+                        .filter(el => !el.classList.contains('sr') && el.getClientRects().length && ((el.scrollHeight > el.clientHeight + 1) || (el.scrollWidth > el.clientWidth + 1)) && ['hidden','clip'].includes(getComputedStyle(el).overflow)).length,
+                      mediaLeaks: [...document.querySelectorAll('.media-frame')].filter(frame => {
+                        const img = frame.querySelector('img');
+                        if (!img || !frame.getClientRects().length || !img.getClientRects().length) return false;
+                        const f = frame.getBoundingClientRect(), r = img.getBoundingClientRect();
+                        return r.width + 1 < f.width || r.height + 1 < f.height || getComputedStyle(frame).overflow === 'visible';
+                      }).length,
+                      marqueeOverlap: [...document.querySelectorAll('.tagband')].filter(band => {
+                        const rows = [...band.querySelectorAll(':scope > .marq')].map(el => el.getBoundingClientRect());
+                        return rows.length > 1 && rows.some((r,i) => i && r.top < rows[i-1].bottom - 1);
+                      }).length
                     })"""
                 )
                 if not response or response.status >= 400:
@@ -149,6 +169,12 @@ def main() -> int:
                     errors.append(f"hidden-animated:{metrics['hiddenAnimated']}")
                 if metrics["invalidImages"]:
                     errors.append(f"invalid-images:{metrics['invalidImages']}")
+                if metrics["clippedText"]:
+                    errors.append(f"clipped-text:{metrics['clippedText']}")
+                if metrics["mediaLeaks"]:
+                    errors.append(f"media-leaks:{metrics['mediaLeaks']}")
+                if metrics["marqueeOverlap"]:
+                    errors.append(f"marquee-overlap:{metrics['marqueeOverlap']}")
 
                 filename = f"{slug(rel)}--{view_name}.png"
                 page.screenshot(path=str(out / filename), full_page=True, animations="disabled")
