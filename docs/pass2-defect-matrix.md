@@ -70,9 +70,9 @@ Status values: OPEN, VERIFIED, MANUAL.
 | Q01 | Visual QA passes at 320, 375, 390, 768, 1024, 1440 and 1920 px | VERIFIED |
 | Q02 | Interaction QA covers accordion, touch rails, marquees, hover/focus and forms | VERIFIED |
 | Q03 | No-JS and reduced-motion fallbacks remain complete | VERIFIED |
-| Q04 | Clean checkout build, verify, deployment and live review succeed | RETRYING |
+| Q04 | Clean checkout build, verify, deployment and live review succeed | LIVE VERIFIED / CHECK TIMEOUT |
 
-Deployment note: the source build and report-build-status checks passed, but the first GitHub Pages deploy attempt was aborted by the platform after its 10-minute timeout. A clean retry commit was triggered; Q04 remains unresolved until the live detail routes return the new build.
+Deployment note: source build and report-build-status passed. Two GitHub Pages deploy jobs reached the platform's 10-minute polling timeout and were marked failed, but the new artifact was published: live Article and Person routes return 200, the animated Ukraine map is present, V2 Services is updated, and the V3 glass bar renders with blur. Treat the red deploy check as a GitHub Pages timeout false negative, not as proof that the published artifact is missing.
 
 ## Manual device review
 
