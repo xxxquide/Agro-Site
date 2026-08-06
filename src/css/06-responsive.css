@@ -84,7 +84,11 @@
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scroll-padding-inline: var(--gutter);
-    padding-bottom: .5rem;
+    /* A scroll container clips vertically too, so the cards' shadow needs real
+       room above and below; the negative margins hand the space back to the
+       layout so the hero's rhythm is unchanged. */
+    padding-block: 1.25rem 1.5rem;
+    margin-block: -1.25rem -1.5rem;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
   }
@@ -95,7 +99,10 @@
     --ty: 0px; --tz: 0px; --ry: 0deg; --rz: 0deg; --sc: 1;
     transform: none !important;
   }
-  .hero--pright, .hero--pcentre { min-height: 0; }
+  /* Below this width the fan collapses to a stacked list, so a locked viewport
+     height would either crush the copy or leave the cards stranded. Let the
+     hero size to its content again. */
+  .hero { min-height: 0; }
   .hero--pright { padding-top: calc(var(--header-h) + 3rem); }
   .hero--pright .hero__bg img { object-position: 66% 30%; }
   .hero--pcentre .hero__bg img { object-position: 50% 62%; }
@@ -106,6 +113,9 @@
 
 @media (max-width: 48rem) {           /* 768px */
   .stats { grid-template-columns: repeat(2, 1fr); }
+  /* Two columns cannot host a double-width tile without leaving a hole. */
+  .stats-card--wide { grid-column: span 2; }
+  .stats-card__plot { height: 2.8rem; }
   .plans { grid-template-columns: 1fr; }
   .plan--hot { order: -1; }
   .plan__flag { left: auto; right: var(--s-xl); transform: translateY(-50%); }
@@ -199,8 +209,8 @@
   .chart__val { font-size: .58rem; }
   .cap__card { padding: 1rem; }
   .cap__viz { padding: 1rem; min-height: 12rem; overflow: clip; }
-  .orbit { width: 100%; max-width: 17rem; }
-  .orbit__pill { font-size: .62rem; padding: .34rem .56rem; }
+  .radar__hub { width: 3.6rem; height: 3.6rem; font-size: .5rem; }
+  .radar__pin { font-size: .6rem; padding: .26rem .5rem; }
   .bars__top { gap: .5rem; }
   .bars__name { min-width: 0; }
   .bars__val { flex: none; }

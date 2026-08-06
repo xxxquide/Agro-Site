@@ -6,3 +6,6 @@ build/
 __pycache__/
 *.pyc
 .DS_Store
+
+# build cache for tools/build_map.py — regenerate with --refresh
+tools/.cache/

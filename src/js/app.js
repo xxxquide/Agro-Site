@@ -130,6 +130,16 @@
 
   /* =========================================================================
      2. Reveals
+
+     Every entrance here is fromTo, never from. `gsap.from()` captures the
+     element's *current* value as the destination at the moment the tween is
+     built, and renders the start state immediately. Combine that with the
+     ScrollTrigger.refresh() this page fires whenever a lazy image lands or the
+     layout changes, and a from-tween can re-record its own start state as its
+     destination — the element then animates to where it began and simply stays
+     there. That is exactly what pinned every testimonial card 52px low, and it
+     would have done the same to the stats grid and the news cards. Spelling
+     both ends out removes the ambiguity for good.
      ========================================================================= */
   function revealAll() {
     var gsap = window.gsap;
@@ -140,54 +150,65 @@
       var words = splitWords(el);
       if (!words.length) return;
       gsap.set(el, { autoAlpha: 1 });
-      gsap.from(words, {
-        yPercent: 116,
-        autoAlpha: 0,
-        duration: DUR.lg,
-        ease: EASE.expo,
-        stagger: STAGGER.word,
-        scrollTrigger: { trigger: el, start: 'top 88%', once: true },
-      });
+      /* fromTo, not from — see the note above initReveal(). */
+      gsap.fromTo(words,
+        { yPercent: 116, autoAlpha: 0 },
+        {
+          yPercent: 0,
+          autoAlpha: 1,
+          duration: DUR.lg,
+          ease: EASE.expo,
+          stagger: STAGGER.word,
+          scrollTrigger: { trigger: el, start: 'top 88%', once: true },
+        });
     });
 
     /* --- generic fade-up, with optional group stagger -------------------- */
     all('[data-r]').forEach(function (el) {
       var mode = el.getAttribute('data-r') || 'up';
-      var from = { autoAlpha: 0, duration: DUR.lg, ease: EASE.out };
+      var from = { autoAlpha: 0 };
+      var to = {
+        autoAlpha: 1, x: 0, y: 0, scale: 1,
+        duration: DUR.lg, ease: EASE.out,
+        delay: parseFloat(el.getAttribute('data-delay') || 0),
+        scrollTrigger: { trigger: el, start: 'top 90%', once: true },
+      };
       if (mode === 'up' || mode === '') from.y = 44;
       if (mode === 'left') from.x = -44;
       if (mode === 'right') from.x = 44;
       if (mode === 'in') { from.scale = 0.94; from.y = 24; }
       if (mode === 'none') from.y = 0;
-      from.delay = parseFloat(el.getAttribute('data-delay') || 0);
-      from.scrollTrigger = { trigger: el, start: 'top 90%', once: true };
-      gsap.from(el, from);
+      gsap.fromTo(el, from, to);
     });
 
     /* --- containers whose children come in one after another ------------- */
     all('[data-stagger]').forEach(function (box) {
       var kids = box.children.length ? Array.prototype.slice.call(box.children) : [];
       if (!kids.length) return;
-      gsap.from(kids, {
-        y: 52,
-        autoAlpha: 0,
-        duration: DUR.lg,
-        ease: EASE.out,
-        stagger: parseFloat(box.getAttribute('data-stagger')) || STAGGER.normal,
-        scrollTrigger: { trigger: box, start: 'top 86%', once: true },
-      });
+      gsap.fromTo(kids,
+        { y: 52, autoAlpha: 0 },
+        {
+          y: 0,
+          autoAlpha: 1,
+          duration: DUR.lg,
+          ease: EASE.out,
+          stagger: parseFloat(box.getAttribute('data-stagger')) || STAGGER.normal,
+          scrollTrigger: { trigger: box, start: 'top 86%', once: true },
+        });
     });
 
     /* --- cards: lift and settle ------------------------------------------ */
     all('[data-card]').forEach(function (card) {
-      gsap.from(card, {
-        y: 60,
-        scale: 0.955,
-        autoAlpha: 0,
-        duration: DUR.xl,
-        ease: EASE.expo,
-        scrollTrigger: { trigger: card, start: 'top 88%', once: true },
-      });
+      gsap.fromTo(card,
+        { y: 60, scale: 0.955, autoAlpha: 0 },
+        {
+          y: 0,
+          scale: 1,
+          autoAlpha: 1,
+          duration: DUR.xl,
+          ease: EASE.expo,
+          scrollTrigger: { trigger: card, start: 'top 88%', once: true },
+        });
     });
 
     /* --- capacity lifecycle and data visualizations ---------------------- */
@@ -215,41 +236,86 @@
     });
 
     all('.svc-signal').forEach(function (box) {
-      gsap.from(all('.svc-signal__track i', box), {
-        scaleX: 0,
-        duration: DUR.lg,
-        ease: EASE.expo,
-        stagger: STAGGER.tight,
-        scrollTrigger: { trigger: box, start: 'top 90%', once: true },
-      });
+      gsap.fromTo(all('.svc-signal__track i', box),
+        { scaleX: 0 },
+        {
+          scaleX: 1,
+          duration: DUR.lg,
+          ease: EASE.expo,
+          stagger: STAGGER.tight,
+          scrollTrigger: { trigger: box, start: 'top 90%', once: true },
+        });
     });
 
     all('[data-stat-card]').forEach(function (card) {
-      gsap.from(all('.stats-card__spark i', card), {
-        scaleY: 0,
-        duration: DUR.lg,
-        ease: EASE.back,
-        stagger: STAGGER.tight,
-        scrollTrigger: { trigger: card, start: 'top 90%', once: true },
-      });
+      gsap.fromTo(all('.stats-card__spark i, .stats-card__plot i', card),
+        { scaleY: 0 },
+        {
+          scaleY: 1,
+          duration: DUR.lg,
+          ease: EASE.back,
+          stagger: STAGGER.tight,
+          scrollTrigger: { trigger: card, start: 'top 90%', once: true },
+        });
     });
 
     all('[data-route-map]').forEach(function (map) {
-      gsap.to(all('.ukraine-map__route', map), {
+      var routes = all('.ukraine-map__route', map);
+      // Slow and deliberate: the routes are the content of this section, and at
+      // 2.2s with expo easing they snapped to full length in the first third of
+      // the tween. 2.6s on power2.inOut with a wider stagger lets the eye
+      // actually follow each one out of the elevator.
+      gsap.to(routes, {
         strokeDashoffset: 0,
-        duration: 2.2,
-        ease: EASE.expo,
-        stagger: .24,
-        scrollTrigger: { trigger: map, start: 'top 82%', once: true },
+        duration: 2.6,
+        ease: 'power2.inOut',
+        stagger: .45,
+        scrollTrigger: { trigger: map, start: 'top 80%', once: true },
       });
-      gsap.from(all('.ukraine-map__point, .ukraine-map__hub', map), {
-        scale: .6,
-        autoAlpha: 0,
-        transformOrigin: 'center center',
-        duration: DUR.md,
-        ease: EASE.back,
-        stagger: .09,
-        scrollTrigger: { trigger: map, start: 'top 82%', once: true },
+      gsap.fromTo(all('.ukraine-map__point, .ukraine-map__hub', map),
+        { scale: .6, autoAlpha: 0 },
+        {
+          scale: 1,
+          autoAlpha: 1,
+          transformOrigin: 'center center',
+          duration: DUR.md,
+          ease: EASE.back,
+          stagger: .09,
+          delay: .5,
+          scrollTrigger: { trigger: map, start: 'top 80%', once: true },
+        });
+
+      // Once a route has drawn, a short bright segment keeps running along it.
+      // Cloning the path means the travelling light follows the same arc
+      // exactly, and each clone gets its own unhurried period so the four
+      // never pulse in unison.
+      var periods = [9, 11.5, 13, 10.5];
+      routes.forEach(function (route, i) {
+        var spark = route.cloneNode(false);
+        spark.setAttribute('class', 'ukraine-map__spark');
+        spark.removeAttribute('filter');
+        route.parentNode.insertBefore(spark, route.nextSibling);
+        gsap.set(spark, { autoAlpha: 0 });
+        var loop = gsap.timeline({
+          repeat: -1,
+          delay: 2.4 + i * .45,
+          paused: true,
+        });
+        loop.set(spark, { autoAlpha: .9, strokeDashoffset: 1 });
+        loop.to(spark, { strokeDashoffset: 0, duration: periods[i % 4] * .34, ease: 'none' });
+        loop.set(spark, { autoAlpha: 0 });
+        loop.to({}, { duration: periods[i % 4] * .66 });
+        if (ST) {
+          ST.create({
+            trigger: map,
+            start: 'top bottom',
+            end: 'bottom top',
+            onToggle: function (self) {
+              if (self.isActive && !doc.hidden) loop.play();
+              else loop.pause();
+            },
+          });
+        }
       });
     });
 
@@ -265,42 +331,43 @@
     });
 
     all('[data-orbit]').forEach(function (box) {
-      var rings = all('.orbit__ring', box);
-      var hub = one('.orbit__hub', box);
-      var pills = all('.orbit__pill', box);
+      var rings = all('.radar__ring', box);
+      var routes = all('.radar__route', box);
+      var hub = one('.radar__hub', box);
+      var pins = all('.radar__pin', box);
+      var nodes = all('.radar__node', box);
       var tl = gsap.timeline({
         scrollTrigger: { trigger: box, start: 'top 82%', once: true },
       });
-      tl.fromTo(rings, { scale: 0.55, autoAlpha: 0 },
+      // The field settles first, then the routes draw outward from the hub, and
+      // only then do the destinations appear — the order tells the story the
+      // card is about: everything leaves from one place.
+      tl.fromTo(rings, { scale: 0.6, autoAlpha: 0 },
         { scale: 1, autoAlpha: 1, duration: DUR.md, ease: EASE.back, stagger: 0.1 });
       if (hub) {
         tl.fromTo(hub, { scale: 0.5, autoAlpha: 0 },
           { scale: 1, autoAlpha: 1, duration: DUR.md, ease: EASE.back }, '-=' + DUR.sm);
       }
-      tl.fromTo(pills, { scale: 0.6, autoAlpha: 0 },
-        { scale: 1, autoAlpha: 1, duration: DUR.md, ease: EASE.back, stagger: 0.1 },
+      tl.fromTo(routes, { autoAlpha: 0 }, { autoAlpha: 1, duration: DUR.sm }, '-=' + DUR.xs);
+      tl.fromTo(nodes, { scale: 0, autoAlpha: 0 },
+        { scale: 1, autoAlpha: 1, duration: DUR.sm, ease: EASE.back, stagger: 0.08 }, '-=' + DUR.xs);
+      tl.fromTo(pins, { y: 8, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: DUR.md, ease: EASE.out, stagger: 0.09 },
         '-=' + DUR.sm);
-      tl.add(function () { box.classList.add('is-spinning'); });
-      ST.create({
-        trigger: box,
-        start: 'top bottom',
-        end: 'bottom top',
-        onToggle: function (self) {
-          box.classList.toggle('is-spinning', self.isActive && !doc.hidden);
-        },
-      });
     });
 
     /* --- lab rows -------------------------------------------------------- */
     all('[data-lab]').forEach(function (box) {
-      gsap.from(all('.lab__row', box), {
-        x: 26,
-        autoAlpha: 0,
-        duration: DUR.lg,
-        ease: EASE.out,
-        stagger: STAGGER.normal,
-        scrollTrigger: { trigger: box, start: 'top 86%', once: true },
-      });
+      gsap.fromTo(all('.lab__row', box),
+        { x: 26, autoAlpha: 0 },
+        {
+          x: 0,
+          autoAlpha: 1,
+          duration: DUR.lg,
+          ease: EASE.out,
+          stagger: STAGGER.normal,
+          scrollTrigger: { trigger: box, start: 'top 86%', once: true },
+        });
     });
 
     if (ST) scheduleRefresh();
@@ -310,19 +377,47 @@
      3. Parallax — scrubbed, so images drift with the scroll rather than
         popping when they enter.
      ========================================================================= */
-  function initParallax() {
-    var gsap = window.gsap;
-    // section photographs drift by default; [data-parallax] tunes the amount
+  /* The drift is +/- amount/2 percent of the element's own height, so at rest
+     the element has to be that much bigger than its frame or one end of the
+     travel uncovers a strip of the card behind it. Scaling from the centre by
+     1 + amount/100 grows it by exactly amount/2 percent per edge — the travel.
+
+     This value is shared with the reveal timeline below. Both tweens write to
+     the same `transform`, so if the reveal settled at scale 1 while the
+     parallax expected 1 + amount/100, the reveal would silently cancel the
+     compensation and the strip would come straight back. One helper, one
+     resting scale, no way for the two to disagree. */
+  function parallaxCover(el) {
+    if (!el || !el.getAttribute) return 1;
+    var raw = el.getAttribute('data-parallax');
+    if (raw === null) return 1;
+    var amount = parseFloat(raw);
+    return isNaN(amount) ? 1 : 1 + amount / 100;
+  }
+
+  /* Section photographs drift by default; [data-parallax] tunes the amount.
+     This must run before any reveal timeline is built, because those read the
+     attribute to decide where the image comes to rest. While it lived inside
+     initParallax() an already-decoded image built its reveal first, settled at
+     scale 1, and the drift then slid it clean off the edge of its frame. */
+  function tagParallaxTargets() {
     all('.post img, .svc__ph img, .parcel img, .contact-photo img').forEach(function (im) {
       if (!im.closest('[data-parallax]')) im.setAttribute('data-parallax', '7');
     });
+  }
+
+  function initParallax() {
+    var gsap = window.gsap;
     all('[data-parallax]').forEach(function (el) {
       var amount = parseFloat(el.getAttribute('data-parallax')) || 12;
+      var cover = parallaxCover(el);
       gsap.fromTo(el,
-        { yPercent: -amount / 2 },
+        { yPercent: -amount / 2, scale: cover },
         {
           yPercent: amount / 2,
+          scale: cover,
           ease: 'none',
+          force3D: true,
           scrollTrigger: {
             trigger: el.parentElement || el,
             start: 'top bottom',
@@ -359,7 +454,10 @@
           { clipPath: 'inset(0% 0% 100% 0%)' },
           { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.25, ease: EASE.expo }, 0);
         if (img) {
-          tl.fromTo(img, { scale: 1.16 }, { scale: 1, duration: 1.6, ease: EASE.expo }, 0);
+          // Settle at the parallax cover scale, not at 1 — see parallaxCover().
+          var rest = parallaxCover(img);
+          tl.fromTo(img, { scale: rest * 1.16 },
+            { scale: rest, duration: 1.6, ease: EASE.expo }, 0);
         }
         scheduleRefresh();
       }
@@ -523,21 +621,21 @@
     if (title) {
       var words = splitWords(title);
       gsap.set(title, { autoAlpha: 1 });
-      tl.from(words, {
-        yPercent: 116, autoAlpha: 0, duration: DUR.xl, stagger: STAGGER.word,
-      }, 0.15);
-      tl.from(all('.hero-glyph', title), {
-        scale: 0, rotate: -24, autoAlpha: 0, duration: DUR.md, ease: EASE.back,
-      }, 0.45);
+      tl.fromTo(words,
+        { yPercent: 116, autoAlpha: 0 },
+        { yPercent: 0, autoAlpha: 1, duration: DUR.xl, stagger: STAGGER.word }, 0.15);
+      tl.fromTo(all('.hero-glyph', title),
+        { scale: 0, rotate: -24, autoAlpha: 0 },
+        { scale: 1, rotate: 0, autoAlpha: 1, duration: DUR.md, ease: EASE.back }, 0.45);
     }
     if (sub.length) {
-      tl.from(sub, { y: 30, autoAlpha: 0, duration: DUR.lg, stagger: 0.1 }, 0.5);
+      tl.fromTo(sub, { y: 30, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: DUR.lg, stagger: 0.1 }, 0.5);
     }
     if (fanItems.length) {
       hero.classList.add('fan-ready');
-      tl.from(fanItems, {
-        y: 90, autoAlpha: 0, duration: DUR.xl, stagger: 0.075,
-      }, 0.6);
+      tl.fromTo(fanItems, { y: 90, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: DUR.xl, stagger: 0.075 }, 0.6);
     }
 
     tl.eventCallback('onComplete', function () {
@@ -571,21 +669,38 @@
         tl.fromTo(media, { clipPath: 'inset(0 0 100% 0)' },
           { clipPath: 'inset(0 0 0% 0)', duration: 1.35 }, 0);
       }
-      if (image) tl.fromTo(image, { scale: 1.12 }, { scale: 1, duration: 1.65 }, 0);
+      // The page hero runs its own drift below, symmetric about zero, so the
+      // image has to rest oversized by the same rule the shared parallax uses:
+      // travel each way is HERO_DRIFT/2 percent, so cover it with 1 + drift/100.
+      var HERO_DRIFT = 10;
+      var heroRest = 1 + HERO_DRIFT / 100;
+      if (image) {
+        tl.fromTo(image, { scale: heroRest * 1.12 },
+          { scale: heroRest, duration: 1.65 }, 0);
+      }
       if (title) {
         var words = splitWords(title);
         gsap.set(title, { autoAlpha: 1 });
-        tl.from(words, { yPercent: 116, autoAlpha: 0, duration: DUR.xl, stagger: STAGGER.word }, 0.12);
-        tl.from(all('.ichip', title), { scale: 0, rotate: -24, duration: DUR.md, ease: EASE.back }, 0.4);
+        tl.fromTo(words, { yPercent: 116, autoAlpha: 0 },
+          { yPercent: 0, autoAlpha: 1, duration: DUR.xl, stagger: STAGGER.word }, 0.12);
+        tl.fromTo(all('.ichip', title), { scale: 0, rotate: -24 },
+          { scale: 1, rotate: 0, duration: DUR.md, ease: EASE.back }, 0.4);
       }
-      if (items.length) tl.from(items, { y: 30, autoAlpha: 0, duration: DUR.lg, stagger: .1 }, .45);
+      if (items.length) {
+        tl.fromTo(items, { y: 30, autoAlpha: 0 },
+          { y: 0, autoAlpha: 1, duration: DUR.lg, stagger: .1 }, .45);
+      }
 
       if (image && window.ScrollTrigger) {
-        gsap.fromTo(image, { yPercent: -3 }, {
-          yPercent: 7,
-          ease: 'none',
-          scrollTrigger: { trigger: hero, start: 'top bottom', end: 'bottom top', scrub: .65 },
-        });
+        gsap.fromTo(image,
+          { yPercent: -HERO_DRIFT / 2, scale: heroRest },
+          {
+            yPercent: HERO_DRIFT / 2,
+            scale: heroRest,
+            ease: 'none',
+            force3D: true,
+            scrollTrigger: { trigger: hero, start: 'top bottom', end: 'bottom top', scrub: .65 },
+          });
       }
     });
   }
@@ -635,7 +750,12 @@
     all('[data-count]').forEach(function (el) {
       var target = parseFloat(el.getAttribute('data-count'));
       if (isNaN(target)) return;
+      // Legacy nodes still carry the unit as a suffix string; the stat cards
+      // now hold it in a sibling element, so there the counter owns nothing but
+      // the digits and cannot disturb the unit's typography or line box.
       var suffix = el.getAttribute('data-suffix') || '';
+      // Larger figures count for longer, so magnitude is felt and not just read.
+      var dur = parseFloat(el.getAttribute('data-dur')) || 2;
 
       if (REDUCED || !hasGSAP) {
         el.textContent = fmt.format(target) + suffix;
@@ -644,7 +764,7 @@
       var obj = { v: 0 };
       gsap.to(obj, {
         v: target,
-        duration: 2,
+        duration: dur,
         ease: 'power2.out',
         onUpdate: function () {
           el.textContent = fmt.format(Math.round(obj.v)) + suffix;
@@ -873,6 +993,7 @@
     doc.documentElement.classList.add('motion-ready');
 
     initSmoothScroll();
+    tagParallaxTargets();
     initHero();
     initPageHero();
     revealAll();

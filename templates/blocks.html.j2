@@ -209,7 +209,7 @@
       <div class="marq__group" aria-hidden="true">{% for t in c.tagmarquee.row_a %}<span class="tag-pill{{ ' tag-pill--lime' if loop.index0 % 3 == 1 }}">{{ t }}</span>{% endfor %}</div>
     </div>
   </div>
-  <div class="marq marq--tags" data-marquee="right" data-speed="40">
+  <div class="marq marq--tags" data-marquee="right" data-speed="47">
     <div class="marq__track">
       <div class="marq__group">{% for t in c.tagmarquee.row_b %}<span class="tag-pill{{ ' tag-pill--dark' if loop.index0 % 3 == 2 }}">{{ t }}</span>{% endfor %}</div>
       <div class="marq__group" aria-hidden="true">{% for t in c.tagmarquee.row_b %}<span class="tag-pill{{ ' tag-pill--dark' if loop.index0 % 3 == 2 }}">{{ t }}</span>{% endfor %}</div>
@@ -244,18 +244,37 @@
 </section>
 {%- endmacro -%}
 
+{#- The value and its unit are two elements inside one nowrap flex row. As a
+    single text node ("46 000 т") the line-breaker was free to drop the unit
+    onto its own line, which it did on every narrow column — and the unit
+    inherited the 2.4rem display size, so it read as part of the figure rather
+    than a qualifier. Splitting them also lets the counter rewrite the digits
+    without touching the unit on every animation frame. -#}
 {%- macro stat_card(s, idx) -%}
 {%- set icons = ['wheat', 'grain', 'silo', 'truck', 'clock', 'ship'] -%}
-<article class="stat stats-card" data-stat-card>
+{%- set tones = ['plain', 'plain', 'lime', 'ink', 'plain', 'plain'] -%}
+{%- set wide = idx in [0, 3] -%}
+{#- Bigger figures count for longer: scale reads as weight. -#}
+{%- set dur = 1.3 if s.value < 100 else (1.9 if s.value < 10000 else 2.5) -%}
+<article class="stat stats-card stats-card--{{ tones[idx % 6] }}{{ ' stats-card--wide' if wide }}" data-stat-card>
   <div class="stats-card__top">
     <span class="icon-badge icon-badge--sm" aria-hidden="true">{{ I.icon(icons[idx % (icons|length)]) }}</span>
     <span class="stats-card__index">{{ '%02d' % (idx + 1) }}</span>
   </div>
-  <span class="stat__v" data-count="{{ s.value }}" data-suffix="{{ s.suffix }}">0{{ s.suffix }}</span>
+  <span class="stat__v">
+    <b class="stat__num" data-count="{{ s.value }}" data-dur="{{ dur }}">0</b>
+    {%- if s.suffix %}<em class="stat__u">{{ s.suffix|trim }}</em>{% endif %}
+  </span>
   <span class="stat__l">{{ s.label }}</span>
+  {%- if wide %}
+  <span class="stats-card__plot" aria-hidden="true">
+    {%- for h in [26, 34, 30, 46, 41, 55, 62, 58, 71, 79, 88, 100] %}<i style="--h:{{ h }}%"></i>{% endfor %}
+  </span>
+  {%- else %}
   <span class="stats-card__spark" aria-hidden="true">
     {%- for h in [44 + idx * 3, 62 - idx * 2, 50 + (idx % 3) * 8, 72 - idx, 58 + idx * 2] %}<i style="--h:{{ h }}%"></i>{% endfor %}
   </span>
+  {%- endif %}
 </article>
 {%- endmacro -%}
 
@@ -337,17 +356,29 @@
             {%- endfor %}
           </div>
           {%- elif card.widget == 'orbit' %}
-          <div class="orbit">
-            <span class="orbit__cross" aria-hidden="true"></span>
-            <span class="orbit__legend" aria-hidden="true"><i>N</i><i>E</i><i>S</i><i>W</i></span>
-            {%- for ins in ['4%', '20%', '36%'] %}<span class="orbit__ring" style="--inset:{{ ins }}" aria-hidden="true"></span>{% endfor %}
-            <span class="orbit__hub">{{ card.center }}</span>
-            {%- for it in card['items'] %}{% set o = orbit[loop.index0] %}
-            <span class="orbit__arm" style="--a:{{ o.a }}deg;--r:{{ o.r }};--d:{{ o.d }}s">
-              <span class="orbit__hold" style="--a:{{ o.a }}deg;--d:{{ o.d }}s">
-                <span class="orbit__pill">{{ it }}</span>
-              </span>
-            </span>
+          {#- Dispatch radar. The hub is absolutely centred and the labels never
+              move; the only motion is light travelling out along each route and
+              a slow sweep behind them. -#}
+          <div class="radar">
+            <svg class="radar__field" viewBox="0 0 400 220" aria-hidden="true" focusable="false">
+              {%- for r in [(62, 34), (112, 62), (162, 90)] %}
+              <ellipse class="radar__ring" cx="{{ radar_c[0] }}" cy="{{ radar_c[1] }}" rx="{{ r[0] }}" ry="{{ r[1] }}"/>
+              {%- endfor %}
+              <path class="radar__cross" d="M{{ radar_c[0] }} 16V204M34 {{ radar_c[1] }}H366"/>
+              {%- for n in radar %}
+              <path class="radar__route" d="M{{ radar_c[0] }} {{ radar_c[1] }}L{{ n.x }} {{ n.y }}"/>
+              {%- endfor %}
+              {%- for n in radar %}
+              <path class="radar__beam" pathLength="100" style="--d:{{ n.d }}s" d="M{{ radar_c[0] }} {{ radar_c[1] }}L{{ n.x }} {{ n.y }}"/>
+              {%- endfor %}
+              {%- for n in radar %}
+              <circle class="radar__node" cx="{{ n.x }}" cy="{{ n.y }}" r="4.5"/>
+              {%- endfor %}
+            </svg>
+            <span class="radar__sweep" aria-hidden="true"></span>
+            <span class="radar__hub">{{ card.center }}</span>
+            {%- for it in card['items'] %}{% set n = radar[loop.index0] %}
+            <span class="radar__pin radar__pin--{{ n.side }}" style="--l:{{ n.left }}%;--t:{{ n.top }}%">{{ it }}</span>
             {%- endfor %}
           </div>
           {%- elif card.widget == 'lab' %}

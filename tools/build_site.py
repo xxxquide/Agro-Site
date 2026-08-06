@@ -50,12 +50,25 @@ CSS_PARTS = [
 
 LOCALES = [("uk", ""), ("en", "en/")]
 GEO_IMGS = ["ops-elevator", "crop-wheat", "crop-corn"]
-ORBIT = [
-    {"a": 22, "r": "30%", "d": 54},
-    {"a": 112, "r": "37%", "d": 64},
-    {"a": 203, "r": "31%", "d": 48},
-    {"a": 292, "r": "38%", "d": 59},
+# Dispatch radar (capacity card 03). Positions are authored directly in the
+# widget's 400x220 viewBox and mirrored as percentages for the HTML labels, so
+# the SVG geometry and the pills cannot drift apart.
+#
+# The previous widget orbited its labels around a hub, which failed twice over:
+# revolving text is unreadable, and the hub was the only in-flow child of a grid
+# whose other children were absolutely positioned, so it was placed in an
+# implicit second row and sat 59px below the rings it was supposed to centre.
+# Here the hub is absolutely centred and every label is static.
+RADAR_CX, RADAR_CY = 200.0, 110.0
+RADAR = [
+    {"x": 120.0, "y": 48.0, "side": "l", "d": 6.5},
+    {"x": 280.0, "y": 48.0, "side": "r", "d": 8.0},
+    {"x": 296.0, "y": 172.0, "side": "r", "d": 7.2},
+    {"x": 104.0, "y": 172.0, "side": "l", "d": 9.0},
 ]
+for _n in RADAR:
+    _n["left"] = round(_n["x"] / 4.0, 2)   # 400 wide  -> percent
+    _n["top"] = round(_n["y"] / 2.2, 2)    # 220 tall  -> percent
 
 DECIMAL = ","
 
@@ -580,7 +593,7 @@ def main():
                     chart_html=chart_html,
                     iconic=iconic,
                     fan=fan_transforms(len(c["hero"]["cards"])),
-                    orbit=ORBIT, geo_imgs=GEO_IMGS,
+                    radar=RADAR, radar_c=(RADAR_CX, RADAR_CY), geo_imgs=GEO_IMGS,
                     fmt_num=lambda n, _t=thousands: f"{n:,}".replace(",", _t),
                     ha="га" if lang == "uk" else "ha",
                     tel="+" + re.sub(r"\D", "", c["contact"]["phone"]),
@@ -651,7 +664,7 @@ def main():
                         logo_mark=Markup(logo_inner), srcset=make_srcset(imgs, prefix),
                         chart_html=chart_html, iconic=iconic,
                         fan=fan_transforms(len(c["hero"]["cards"])),
-                        orbit=ORBIT, geo_imgs=GEO_IMGS,
+                        radar=RADAR, radar_c=(RADAR_CX, RADAR_CY), geo_imgs=GEO_IMGS,
                         fmt_num=lambda n, _t=thousands: f"{n:,}".replace(",", _t),
                         ha="га" if lang == "uk" else "ha",
                         tel="+" + re.sub(r"\D", "", c["contact"]["phone"]),

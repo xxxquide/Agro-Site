@@ -33,14 +33,25 @@ html.no-motion .ukraine-map__pulse { animation: none !important; }
 
 /* --- word reveal ---------------------------------------------------------
    Each word gets a clipping wrapper so the inner span can slide up from
-   underneath. The padding/negative-margin pair keeps descenders (у, р, ц, g)
-   from being clipped by that same overflow. */
+   underneath. That wrapper has to clear the glyph's *ink*, not its advance
+   width: round and italic letters (О, С, Ф, ж) overshoot the box sideways, tall
+   ones (Й, Ї, the acute on і) overshoot upward, descenders (у, р, ц, щ)
+   downward. A bottom-only inset shaved the side bearings off every large
+   heading. Pad all four edges and pull the same amount back with negative
+   margins, so the mask grows while the text stays exactly where the type
+   designer put it. */
 .w {
   display: inline-block;
   overflow: hidden;
   vertical-align: top;
-  padding-bottom: .16em;
-  margin-bottom: -.16em;
+  padding: .2em .11em .22em;
+  margin: -.2em -.11em -.22em;
+}
+/* Display sizes carry tighter tracking (-.06em), which pulls the ink further
+   past the advance width, so they need a wider safety margin still. */
+h1 .w, .h-iconic .w, .stat__v .w, .post__title .w {
+  padding-inline: .16em;
+  margin-inline: -.16em;
 }
 .w__i {
   display: inline-block;
@@ -53,30 +64,17 @@ html.no-motion .ukraine-map__pulse { animation: none !important; }
 .svc-signal__track i { transform-origin: left center; }
 .chart__val  { opacity: 0; }
 
-/* --- orbit: continuous rotation, started once revealed ------------------ */
-.orbit__arm,
-.orbit__hold {
-  animation-play-state: paused;
-}
-.orbit.is-spinning .orbit__arm,
-.orbit.is-spinning .orbit__hold {
-  animation-play-state: running;
-}
-.orbit.is-spinning:hover .orbit__arm,
-.orbit.is-spinning:hover .orbit__hold,
-.orbit.is-spinning:focus-within .orbit__arm,
-.orbit.is-spinning:focus-within .orbit__hold {
-  animation-play-state: paused;
-}
-.partner-orbit.is-spinning:hover .partner-orbit__node,
-.partner-orbit.is-spinning:focus-within .partner-orbit__node {
-  animation-play-state: paused;
-}
-.orbit__arm  { animation: orbit-cw var(--d) linear infinite; }
-.orbit__hold { animation: orbit-ccw var(--d) linear infinite; }
-
-@keyframes orbit-cw  { to { transform: rotate(calc(var(--a) + 360deg)); } }
-@keyframes orbit-ccw { to { transform: rotate(calc(-1 * var(--a) - 360deg)); } }
+/* --- radar: light travelling out along each route ----------------------- */
+/* Held still until the card is on screen, and paused again on hover so a
+   pointer can rest on a label without motion under it. */
+.radar__beam,
+.radar__sweep { animation-play-state: paused; }
+.cap__card.is-active .radar__beam,
+.cap__card.is-active .radar__sweep { animation-play-state: running; }
+.radar:hover .radar__beam,
+.radar:hover .radar__sweep,
+.radar:focus-within .radar__beam,
+.radar:focus-within .radar__sweep { animation-play-state: paused; }
 
 /* --- marquee track ------------------------------------------------------ */
 .marq {
@@ -159,13 +157,9 @@ html.no-motion .ukraine-map__pulse { animation: none !important; }
   .bars__fill  { transform: scaleX(1) !important; }
   .chart__val  { opacity: 1 !important; }
 
-  .orbit__ring, .orbit__hub, .orbit__pill {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-  .orbit__pill { transform: translate(-50%, -50%) !important; }
-  .orbit__arm, .orbit__hold,
+  .radar__beam, .radar__sweep,
   .partner-orbit__node { animation: none !important; }
+  .radar__beam { stroke-dashoffset: 0; stroke-dasharray: none; opacity: .55; }
   .partner-orbit__node { transform: rotate(var(--start)) translateX(var(--radius)) rotate(calc(-1 * var(--start))) !important; }
 
   .marq {

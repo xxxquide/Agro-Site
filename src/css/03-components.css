@@ -313,9 +313,15 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 
 /* --- stats --------------------------------------------------------------- */
 
+/* Six equal tiles read as a spreadsheet. A four-column field where the two
+   headline figures take a double cell gives the block a reading order —
+   land bank and tonnage first, the supporting numbers around them — and, as a
+   side effect, cures the wrapping: the cramped 9.5rem columns were what forced
+   "46 000" and "т" apart in the first place. */
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
   gap: var(--s-md);
 }
 .stat {
@@ -327,12 +333,27 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   flex-direction: column;
   gap: .35rem;
 }
+/* Value and unit: one nowrap row, baseline-aligned, unit at 40 percent of the
+   figure so it qualifies the number instead of competing with it. */
 .stat__v {
+  display: flex;
+  align-items: baseline;
+  gap: .22em;
+  white-space: nowrap;
   font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.4rem);
   font-weight: var(--fw-medium);
   letter-spacing: -.06em;
   line-height: 1.1;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
+  margin-top: var(--s-sm);
+}
+.stat__num { font-weight: inherit; letter-spacing: inherit; }
+.stat__u {
+  font-style: normal;
+  font-size: .4em;
+  font-weight: var(--fw-medium);
+  letter-spacing: .01em;
+  color: var(--text-2);
 }
 .stat__l {
   font-family: var(--mono);
@@ -343,6 +364,50 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 }
 .on-dark .stat { background: rgba(255, 255, 255, .06); box-shadow: none; color: var(--white); }
 .on-dark .stat__l { color: var(--on-dark-2); }
+
+/* --- stats: surfaces and the two headline tiles -------------------------- */
+
+.stats-card--wide { grid-column: span 2; }
+.stats-card--wide .stat__v { font-size: clamp(2.1rem, 1.3rem + 2.6vw, 3.6rem); }
+.stats-card--lime {
+  background: var(--lime);
+  box-shadow: none;
+}
+.stats-card--lime .stat__l,
+.stats-card--lime .stat__u { color: #46600d; }
+.stats-card--lime .stats-card__index { color: #46600d; opacity: .6; }
+.stats-card--ink {
+  background: var(--ink);
+  color: var(--white);
+  box-shadow: none;
+}
+.stats-card--ink .stat__l,
+.stats-card--ink .stat__u { color: var(--on-dark-2); }
+.stats-card--ink .stats-card__index { color: rgba(255, 255, 255, .38); }
+.stats-card--ink .stats-card__plot { border-top-color: rgba(255, 255, 255, .16); }
+.stats-card--ink .stats-card__plot i { background: rgba(255, 255, 255, .18); }
+.stats-card--ink .stats-card__plot i:nth-child(n+9) { background: var(--lime); }
+
+/* The wide tiles carry a twelve-step climb rather than the five-bar spark:
+   more resolution, and it reads as a trend instead of decoration. */
+.stats-card__plot {
+  height: 3.4rem;
+  margin-top: auto;
+  display: flex;
+  align-items: flex-end;
+  gap: .2rem;
+  padding-top: .55rem;
+  border-top: 1px solid var(--border);
+}
+.stats-card__plot i {
+  flex: 1;
+  height: var(--h);
+  min-height: .22rem;
+  border-radius: .18rem .18rem 0 0;
+  background: var(--grey-200);
+  transform-origin: bottom center;
+}
+.stats-card__plot i:nth-child(n+9) { background: var(--lime); }
 
 /* --- widget: bar chart --------------------------------------------------- */
 
@@ -392,27 +457,107 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 .bars__fill { display: block; height: 100%; width: var(--w); border-radius: inherit; background: var(--ink); }
 .bars__row:first-child .bars__fill { background: var(--lime-lo); }
 
-/* --- widget: orbit ------------------------------------------------------- */
+/* --- widget: dispatch radar --------------------------------------------- */
 
-.orbit {
+/* Replaces the orbiting-pill widget. Two things were wrong with that: text that
+   revolves cannot be read, and the hub was the only in-flow child of a grid
+   whose siblings were all absolutely positioned, so auto-placement dropped it
+   into an implicit second row — it rendered 59px below the rings it was meant
+   to sit inside. Here the hub is centred by absolute positioning, which has no
+   second row to fall into, and every label holds still. */
+
+.radar {
   position: relative;
-  aspect-ratio: 1;
-  width: min(100%, 19rem);
-  margin-inline: auto;
-  display: grid;
-  place-items: center;
+  width: 100%;
+  /* Authored at 400x220 and locked to it, so the ellipses in the SVG stay true
+     circles-in-perspective and the label percentages line up with the nodes. */
+  aspect-ratio: 400 / 220;
+  isolation: isolate;
 }
-.orbit__ring {
+.radar__field {
   position: absolute;
-  inset: var(--inset);
-  border-radius: 50%;
-  border: 1px solid var(--border);
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
-.orbit__hub {
-  position: relative;
+/* SVG elements take their transform-origin from the user-space origin unless
+   told otherwise, so a scale tween aimed at "center" gets compensated with a
+   translation that does not fully unwind — the rings came to rest 29px off the
+   hub. fill-box makes "center" mean the element's own centre, which is what
+   both the CSS and the tween assume. */
+.radar__ring, .radar__node {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.radar__ring {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+}
+.radar__cross {
+  stroke: var(--border);
+  stroke-width: 1;
+  stroke-dasharray: 3 5;
+  vector-effect: non-scaling-stroke;
+  opacity: .7;
+}
+.radar__route {
+  fill: none;
+  stroke: var(--grey-300);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  opacity: .75;
+}
+/* A short lit segment chasing along an otherwise invisible copy of the route:
+   one dash, one very long gap, offset animated the length of the path. Cheaper
+   and better supported than a motion path, and it pauses with the card. */
+.radar__beam {
+  fill: none;
+  stroke: var(--lime-lo);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 12 100;
+  stroke-dashoffset: 112;
+  animation: radar-beam var(--d, 7s) linear infinite;
+  animation-play-state: paused;
+}
+.radar__node {
+  fill: var(--white);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+/* The sweep is a conic wedge clipped to the outer ellipse. */
+.radar__sweep {
+  position: absolute;
+  left: 9.5%; top: 9%;
+  width: 81%; height: 82%;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg,
+    rgba(209, 255, 92, 0) 0deg,
+    rgba(209, 255, 92, .05) 26deg,
+    rgba(209, 255, 92, .3) 46deg,
+    rgba(209, 255, 92, 0) 52deg);
+  animation: radar-sweep 11s linear infinite;
+  animation-play-state: paused;
+  pointer-events: none;
+  z-index: -1;
+}
+/* Centred with inset + auto margins, not a translate. GSAP takes ownership of
+   `transform` the moment it tweens the hub's scale, and a centring translate
+   living in that same property is simply overwritten — which is how the hub
+   ended up 29px off-centre again after the rebuild. Auto margins are immune. */
+.radar__hub {
+  position: absolute;
+  inset: 0;
+  margin: auto;
   z-index: 2;
   display: grid; place-items: center;
-  width: 4.25rem; height: 4.25rem;
+  width: 4.5rem; height: 4.5rem;
   border-radius: var(--r-md);
   background: var(--ink);
   color: var(--white);
@@ -424,27 +569,15 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   padding: .3rem;
   box-shadow: var(--shadow);
 }
-.orbit__arm {
+.radar__pin {
   position: absolute;
-  inset: 0;
-  pointer-events: none;
-  transform: rotate(var(--a));
-}
-.orbit__hold {
-  position: absolute;
-  left: calc(50% + var(--r)); top: 50%;
-  width: 0; height: 0;
-  /* cancels the arm's static --a as well as its animated spin, otherwise every
-     pill renders permanently tilted by its own start angle */
-  transform: rotate(calc(-1 * var(--a)));
-}
-.orbit__pill {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-  gap: .4rem;
-  padding: .4rem .7rem;
+  left: var(--l); top: var(--t);
+  z-index: 3;
+  /* Same reasoning as the hub, solved the other way: the offset rides the
+     independent `translate` property, which composes with — rather than being
+     replaced by — the `transform` GSAP writes when the label animates in. */
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .34rem .66rem;
   border-radius: var(--r-pill);
   background: var(--white);
   box-shadow: var(--shadow-sm);
@@ -452,13 +585,20 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   font-weight: var(--fw-medium);
   white-space: nowrap;
 }
-.orbit__pill::before {
+/* Labels grow away from the centre, so a long one can never reach across the
+   hub or collide with the label opposite. */
+.radar__pin--l { translate: calc(-100% + .9rem) -50%; flex-direction: row-reverse; }
+.radar__pin--r { translate: -.9rem -50%; }
+.radar__pin::before {
   content: "";
   width: .4rem; height: .4rem;
   border-radius: 50%;
   background: var(--lime-lo);
   flex: none;
 }
+
+@keyframes radar-beam { to { stroke-dashoffset: 0; } }
+@keyframes radar-sweep { to { transform: rotate(360deg); } }
 
 /* --- widget: lab readout ------------------------------------------------- */
 
@@ -550,13 +690,24 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 
 .rail {
   display: flex;
+  /* `stretch` is what makes every card in the rail the same height, so the
+     author block always lands on one line across the row instead of floating
+     wherever a shorter quote happens to end. */
+  align-items: stretch;
   gap: var(--s-lg);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-padding-inline: var(--gutter);
   padding-inline: var(--gutter);
   margin-inline: calc(var(--gutter) * -1);
-  padding-bottom: var(--s-xs);
+  /* A scroll container clips on BOTH axes, so the cards' drop shadow was being
+     sliced off flush against the rail's edge and read as a hard dark line. The
+     block padding is the room the shadow needs; the negative margin gives it
+     back to the layout so the section spacing is unchanged. */
+  /* Sized against the largest card shadow any variation uses — v3's is a 32px
+     blur, so 16px of clearance still cut it into a line. */
+  padding-block: 1.75rem calc(var(--s-xl) + .75rem);
+  margin-block: -1.75rem calc((var(--s-xl) + .75rem) * -1);
   scrollbar-width: none;
   overscroll-behavior-inline: contain;
   touch-action: pan-x pan-y;
@@ -565,6 +716,12 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 }
 .rail::-webkit-scrollbar { display: none; }
 .rail > * { scroll-snap-align: start; flex: 0 0 auto; }
+/* Fade the rail into the page at both ends rather than letting cards be
+   guillotined by the viewport edge. */
+.rail--faded {
+  -webkit-mask-image: linear-gradient(90deg, #0000 0, #000 3%, #000 97%, #0000 100%);
+  mask-image: linear-gradient(90deg, #0000 0, #000 3%, #000 97%, #0000 100%);
+}
 
 .rail-btns { display: inline-flex; gap: .5rem; }
 .rail-btn {
@@ -585,15 +742,27 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 .quote {
   width: min(23.5rem, 84vw);
   border-radius: var(--r);
-  overflow: hidden;
+  overflow: clip;
   background: var(--white);
   box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
+  /* Height comes from the rail's `align-items: stretch`, so every card in the
+     row matches the tallest quote and the author block lands on one line.
+     A `min-height: 100%` here would resolve against the rail's *padded* height
+     and push the card back out through the bottom edge — the same clipping,
+     reintroduced by the fix. */
+  height: auto;
 }
-.quote__ph { position: relative; aspect-ratio: 4 / 3; }
-.quote__ph img { width: 100%; height: 100%; object-fit: cover; }
-.quote__body { padding: var(--s-xl); display: flex; flex-direction: column; gap: var(--s-lg); flex: 1; }
+.quote__ph { position: relative; aspect-ratio: 4 / 3; flex: none; overflow: clip; }
+.quote__ph img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 28%; }
+.quote__body {
+  padding: var(--s-xl);
+  display: flex; flex-direction: column;
+  gap: var(--s-lg);
+  flex: 1 1 auto;
+  min-height: 0;
+}
 .quote__mark { color: var(--lime-lo); font-size: 2.2rem; line-height: .55; }
 .quote__txt { font-size: var(--fs-sm); line-height: 1.6; }
 .quote__who { margin-top: auto; display: flex; flex-direction: column; gap: .1rem; }
@@ -992,12 +1161,19 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 .media-frame {
   --media-radius: var(--r);
   position: relative;
-  overflow: hidden;
+  /* `clip` beats `hidden` here: it clips to the padding box without turning the
+     frame into a scroll container, so a photograph that overhangs for parallax
+     cannot make the page scrollable sideways. */
+  overflow: clip;
   border-radius: var(--media-radius);
   isolation: isolate;
   background: transparent;
   min-width: 0;
 }
+/* Every layer between the frame and the pixels has to be full-bleed AND carry
+   the same radius. When one link in the chain stayed square, its corner showed
+   through the rounded frame as a dark triangle — that was the grey wedge on the
+   corners of the about, services and team photographs. */
 .media-frame > picture,
 .media-frame > picture > img,
 .media-frame > img,
@@ -1006,12 +1182,24 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 .media-frame > [data-parallax] > picture > img {
   width: 100%;
   height: 100%;
+  border-radius: inherit;
+  background: none;
+}
+.media-frame > picture,
+.media-frame > [data-parallax],
+.media-frame > [data-parallax] > picture {
+  display: block;
+  overflow: clip;
 }
 .media-frame img {
   display: block;
   object-fit: cover;
   object-position: var(--media-position, 50% 50%);
   border-radius: inherit;
+  /* Promote to its own layer: without it WebKit composites the rounded edge a
+     half-pixel short and leaves a grey hairline along the curve. */
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .icon-badge {
@@ -1108,11 +1296,6 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 .storage-viz__flow i { display: block; width: 26%; height: 100%; background: var(--sky); animation: storage-flow 3.2s linear infinite; }
 @keyframes storage-flow { to { transform: translateX(285%); } }
 
-.orbit__cross::before, .orbit__cross::after { content:""; position:absolute; left:50%; top:7%; bottom:7%; width:1px; background:var(--border); }
-.orbit__cross::after { top:50%; left:7%; right:7%; bottom:auto; width:auto; height:1px; }
-.orbit__legend { position:absolute; inset:2%; font: .52rem/1 var(--mono); color:var(--grey-300); }
-.orbit__legend i { position:absolute; font-style:normal; }
-.orbit__legend i:nth-child(1){left:50%;top:0}.orbit__legend i:nth-child(2){right:0;top:50%}.orbit__legend i:nth-child(3){left:50%;bottom:0}.orbit__legend i:nth-child(4){left:0;top:50%}
 
 .lab__summary { display:flex; align-items:center; gap:.65rem; padding:.65rem .75rem; border-radius:var(--r-sm); background:var(--ink); color:var(--white); }
 .lab__summary span { font: 500 1.05rem/1 var(--mono); }
