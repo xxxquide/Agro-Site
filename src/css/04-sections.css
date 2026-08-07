@@ -1379,6 +1379,12 @@
   color:var(--text-2); border-bottom:1px solid var(--border); padding-bottom:.35rem;
 }
 .detail-back svg { width:.72rem; height:.72rem; }
+/* The breadcrumb on a crop page puts chevrons in this row, and an inline SVG with
+   no intrinsic size stretches to fill whatever contains it — unsized, a single
+   separator covered the entire viewport. Matched to .detail-back above rather
+   than invented. No existing page has an SVG inside .detail-meta (checked
+   against the built output), so this cannot move an article or a profile. */
+.detail-meta svg { width:.72rem; height:.72rem; flex:none; }
 .detail-hero { display:flex; flex-direction:column; gap:clamp(1.5rem,3vw,2.5rem); }
 .detail-hero__copy { max-width:61rem; display:flex; flex-direction:column; align-items:center; text-align:center; gap:var(--s-lg); margin-inline:auto; }
 .detail-hero__copy h1 { max-width:18ch; text-wrap:balance; }

@@ -353,7 +353,11 @@
   border-radius:var(--r-sm); background:var(--ink); color:var(--white);
 }
 .v2 .detail-hero__copy h1, .v2 .profile-hero__copy h1 { color:var(--white); }
-.v2 .detail-hero__copy .lead, .v2 .detail-meta,
+/* Scoped to the ink panel, not to the page. On an article .detail-meta is inside
+   that panel; on a crop page it holds the breadcrumb and sits outside it, on
+   white, where on-dark grey measures 1.69:1. Same mistake the unscoped
+   .detail-back selector used to make. */
+.v2 .detail-hero__copy .lead, .v2 .detail-hero__copy .detail-meta,
 .v2 .profile-hero__copy .lead, .v2 .profile-hero__copy .detail-back { color:var(--on-dark-2); }
 .v2 .profile-hero__copy { padding:clamp(2rem,5vw,4.5rem); border-radius:var(--r-sm); background:var(--ink); color:var(--white); border-top:0; }
 .v2 .profile-hero__copy .profile-role { color:var(--lime); }

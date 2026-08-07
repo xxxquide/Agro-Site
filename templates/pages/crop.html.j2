@@ -1,0 +1,144 @@
+{#- ============================================================================
+    Crop detail page — /services/<slug>/
+
+    Like article.html.j2 and profile.html.j2 this template never mentions `V`.
+    The three art directions arrive on their own, because base.html.j2 puts the
+    variation on <body> and 07-variants.css already knows every class used here:
+
+      detail-hero, detail-hero__copy, detail-hero__media, detail-meta   (v2)
+      stat / stats-card / stats-card__index / stats-card__plot          (v1, v3)
+      card                                                             (v2, v3)
+      cinfo / cinfo__row / cinfo__k / cinfo__v                          — light
+      head, head-row                                                   (v2, v3)
+      plan, plan__name, plan__desc, plan__list                          (v2, v3)
+      post, blog-grid, btn--outline                                     (v2, v3)
+
+    Not one new class is introduced. Anything invented here would have rendered
+    identically in all three variations, which is the one outcome this page
+    cannot have.
+
+    Animation markup follows services.html.j2 and article.html.j2 at the same
+    density: data-split on section headings, data-r on prose and media,
+    data-stagger on card rows, data-card on the terms cards.
+    ============================================================================ -#}
+{% extends "base.html.j2" %}
+{%- import "blocks.html.j2" as B with context -%}
+{% block body %}
+<section class="detail-hero wrap" data-page-hero>
+  {#- The breadcrumb replaces article.html.j2's single back link rather than
+      joining it: it does the same job and states the hierarchy as well, and two
+      ways back out of one hero is one too many. .detail-meta is reused for it —
+      a mono, uppercase, small row is exactly what a trail wants, and it is
+      already re-laid-out by v2. -#}
+  <nav class="detail-meta" aria-label="{{ c.a11y.breadcrumb }}">
+    <a href="{{ url_for('home') }}">{{ c.detail_labels.crumb_home }}</a>
+    {{ I.chevron('right') }}
+    <a href="{{ url_for('services') }}">{{ c.detail_labels.crumb_services }}</a>
+    {{ I.chevron('right') }}
+    <span aria-current="page">{{ item.name }}</span>
+  </nav>
+  <div class="detail-hero__copy">
+    <span class="tag tag--lime" data-page-item>{{ c.crops.eyebrow }}</span>
+    <h1 id="crop-t" data-page-title>{{ item.name }}</h1>
+    <p class="lead" data-page-item>{{ item.lead }}</p>
+  </div>
+  <div class="detail-hero__media media-frame" data-page-media>
+    {{ B.pic(item.img, item.alt, '(max-width: 48rem) 100vw, 80rem', priority=True) }}
+  </div>
+</section>
+
+<section class="section section--tight" aria-label="{{ c.crops.spec_labels.area }}">
+  <div class="wrap">
+    <div class="stats" data-stagger=".08">
+      {%- for f in figures %}{{ B.stat_card(f, loop.index0, f.display) }}{% endfor %}
+    </div>
+  </div>
+</section>
+
+{#- Lifted from article.html.j2 unchanged, down to the heading level:
+    .article-section h2 carries its own clamped display size, so dropping to h3
+    here would have given the crop body a different typographic scale from a blog
+    article in the same variation. -#}
+<section class="section detail-content" aria-label="{{ item.name }}">
+  <div class="wrap wrap--narrow">
+    <article class="article-body">
+      {%- for section in item.body %}
+      <section class="article-section" data-r>
+        <h2>{{ section.heading }}</h2>
+        {%- for paragraph in section.paragraphs %}<p>{{ paragraph }}</p>{% endfor %}
+        {%- if section.get('items') %}
+        <ul>{% for point in section['items'] %}<li>{{ I.tick() }}<span>{{ point }}</span></li>{% endfor %}</ul>
+        {%- endif %}
+      </section>
+      {%- endfor %}
+    </article>
+  </div>
+</section>
+
+<section class="section section--tight" role="region" aria-labelledby="crop-specs-t">
+  <div class="wrap wrap--narrow">
+    <div class="head">
+      <span class="tag tag--lime" data-r>{{ c.detail_labels.specs_eyebrow }}</span>
+      <h2 id="crop-specs-t" data-split>{{ c.detail_labels.specs_title }}</h2>
+    </div>
+    {#- wrap--narrow keeps the key/value rows at a readable measure; .card is what
+        carries the variation (v1 shadow, v2 hairline, v3 no surface at all). -#}
+    <div class="card" data-r style="margin-top:2rem">
+      <dl class="cinfo">
+        {#- specs is the four rows the crops accordion has always shown, kept
+            byte-identical so the home and services panels do not move;
+            specs_extra is the rest of the sheet, which only this page has
+            room for. -#}
+        {%- for s in item.specs + item.specs_extra %}
+        <div class="cinfo__row">
+          <dt class="cinfo__k">{{ s.k }}</dt>
+          <dd class="cinfo__v">{{ s.v }}</dd>
+        </div>
+        {%- endfor %}
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section class="section" role="region" aria-labelledby="crop-terms-t">
+  <div class="wrap">
+    <div class="head head--center">
+      <span class="tag tag--lime" data-r>{{ c.terms.eyebrow }}</span>
+      <h2 id="crop-terms-t" data-split>{{ c.detail_labels.terms_title }}</h2>
+      <p class="lead" data-r>{{ c.terms.lead }}</p>
+    </div>
+    <div class="plans" style="margin-top:3rem">
+      {%- for block in item.terms %}
+      <article class="plan" data-card>
+        <h3 class="plan__name">{{ block.name }}</h3>
+        <p class="plan__desc">{{ block.desc }}</p>
+        <ul class="plan__list">
+          {%- for row in block.rows %}
+          <li>{{ I.tick() }}<span>{{ row.k }} — {{ row.v }}</span></li>
+          {%- endfor %}
+        </ul>
+        <div class="plan__cta">
+          <a class="btn btn--dark btn--block" href="{{ url_for('contacts') }}">{{ c.terms.cta }}<span class="btn__badge">{{ I.arrow() }}</span></a>
+        </div>
+      </article>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section detail-related" role="region" aria-labelledby="crop-related-t">
+  <div class="wrap">
+    <div class="head-row">
+      <div class="head">
+        <span class="tag tag--lime" data-r>{{ c.crops.eyebrow }}</span>
+        <h2 id="crop-related-t" data-split>{{ c.detail_labels.related_crops }}</h2>
+      </div>
+      <a class="btn btn--outline" href="{{ url_for('services') }}">{{ c.detail_labels.back_services }}<span class="btn__badge">{{ I.arrow() }}</span></a>
+    </div>
+    <div class="news detail-related__grid" data-stagger=".1">
+      {%- for cr in related %}{{ B.crop_card(cr, loop.index) }}{% endfor %}
+    </div>
+  </div>
+</section>
+{{ B.sec_cta() }}
+{% endblock %}

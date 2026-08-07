@@ -10,7 +10,10 @@ import sys
 from PIL import Image
 
 SRC_DIR = "/agent/stored_files"
-OUT_DIR = "/agent/workspace/agro/assets/img"
+# See the note in build_fonts.py: this was an absolute path into a directory
+# this repository does not have.
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+OUT_DIR = os.path.join(ROOT, "assets", "img")
 
 # name, source-id prefix, target aspect (w/h), widths to emit
 JOBS = [

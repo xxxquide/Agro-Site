@@ -100,6 +100,68 @@ def protect_numbers(html):
     return "".join(out)
 
 
+def parse_measure(text, thousands, decimal):
+    """Split "4 800 га" into (4800.0, "га", "4 800").
+
+    The crop pages want the area, yield and gross figures as counter-animated
+    stat cards, and a counter needs a number. Carrying a second numeric copy of
+    each figure in the content would mean the owner updating "4 800 га" and 4800
+    in step forever, so the number is read back out of the string the crops
+    section already publishes — one source of truth, and locale-aware because uk
+    groups thousands with a space and en with a comma.
+
+    Returns None when the string is not a measurement, so a caller can fail
+    loudly rather than render a zero.
+    """
+    # The numeric run has to both start and end on a digit, so a separator counts
+    # as part of the number only when digits follow it. A lazier pattern stopped
+    # at the first separator and read "6,4 т/га" as 6 with a unit of ",4 т/га" —
+    # which is worse than failing, because it renders a plausible wrong figure.
+    match = re.match(r"^\s*(\d[\d\s.,\u00a0\u2009\u202f]*\d|\d)\s*(.*)$", text or "")
+    if not match:
+        return None
+    digits = match.group(1).strip()
+    unit = match.group(2).strip()
+    # Strip every kind of space, not only U+0020: the separator is a plain space
+    # in the source, but protect_numbers() rewrites it to U+00A0 on the way to
+    # the page, and this helper should read a figure from either side of that.
+    normalised = re.sub(r"[\s\u00a0\u2009\u202f]", "", digits)
+    if thousands.strip():
+        normalised = normalised.replace(thousands, "")
+    if decimal != ".":
+        normalised = normalised.replace(decimal, ".")
+    try:
+        value = float(normalised)
+    except ValueError:
+        return None
+    return value, unit, digits
+
+
+def crop_figures(c, item, thousands, decimal):
+    """The three headline numbers of a crop page, as stat_card inputs.
+
+    `display` is set only where the figure is fractional: the shared counter
+    rounds as it animates (Math.round on every frame), so 6,4 t/ha would count up
+    to 6. Those cards print the authored string instead of animating, which is
+    also the honest reading — a yield is a measurement, not a tally.
+    """
+    labels = c["crops"]["spec_labels"]
+    out = []
+    for key, label_key in (("area", "area"), ("yield", "yield"), ("volume", "volume")):
+        parsed = parse_measure(item[key], thousands, decimal)
+        if parsed is None:
+            raise SystemExit(f'FATAL: cannot read a number out of crops."{key}" '
+                             f'= {item[key]!r} for {item["name"]!r}.')
+        value, unit, digits = parsed
+        out.append({
+            "value": value,
+            "suffix": unit,
+            "label": labels[label_key],
+            "display": None if float(value).is_integer() else digits,
+        })
+    return out
+
+
 def rel(*parts):
     return os.path.join(ROOT, *parts)
 
@@ -270,8 +332,17 @@ def page_seo(c, page_id, variant):
 
 def detail_seo(c, item, kind):
     brand = c["brand"]["name"]
-    title = item.get("seo_title", item["title"]) if kind == "article" else f'{item["name"]} — {item["role"]}'
-    description = item.get("seo_description", item["excerpt"]) if kind == "article" else item["intro"]
+    if kind == "article":
+        title = item.get("seo_title", item["title"])
+        description = item.get("seo_description", item["excerpt"])
+    elif kind == "crop":
+        # A crop page is a commercial landing page, so its title and description
+        # are authored for the search result and not derived from the page lead.
+        title = item["seo_title"]
+        description = item["seo_description"]
+    else:
+        title = f'{item["name"]} — {item["role"]}'
+        description = item["intro"]
     description = " ".join(description.split())
     if len(description) > 165:
         description = description[:162].rsplit(" ", 1)[0] + "…"
@@ -281,7 +352,7 @@ def detail_seo(c, item, kind):
     }
 
 
-def build_jsonld(c, lang, canonical, page_id, seo, entity=None):
+def build_jsonld(c, lang, canonical, page_id, seo, entity=None, crumbs=None):
     org_id = BASE + "#org"
     addr = {
         "@type": "PostalAddress",
@@ -345,7 +416,8 @@ def build_jsonld(c, lang, canonical, page_id, seo, entity=None):
 
     page_type = {"home": "WebPage", "about": "AboutPage", "services": "WebPage",
                  "blog": "CollectionPage", "contacts": "ContactPage",
-                 "article": "WebPage", "profile": "ProfilePage"}[page_id]
+                 "article": "WebPage", "profile": "ProfilePage",
+                 "crop": "ItemPage", "privacy": "WebPage", "terms": "WebPage"}[page_id]
     page = {
         "@type": page_type, "@id": canonical + "#page", "url": canonical,
         "name": seo["title"], "description": seo["description"],
@@ -356,6 +428,20 @@ def build_jsonld(c, lang, canonical, page_id, seo, entity=None):
     }
 
     graph = [org, place, site, page]
+
+    # BreadcrumbList is the one rich result Google still renders for a site like
+    # this one — it replaces the bare URL in the result with a navigation path.
+    # Every page had zero. The trail is handed in from main(), built from the same
+    # page table url_for() uses, so it cannot drift from the real link structure.
+    if crumbs:
+        graph.append({
+            "@type": "BreadcrumbList", "@id": canonical + "#crumbs",
+            "itemListElement": [
+                {"@type": "ListItem", "position": i + 1, "name": name,
+                 "item": url}
+                for i, (name, url) in enumerate(crumbs)
+            ],
+        })
 
     if page_id in ("home", "services", "contacts"):
         graph.append({
@@ -407,6 +493,34 @@ def build_jsonld(c, lang, canonical, page_id, seo, entity=None):
         graph.append(article)
         page["mainEntity"] = {"@id": article["@id"]}
         page["primaryImageOfPage"] = {"@type": "ImageObject", "url": article["image"]}
+
+    if page_id == "crop" and entity:
+        # additionalProperty is the substance here: moisture, protein, test
+        # weight and falling number stop being prose and become machine-readable
+        # against the product they describe. No price — the site publishes none,
+        # and an Offer without one is still valid in a catalogue.
+        product = {
+            "@type": "Product", "@id": canonical + "#product",
+            "name": entity["name"], "description": entity["seo_description"],
+            "image": BASE + f'assets/img/{entity["img"]}-1120.webp',
+            "url": canonical,
+            "brand": {"@id": org_id},
+            "category": c["crops"]["title"],
+            "additionalProperty": [
+                {"@type": "PropertyValue", "name": spec["k"], "value": spec["v"]}
+                for spec in entity["specs"] + entity["specs_extra"]
+            ],
+            "offers": {
+                "@type": "Offer",
+                "availability": "https://schema.org/InStock",
+                "seller": {"@id": org_id},
+                "areaServed": {"@type": "Country", "name": "Ukraine"},
+                "url": canonical,
+            },
+        }
+        graph.append(product)
+        page["mainEntity"] = {"@id": product["@id"]}
+        page["primaryImageOfPage"] = {"@type": "ImageObject", "url": product["image"]}
 
     if page_id == "profile" and entity:
         person = {
@@ -467,6 +581,33 @@ def build_side_files(uk, indexed_urls):
             {"src": SUBPATH + "assets/icons/favicon.svg", "sizes": "any", "type": "image/svg+xml"},
         ],
     }, ensure_ascii=False, indent=1))
+
+
+def section_url(lang_prefix, vslug, page_file):
+    """Absolute URL of a page from the same table url_for() reads."""
+    tail = posixpath.dirname(f"{lang_prefix}{vslug}{page_file}")
+    return BASE + (tail + "/" if tail else "")
+
+
+def build_crumbs(c, lang_prefix, vslug, page_files, page_id, item=None):
+    """Home -> section -> page, as (name, absolute url) pairs.
+
+    Derived, never hardcoded: the section label comes from the same nav table the
+    header renders and the URL from the same page table url_for() resolves, so a
+    renamed page or a moved file cannot leave a stale trail behind. Returns an
+    empty list for the home page, which is the root and has nothing to show.
+    """
+    if page_id == "home" and item is None:
+        return []
+    nav_labels = {i["page"]: i["label"] for i in c["nav_pages"]["items"]}
+    trail = [(c["detail_labels"]["crumb_home"],
+              section_url(lang_prefix, vslug, page_files["home"]))]
+    if page_id != "home":
+        trail.append((nav_labels.get(page_id, page_id),
+                      section_url(lang_prefix, vslug, page_files[page_id])))
+    if item is not None:
+        trail.append((item.get("name") or item["title"], None))
+    return trail
 
 
 def indexed_urls_alt(loc, lang, all_urls):
@@ -572,6 +713,11 @@ def main():
                     r = posixpath.relpath(target, _dir or ".")
                     return "./" if r == "." else r + "/"
 
+                def crop_url(slug, _dir=page_dir, _lp=lang_prefix, _v=V):
+                    target = f'{_lp}{_v["slug"]}services/{slug}'
+                    r = posixpath.relpath(target, _dir or ".")
+                    return "./" if r == "." else r + "/"
+
                 canonical = BASE + posixpath.dirname(out_path)
                 canonical = canonical.rstrip("/") + "/" if posixpath.dirname(out_path) else BASE
                 seo = page_seo(c, pg["id"], V)
@@ -606,6 +752,7 @@ def main():
                     ha="га" if lang == "uk" else "ha",
                     tel="+" + re.sub(r"\D", "", c["contact"]["phone"]),
                     url_for=url_for, article_url=article_url, profile_url=profile_url,
+                    crop_url=crop_url,
                     alt_uk=uk_url, alt_en=en_url,
                     alt_uk_rel=(other_rel if lang == "en" else "./"),
                     alt_en_rel=(other_rel if lang == "uk" else "./"),
@@ -613,7 +760,10 @@ def main():
                     light_header=(pg["id"] != "home"),
                     variants_url=variants_rel,
                     variant_switch_label=(V["label"] if lang == "uk" else V["label_en"]),
-                    jsonld=Markup(build_jsonld(c, lang, canonical, pg["id"], seo)),
+                    jsonld=Markup(build_jsonld(
+                        c, lang, canonical, pg["id"], seo,
+                        crumbs=[(n, u or canonical) for n, u in build_crumbs(
+                            c, lang_prefix, V["slug"], page_files, pg["id"])])),
                 )
                 html = protect_numbers(html)
                 html = re.sub(r"\n{3,}", "\n\n", html)
@@ -625,6 +775,9 @@ def main():
             for kind, items, parent_id, folder, template_name in [
                 ("article", c["blog_page"]["posts"], "blog", "blog", "article"),
                 ("profile", c["team"]["items"], "about", "about/team", "profile"),
+                # Crops sit one level under services, the same depth as an article
+                # under blog, so nothing around this loop needs to change.
+                ("crop", c["crops"]["items"], "services", "services", "crop"),
             ]:
                 for item in items:
                     detail_file = f'{folder}/{item["slug"]}/index.html'
@@ -648,6 +801,11 @@ def main():
                         r = posixpath.relpath(target, _dir or ".")
                         return "./" if r == "." else r + "/"
 
+                    def crop_url(slug, _dir=page_dir, _lp=lang_prefix, _v=V):
+                        target = f'{_lp}{_v["slug"]}services/{slug}'
+                        r = posixpath.relpath(target, _dir or ".")
+                        return "./" if r == "." else r + "/"
+
                     canonical = BASE + posixpath.dirname(out_path).rstrip("/") + "/"
                     seo = detail_seo(c, item, kind)
                     uk_url = BASE + f'{V["slug"]}{folder}/{item["slug"]}/'
@@ -659,8 +817,8 @@ def main():
                     if not noindex:
                         indexed.append((canonical, lang))
 
-                    if kind == "article":
-                        related = [c["blog_page"]["posts"][i] for i in item["related"]]
+                    if kind == "crop":
+                        related = [c["crops"]["items"][i] for i in item["related"]]
                     else:
                         related = [c["blog_page"]["posts"][i] for i in item["related"]]
 
@@ -677,14 +835,20 @@ def main():
                         ha="га" if lang == "uk" else "ha",
                         tel="+" + re.sub(r"\D", "", c["contact"]["phone"]),
                         url_for=detail_url_for, article_url=article_url,
-                        profile_url=profile_url,
+                        profile_url=profile_url, crop_url=crop_url,
+                        figures=(crop_figures(c, item, thousands, DECIMAL)
+                                 if kind == "crop" else None),
                         alt_uk=uk_url, alt_en=en_url,
                         alt_uk_rel=(other_rel if lang == "en" else "./"),
                         alt_en_rel=(other_rel if lang == "uk" else "./"),
                         hero_img=None, light_header=True,
                         variants_url=variants_rel,
                         variant_switch_label=(V["label"] if lang == "uk" else V["label_en"]),
-                        jsonld=Markup(build_jsonld(c, lang, canonical, kind, seo, item)),
+                        jsonld=Markup(build_jsonld(
+                            c, lang, canonical, kind, seo, item,
+                            crumbs=[(n, u or canonical) for n, u in build_crumbs(
+                                c, lang_prefix, V["slug"], page_files, parent_id,
+                                item)])),
                     )
                     html = protect_numbers(html)
                     html = re.sub(r"\n{3,}", "\n\n", html)

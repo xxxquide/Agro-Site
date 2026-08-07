@@ -34,8 +34,15 @@ import sys
 
 from fontTools.ttLib import TTFont
 
-OUT_DIR = "/agent/workspace/agro/assets/fonts"
-CSS_OUT = "/agent/workspace/agro/assets/css/fonts.css"
+# Resolved from this file, the way every other tool here does it. These two were
+# absolute paths into "/agent/workspace/agro", a directory this repository does
+# not have — so the script could not run against the real assets and, when run
+# at all, quietly built a parallel tree outside the repo. That is also why two
+# orphaned woff2 files survived: main() clears stale woff2 from OUT_DIR first,
+# and OUT_DIR was pointing somewhere else.
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+OUT_DIR = os.path.join(ROOT, "assets", "fonts")
+CSS_OUT = os.path.join(ROOT, "assets", "css", "fonts.css")
 TMP = "/tmp/fontsrc"
 
 SRC = {

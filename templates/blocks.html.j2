@@ -250,19 +250,27 @@
     inherited the 2.4rem display size, so it read as part of the figure rather
     than a qualifier. Splitting them also lets the counter rewrite the digits
     without touching the unit on every animation frame. -#}
-{%- macro stat_card(s, idx) -%}
+{#- `wide` and the icon/tone cycles are driven by position, so a caller that
+    passes fewer than six figures still gets a coherent set. `display` prints a
+    literal instead of animating a counter: the counter rounds every frame, so a
+    fractional figure such as 6,4 t/ha would count up to 6. Existing callers pass
+    two arguments and render exactly as before. -#}
+{%- macro stat_card(s, idx, display=None) -%}
 {%- set icons = ['wheat', 'grain', 'silo', 'truck', 'clock', 'ship'] -%}
 {%- set tones = ['plain', 'plain', 'lime', 'ink', 'plain', 'plain'] -%}
 {%- set wide = idx in [0, 3] -%}
-{#- Bigger figures count for longer: scale reads as weight. -#}
-{%- set dur = 1.3 if s.value < 100 else (1.9 if s.value < 10000 else 2.5) -%}
 <article class="stat stats-card stats-card--{{ tones[idx % 6] }}{{ ' stats-card--wide' if wide }}" data-stat-card>
   <div class="stats-card__top">
     <span class="icon-badge icon-badge--sm" aria-hidden="true">{{ I.icon(icons[idx % (icons|length)]) }}</span>
     <span class="stats-card__index">{{ '%02d' % (idx + 1) }}</span>
   </div>
   <span class="stat__v">
+    {%- if display %}<b class="stat__num">{{ display }}</b>
+    {%- else %}
+    {#- Bigger figures count for longer: scale reads as weight. -#}
+    {%- set dur = 1.3 if s.value < 100 else (1.9 if s.value < 10000 else 2.5) -%}
     <b class="stat__num" data-count="{{ s.value }}" data-dur="{{ dur }}">0</b>
+    {%- endif %}
     {%- if s.suffix %}<em class="stat__u">{{ s.suffix|trim }}</em>{% endif %}
   </span>
   <span class="stat__l">{{ s.label }}</span>
@@ -569,6 +577,19 @@
   <span class="post__title">{{ n.title }}</span>
   {%- if n.excerpt %}<span class="post__ex">{{ n.excerpt }}</span>{% endif %}
   <span class="post__go">{{ c.blog_page.read if c.blog_page is defined else c.news.read }}{{ I.arrow() }}</span>
+</a>
+{%- endmacro -%}
+
+{#- Same markup contract as story_card, different subject: a crop has an area
+    rather than a date, and links to its own page. Built on .post so every
+    variant override that reshapes a news card reshapes this one too. -#}
+{%- macro crop_card(cr, idx) -%}
+<a class="post card-lift" href="{{ crop_url(cr.slug) }}" data-post="{{ '%02d' % idx }}" aria-label="{{ cr.name }}">
+  {{ pic(cr.img, cr.alt, '(max-width: 35rem) 92vw, (max-width: 64rem) 46vw, 30vw') }}
+  <span class="post__meta"><span class="chip chip--lime">{{ cr.area }}</span><span class="post__date">{{ cr['yield'] }}</span></span>
+  <span class="post__title">{{ cr.name }}</span>
+  <span class="post__ex">{{ cr.text }}</span>
+  <span class="post__go">{{ c.detail_labels.crop_more }}{{ I.arrow() }}</span>
 </a>
 {%- endmacro -%}
 

@@ -22,7 +22,10 @@ discarded rather than patched.
 """
 import os
 
-OUT = "/agent/workspace/agro/assets/icons"
+# See the note in build_fonts.py: this was an absolute path into a directory
+# this repository does not have.
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+OUT = os.path.join(ROOT, "assets", "icons")
 
 INK = "#0E2A1B"     # deep field green
 LIME = "#C6F24E"    # accent

@@ -137,6 +137,69 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/about/team/serhii-kushnir/"/>
   </url>
   <url>
+    <loc>https://xxxquide.github.io/Agro-Site/services/winter-wheat/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/services/winter-wheat/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/services/winter-wheat/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/services/winter-wheat/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/services/corn/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/services/corn/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/services/corn/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/services/corn/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/services/sunflower/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/services/sunflower/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/services/sunflower/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/services/sunflower/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/services/soybean/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/services/soybean/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/services/soybean/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/services/soybean/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/services/winter-rapeseed/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/services/winter-rapeseed/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/services/winter-rapeseed/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/services/winter-rapeseed/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/services/spring-barley/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/services/spring-barley/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/services/spring-barley/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/services/spring-barley/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/services/sugar-beet/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/services/sugar-beet/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/services/sugar-beet/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/services/sugar-beet/"/>
+  </url>
+  <url>
     <loc>https://xxxquide.github.io/Agro-Site/en/</loc>
     <lastmod>2026-08-06</lastmod>
     <changefreq>monthly</changefreq>
@@ -270,5 +333,68 @@
     <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/about/team/serhii-kushnir/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/about/team/serhii-kushnir/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/about/team/serhii-kushnir/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/en/services/winter-wheat/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/services/winter-wheat/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/services/winter-wheat/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/services/winter-wheat/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/en/services/corn/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/services/corn/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/services/corn/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/services/corn/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/en/services/sunflower/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/services/sunflower/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/services/sunflower/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/services/sunflower/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/en/services/soybean/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/services/soybean/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/services/soybean/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/services/soybean/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/en/services/winter-rapeseed/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/services/winter-rapeseed/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/services/winter-rapeseed/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/services/winter-rapeseed/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/en/services/spring-barley/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/services/spring-barley/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/services/spring-barley/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/services/spring-barley/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/en/services/sugar-beet/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/services/sugar-beet/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/services/sugar-beet/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/services/sugar-beet/"/>
   </url>
 </urlset>
