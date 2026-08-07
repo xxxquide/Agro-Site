@@ -1053,10 +1053,20 @@
           settled at scale 1, and the drift then slid it clean off the edge of
           its frame. The queue is drained strictly front to back, one pass at a
           time, and never reordered to fill a gap.
-       2. The first screen. initSmoothScroll, tagParallaxTargets, initHero and
-          initPageHero stay synchronous. A visitor is looking at the hero while
-          this runs, and an idle callback's worth of delay in its opening
-          timeline is visible where the same delay further down the page is not.
+       2. The first screen. initSmoothScroll, tagParallaxTargets, initHero,
+          initPageHero and initMarquees stay synchronous. A visitor is looking at
+          the hero while this runs, and an idle callback's worth of delay in its
+          opening timeline is visible where the same delay further down the page
+          is not.
+          initMarquees is in that list for a measured reason, not by category.
+          v2's card rail and v3's logo bar are both inside the hero, and building
+          a marquee changes its track's height. The webfont swap reflows the hero
+          at ~340ms; whether the rail had been built by then decides how much of
+          the viewport that one reflow moves. Queued, it landed on either side of
+          the swap depending on the run and v2's desktop CLS read 0.028 or 0.068
+          at random. Synchronous, the rail is always in place first and the figure
+          is 0.028 every time — the same as before this change. The reflow itself
+          is a separate, pre-existing problem.
        3. One refresh at the end. ScrollTrigger.refresh() is expensive and it is
           called once, after the last pass, not per pass.
      ========================================================================= */
@@ -1130,10 +1140,11 @@
     tagParallaxTargets();
     initHero();
     initPageHero();
+    initMarquees();
 
     var queue = revealPasses().concat([
       initImageReveal, initMagnetic, initParallax,
-      initMarquees, initPartnerOrbit, initCounters,
+      initPartnerOrbit, initCounters,
     ]);
 
     drainQueue(queue, function () {
