@@ -155,7 +155,12 @@ def main() -> int:
                       h1: document.querySelectorAll('h1').length,
                       hiddenAnimated: [...document.querySelectorAll('[data-r],[data-card],[data-split]')]
                         .filter(el => getComputedStyle(el).visibility === 'hidden').length,
-                      invalidImages: [...document.images].filter(img => img.getClientRects().length && (!img.complete || img.naturalWidth === 0)).length,
+                      // Broken means the browser tried and failed: complete with no
+                      // intrinsic size. `!complete` only means still in flight, and on a
+                      // page with 20 lazy images below the fold that is the normal state
+                      // rather than a defect — it was reporting a finding on every home
+                      // page at every narrow viewport, which is noise that hides real ones.
+                      invalidImages: [...document.images].filter(img => img.getClientRects().length && img.complete && img.naturalWidth === 0).length,
                       clippedText: [...document.querySelectorAll('h1,h2,h3,p,.stat__v,.post__title,.quote__txt,.member__n,.svc__body')]
                         .filter(el => !el.classList.contains('sr') && el.getClientRects().length && ((el.scrollHeight > el.clientHeight + 1) || (el.scrollWidth > el.clientWidth + 1)) && ['hidden','clip'].includes(getComputedStyle(el).overflow)).length,
                       mediaLeaks: [...document.querySelectorAll('.media-frame')].filter(frame => {
