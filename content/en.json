@@ -14,14 +14,19 @@
     "description": "Full-cycle grain producer in Vinnytsia region: 14,200 ha of own land, 7 crops, 46,000 t elevator, 1,200 t/day drying. Wheat, maize, sunflower, soybean.",
     "og_title": "CENTRAGRO PLUS — grain from 14,200 ha of our own land",
     "og_description": "From crop rotation and crop monitoring to our own grain elevator and dispatch. Working with traders, flour mills and processors since 2008.",
-    "keywords": "grain wholesale, wheat, maize, sunflower, soybean, grain elevator, Vinnytsia region, agribusiness, forward contract"
+    "keywords": "grain wholesale, wheat, maize, sunflower, soybean, grain elevator, Vinnytsia region, agribusiness, forward contract",
+    "google_site_verification": "",
+    "price_range": ""
   },
   "brand": {
     "name": "CENTRAGRO PLUS",
     "legal": "CENTRAGRO PLUS LLC",
     "word_1": "CENTRAGRO",
     "word_2": "PLUS",
-    "tagline": "Full-cycle grain"
+    "tagline": "Full-cycle grain",
+    "same_as": [],
+    "tax_id": "",
+    "vat_id": ""
   },
   "nav": {
     "items": [
@@ -1823,8 +1828,10 @@
       "message": "Comments",
       "message_ph": "Quality parameters you need, timing, delivery basis…",
       "submit": "Send request",
-      "note": "By submitting this form you consent to the processing of the data provided in order to reply to your enquiry.",
-      "demo_notice": "This is a demonstration site — the form does not send data to a server."
+      "demo_notice": "This is a demonstration site — the form does not send data to a server.",
+      "note_before": "By submitting this form you consent to the ",
+      "note_link": "processing of the data provided",
+      "note_after": " in order to reply to your enquiry."
     }
   },
   "footer": {
@@ -2627,5 +2634,134 @@
     "specs_title": "Lot quality parameters",
     "terms_title": "Terms for this crop",
     "related_crops": "Other crops in the rotation"
+  },
+  "legal": {
+    "privacy": {
+      "eyebrow": "DOCUMENTS",
+      "title": "Privacy Policy",
+      "lead": "This page explains what data the CENTRAGRO PLUS LLC website processes, why, and what happens to it once the site's forms are connected to a real handler.",
+      "updated": "Last updated 6 August 2026",
+      "body": [
+        {
+          "heading": "1. What the site's forms collect",
+          "paragraphs": [
+            "The site has exactly two forms, and they are the only places a visitor enters personal data.",
+            "The contact form asks for name, email, crop (a dropdown), volume (free text), and message (free text). The newsletter form in the footer asks only for an email address.",
+            "No other part of the site collects personal data: the company, crops, and contact sections only display content that was not entered by you."
+          ]
+        },
+        {
+          "heading": "2. This is a demo site: nothing is transmitted",
+          "paragraphs": [
+            "Neither form has a backend. Whatever you type is not transmitted, stored, or processed by us or by anyone else. After a valid submission, an on-screen notice says exactly that.",
+            "This is a deliberate feature of a demonstration layout, not an oversight or a hidden mechanism. We state it plainly so nobody assumes their data is being kept somewhere when it is not."
+          ]
+        },
+        {
+          "heading": "3. Purpose and legal basis once a handler is connected",
+          "paragraphs": [
+            "When the forms are connected to a real handler, the sole purpose of processing will be to handle a commercial enquiry: to contact you back, clarify details about the crop and volume, and respond. Data will not be used for profiling, unsolicited marketing, or transfers to third parties.",
+            "The legal basis will be the data subject's consent, given by completing and submitting the form, under Ukraine's Law on Personal Data Protection (Закон України «Про захист персональних даних»). For enquiries originating from the EU, the General Data Protection Regulation (GDPR) will also apply as the framework governing that consent and the associated rights."
+          ]
+        },
+        {
+          "heading": "4. Retention period and data controller",
+          "paragraphs": [
+            "Once a handler is connected, contact-form data will be kept for as long as needed to handle the enquiry and any resulting correspondence, and in any case no longer than 12 months from the last contact, after which it will be deleted. Email addresses collected through the newsletter form will be kept until the subscriber unsubscribes or withdraws consent.",
+            "The data controller will be CENTRAGRO PLUS LLC, 4 Zarichna St, Soroka, Vinnytsia region, 22731, Ukraine. Data will not be shared with third parties except where required by law."
+          ]
+        },
+        {
+          "heading": "5. Cookies, analytics, and third-party requests",
+          "paragraphs": [
+            "This site sets no cookies, runs no analytics or advertising services, and makes no requests to third-party servers. Fonts, scripts, and images are all served from the site's own hosting.",
+            "In practice, your browser loads nothing beyond the site itself while you browse it, and no browsing behaviour is tracked in any form."
+          ]
+        },
+        {
+          "heading": "6. Your rights as a data subject",
+          "paragraphs": [
+            "Under Ukraine's Law on Personal Data Protection, you have the right to know that your data is being processed, to access it, to request correction or deletion, to withdraw consent at any time, and to lodge a complaint with Ukraine's Parliament Commissioner for Human Rights.",
+            "To exercise any of these rights, email hello@centragro.example describing your request. We respond within our working hours, Monday to Friday, 08:00-18:00, and provide a substantive reply within 30 days."
+          ],
+          "items": [
+            "Right to access your personal data",
+            "Right to correct inaccurate data",
+            "Right to erasure (the \"right to be forgotten\")",
+            "Right to withdraw consent at any time",
+            "Right to lodge a complaint with the Commissioner for Human Rights"
+          ]
+        },
+        {
+          "heading": "7. Changes to this policy",
+          "paragraphs": [
+            "If our approach to data processing changes — in particular once a real handler is connected to the forms — we will update this page and the date shown at the top. Material changes affecting your rights will be flagged on this page for 30 days after publication.",
+            "Continuing to use the site after an updated version is published means you have had the opportunity to review the current policy."
+          ]
+        }
+      ]
+    },
+    "terms": {
+      "eyebrow": "DOCUMENTS",
+      "title": "Terms of Use",
+      "lead": "These terms set out how the CENTRAGRO PLUS LLC demonstration website may be used and the status of the information published on it.",
+      "updated": "Last updated 6 August 2026",
+      "body": [
+        {
+          "heading": "1. Site operator",
+          "paragraphs": [
+            "This site is owned and operated by CENTRAGRO PLUS LLC, an agricultural producer and wholesale grain supplier, registered at 4 Zarichna St, Soroka, Vinnytsia region, 22731, Ukraine.",
+            "For any question about the site, contact hello@centragro.example or +380 (43) 219-70-40, Monday to Friday, 08:00-18:00. By using this site, you agree to the terms set out below; if you do not agree with any part of them, please do not use the site and reach out to us at the contacts above instead."
+          ]
+        },
+        {
+          "heading": "2. Informational content and illustrative figures",
+          "paragraphs": [
+            "This site is a demonstration layout. All figures, volumes, prices, delivery timelines, and photographs shown on it are illustrative only, included to demonstrate page layout and structure, and do not reflect actual commercial terms.",
+            "No text, image, or form on this site constitutes a public offer, nor a binding price quotation or availability guarantee from CENTRAGRO PLUS LLC.",
+            "This also applies to the crops section: variety descriptions, indicative moisture content, protein levels, and other agronomic figures are included as layout examples, not as the specification of a particular grain lot actually available for sale at the time you view the site."
+          ]
+        },
+        {
+          "heading": "3. Specifications, availability, and contract terms",
+          "paragraphs": [
+            "Exact crop specifications, batch volumes, delivery conditions, pricing, and timelines are negotiated individually and become legally binding only once set out in a contract signed by both parties.",
+            "Any information submitted through the contact form is treated as a preliminary enquiry, not as acceptance of terms or confirmation of a deal.",
+            "The mere mention of a product on the site does not guarantee its availability at the time of enquiry; volumes available for delivery are confirmed by CENTRAGRO PLUS LLC individually for each enquiry, taking into account the current harvest and logistics."
+          ]
+        },
+        {
+          "heading": "4. Intellectual property",
+          "paragraphs": [
+            "The text, photography, design, code, and structure of this site are protected by copyright and belong to CENTRAGRO PLUS LLC or are used under a lawful licence.",
+            "Reproducing, copying, distributing, or reusing these materials in another project without the rightsholder's written permission is prohibited, except as permitted under applicable copyright law.",
+            "The company name and any associated marks may not be used in a way that misleads readers as to the origin of a third party's goods or services."
+          ]
+        },
+        {
+          "heading": "5. Acceptable use",
+          "paragraphs": [
+            "Visitors agree not to use the site's forms to send spam, to scrape or automate data collection, to attempt to disrupt the site's operation, or to submit knowingly false information.",
+            "Because the forms have no backend, any such attempt has no technical effect, but the rules above remain the standard for proper use of the site.",
+            "It is likewise prohibited to attempt unauthorised access to the site's source code, to bypass its navigation structure through automated tools, or to use the site in any way that breaches Ukrainian law."
+          ]
+        },
+        {
+          "heading": "6. Limitation of liability",
+          "paragraphs": [
+            "CENTRAGRO PLUS LLC is not liable for decisions made on the basis of the illustrative figures shown on this demonstration site, nor for temporary unavailability of the site due to technical reasons.",
+            "The site is provided \"as is\", without any warranty as to the completeness or currency of the information displayed, beyond what is expressly confirmed in a signed contract.",
+            "This limitation does not narrow any right that is mandatory under applicable Ukrainian law and cannot be waived by contract."
+          ]
+        },
+        {
+          "heading": "7. Governing law",
+          "paragraphs": [
+            "These terms are governed by and construed in accordance with the law of Ukraine. Any dispute arising from the use of this site is to be resolved under Ukrainian law, in the jurisdiction of CENTRAGRO PLUS LLC's registered address.",
+            "If any provision of these terms is found invalid or unenforceable, the remaining provisions continue in full force."
+          ]
+        }
+      ]
+    }
   }
 }

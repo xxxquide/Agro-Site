@@ -1,5 +1,139 @@
 # Changelog
 
+## Unreleased — accessibility, blocking time, crop pages, legal pages
+
+Five phases, each measured against a screenshot matrix captured before the first
+edit. Threshold throughout: the share of pixels differing by more than 30 on any
+channel stays at or under 0.05% on existing pages. Two repeat captures of the same
+build differ by at most 0.02%, so the threshold has real headroom.
+
+    hidden from assistive tech, home, before scroll   74.0% -> 3.0%
+    headings in the accessibility tree                 1/23 -> 23/23
+    axe serious+critical, 27 pages                      100 -> 0
+    contrast failures, whole page revealed              144 -> 0
+    TBT mobile                     v1 654 -> 216   v2 678 -> 246   v3 571 -> 221
+    CLS v2 desktop                      0.028, spiking to 0.068 -> 0.0000
+    HTML files                                           92 -> 146
+    sitemap URLs                                         30 -> 48
+
+### Accessibility
+
+- The flash guard and all 46 `autoAlpha` calls moved from `visibility` to
+  `opacity`. Both render nothing; `visibility` additionally removes the node from
+  the accessibility tree and the tab order, and that selector covers most of the
+  page. A screen reader reached 3% of the home page's text and no keyboard could
+  reach a link below the first screen.
+- 68 `aria-prohibited-attr` violations had the same single cause: `aria-labelledby`
+  pointed at headings whose words were hidden, so the name resolved empty, so each
+  `<section>` stopped being a `region` and the attribute became invalid on it.
+  Stating `role="region"` makes the landmark unconditional. 66 `empty-heading`
+  violations resolved from the opacity switch alone.
+- Page heroes are no longer landmarks. Each was labelled by the H1 inside it while
+  the section below carried the same words as its own heading, so `region`
+  appeared twice under one name. `<main>` already delimits the hero.
+- Both testimonial rails and the hero fan overflow on narrow viewports and only a
+  mouse could scroll them: `tabindex`, `role="group"` and a label. The fan's cards
+  stay `aria-hidden` — they restate figures the stats section already gives
+  properly.
+- `scroll-margin-block` on focusable controls, so focus-scrolling clears both the
+  sticky header and the reveal trigger line. Focus had been landing on a link 13px
+  short of its own trigger, on a block that stayed transparent.
+
+### Blocking time
+
+- `boot()` spends its init passes across idle callbacks instead of running 83
+  ScrollTriggers and 137 tweens in one 551ms task. TBT counts only what a task
+  spends past 50ms, so one 551ms task costs 501ms and ten 55ms tasks cost 50.
+  Trigger and tween counts are unchanged; frame intervals on scroll are unchanged
+  at p50 16.7ms, p95 33.3ms, zero frames over 50ms.
+- `initMarquees` stays synchronous with the hero. Queued, the v2 card rail landed
+  on either side of the webfont reflow depending on the run, and v2's desktop CLS
+  read 0.028 or 0.068 at random.
+- A pass that throws is now caught individually instead of stranding the passes
+  behind it, and `motion-ready` is set only once every pass is in place, so a
+  3000ms failsafe can detect a boot that died midway and fall back to `no-motion`.
+  Verified by breaking `gsap.registerPlugin`: at 1.5s all 44 animated blocks are
+  hidden, at 4.5s every one is visible.
+- `geistmono.woff2` is preloaded alongside `onest.woff2`. Both are on the first
+  screen but only one was requested before the stylesheet was parsed. This removed
+  the hero reflow entirely: v2 desktop CLS went from 0.028 with spikes to 0.068 to
+  **0.0000 on ten consecutive runs**, at a cost of 12–20ms LCP.
+- Two orphaned font files removed. `build_fonts.py`, `build_images.py` and
+  `build_logo.py` had absolute output paths into a directory this repository does
+  not have, which is why the orphans survived — the stale-file cleanup was
+  clearing somewhere else.
+
+### Contrast — the only visible change
+
+Kept as its own commit so it can be reverted alone. `--grey-300` and `--lime-lo`
+are colours for dark surfaces and had drifted onto white, at 1.69:1 and 1.37:1
+against a 4.5:1 requirement. Two light-surface counterparts join them,
+`--muted-on-light` and `--lime-on-light`, with lightness the only channel moved
+and both checked against `--grey-100` as well as white — a grey panel costs about
+0.4 of a ratio point, which is why #767676 clears white and fails #f4f5f1.
+Counted with every block revealed, because axe skips what a scroll trigger is
+holding and a plain sweep saw 28 of the 144.
+
+Five of these were pre-existing bugs rather than token drift, all in v2, where a
+dark band had never been added to that variation's own on-dark rules.
+
+### Crop pages
+
+- Seven crops had shared one `/services/` page. Each now has its own at
+  `/services/<slug>/` — 42 new pages, 14 of them indexed. One row added to the
+  detail loop next to articles and profiles.
+- `templates/pages/crop.html.j2` never mentions `V` and introduces no new class,
+  so the three art directions arrive through `07-variants.css` on their own: 4–59%
+  of pixels differ between variations depending on scroll depth.
+- ~750–1000 words per crop per locale. The English is written for an international
+  buyer rather than translated — DSTU classes alongside the reference a maltster or
+  miller actually uses, Incoterms for delivery bases.
+- No figure is duplicated. The three headline numbers are parsed back out of the
+  strings the crops section already publishes, so area, yield and gross have one
+  home in the content.
+- `Product` with `additionalProperty` for all eight quality parameters, and an
+  `Offer` with availability, seller and areaServed but no price, because the site
+  publishes none.
+
+### SEO and legal
+
+- `BreadcrumbList` on every page below the root — 0 of 92 pages had one. Built
+  from the same nav labels the header renders and the same page table `url_for()`
+  resolves.
+- Privacy policy and terms of use at `/privacy/` and `/terms/`, in both locales
+  and all three variations. The form had been collecting a name, an e-mail and a
+  phone number under a consent line that promised a document which did not exist.
+  Both are real working documents, and both state plainly that the forms have no
+  backend and transmit nothing — which will need updating the day a handler is
+  connected.
+- The consent line under the contact form now links to the privacy policy. Its
+  middle clause became the link, the sentence is unchanged word for word, and `a`
+  inherits colour with no decoration, so the line occupies the same pixels.
+- `Organization` gained a `contactPoint`. `sameAs`, `taxID`, `vatID` and
+  `priceRange` have content keys and appear the moment they are filled in — an
+  invented ЄДРПОУ code in a knowledge graph is worse than a missing one.
+- `robots.txt` names GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot, Claude-Web,
+  PerplexityBot, Google-Extended, Applebot-Extended, CCBot and meta-externalagent
+  explicitly. `User-agent: *` already allowed them; it allowed them by silence.
+- No `llms.txt`. Ahrefs surveyed 137 000 domains and 97% of those files received
+  no request in a month, and Google has said it ignores them.
+- `FAQPage` markup kept and documented as producing no rich result.
+
+### Quality assurance
+
+- `tools/verify.py` derives its expected page counts from the content files
+  instead of three hardcoded literals, and gained the cross-page checks no
+  per-page pass can make: the sitemap set against the indexable set, duplicate
+  titles and descriptions, self-canonical, hreflang reciprocity, `Product` with
+  `additionalProperty` on crop pages, `BreadcrumbList` below the root, and
+  Cyrillic leaking onto an English page. All zero.
+- `docs/ARCHITECTURE.md` and `docs/CONTENT-GUIDE.md` added. The first documents
+  the motion contract, so the next person does not restore `visibility: hidden`
+  believing `opacity` to be sloppiness. The second maps every fact on the site to
+  the key that holds it.
+- README's weight table re-measured. It had promised 97.0 KB for `index.html`
+  against an actual 155.2 KB — a 59% gap, snapped eight commits earlier.
+
 ## Unreleased — UI/UX pass 3: measured geometry
 
 Pass 2 signed its defect matrix off by eye and several rows were still failing.

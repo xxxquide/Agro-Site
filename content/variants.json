@@ -1,6 +1,5 @@
 {
   "_comment": "Three site variations. Content is shared (it is one company); what differs is layout — which hero, which section order, which about/contact treatment, which photographs. This mirrors how the source template's home/about/contact variants differ from each other.",
-
   "variants": [
     {
       "id": "v1",
@@ -14,11 +13,26 @@
       "hero_align": "center",
       "accent_widget": "fan",
       "home_sections": [
-        "logos", "about", "crops", "capacity", "process",
-        "geo", "terms", "testimonials", "faq", "news", "cta"
+        "logos",
+        "about",
+        "crops",
+        "capacity",
+        "process",
+        "geo",
+        "terms",
+        "testimonials",
+        "faq",
+        "news",
+        "cta"
       ],
       "about_layout": "journey",
-      "about_sections": ["intro", "stats", "team", "journey", "cta"],
+      "about_sections": [
+        "intro",
+        "stats",
+        "team",
+        "journey",
+        "cta"
+      ],
       "contact_layout": "split",
       "services_hero": "tags",
       "team_style": "cards"
@@ -35,11 +49,28 @@
       "hero_align": "left",
       "accent_widget": "card-rail",
       "home_sections": [
-        "about", "logos", "crops", "capacity", "tagmarquee",
-        "terms", "process", "testimonials", "geo", "faq", "news", "cta"
+        "about",
+        "logos",
+        "crops",
+        "capacity",
+        "tagmarquee",
+        "terms",
+        "process",
+        "testimonials",
+        "geo",
+        "faq",
+        "news",
+        "cta"
       ],
       "about_layout": "journey-testimonials",
-      "about_sections": ["intro", "stats", "team", "journey", "cta", "testimonials"],
+      "about_sections": [
+        "intro",
+        "stats",
+        "team",
+        "journey",
+        "cta",
+        "testimonials"
+      ],
       "contact_layout": "centred-photo",
       "services_hero": "plain",
       "team_style": "rail"
@@ -56,22 +87,68 @@
       "hero_align": "center",
       "accent_widget": "logo-bar",
       "home_sections": [
-        "about", "crops", "testimonials", "capacity", "terms",
-        "process", "geo", "faq", "news", "cta"
+        "about",
+        "crops",
+        "testimonials",
+        "capacity",
+        "terms",
+        "process",
+        "geo",
+        "faq",
+        "news",
+        "cta"
       ],
       "about_layout": "mission",
-      "about_sections": ["intro", "team", "mission", "stats", "testimonials", "cta"],
+      "about_sections": [
+        "intro",
+        "team",
+        "mission",
+        "stats",
+        "testimonials",
+        "cta"
+      ],
       "contact_layout": "centred-plain",
       "services_hero": "tags",
       "team_style": "grid-wide"
     }
   ],
-
   "pages": [
-    { "id": "home",     "file": "index.html",         "nav": false },
-    { "id": "about",    "file": "about/index.html",    "nav": true },
-    { "id": "services", "file": "services/index.html", "nav": true },
-    { "id": "blog",     "file": "blog/index.html",     "nav": true },
-    { "id": "contacts", "file": "contacts/index.html", "nav": true }
+    {
+      "id": "home",
+      "file": "index.html",
+      "nav": false
+    },
+    {
+      "id": "about",
+      "file": "about/index.html",
+      "nav": true
+    },
+    {
+      "id": "services",
+      "file": "services/index.html",
+      "nav": true
+    },
+    {
+      "id": "blog",
+      "file": "blog/index.html",
+      "nav": true
+    },
+    {
+      "id": "contacts",
+      "file": "contacts/index.html",
+      "nav": true
+    },
+    {
+      "id": "privacy",
+      "file": "privacy/index.html",
+      "nav": false,
+      "template": "legal"
+    },
+    {
+      "id": "terms",
+      "file": "terms/index.html",
+      "nav": false,
+      "template": "legal"
+    }
   ]
 }
