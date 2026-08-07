@@ -47,6 +47,24 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/contacts/"/>
   </url>
   <url>
+    <loc>https://xxxquide.github.io/Agro-Site/privacy/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/privacy/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/terms/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/terms/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/terms/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/terms/"/>
+  </url>
+  <url>
     <loc>https://xxxquide.github.io/Agro-Site/blog/winter-wheat-harvest/</loc>
     <lastmod>2026-08-06</lastmod>
     <changefreq>monthly</changefreq>
@@ -243,6 +261,24 @@
     <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/contacts/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/contacts/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/contacts/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/en/privacy/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/privacy/"/>
+  </url>
+  <url>
+    <loc>https://xxxquide.github.io/Agro-Site/en/terms/</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://xxxquide.github.io/Agro-Site/terms/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xxxquide.github.io/Agro-Site/en/terms/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xxxquide.github.io/Agro-Site/terms/"/>
   </url>
   <url>
     <loc>https://xxxquide.github.io/Agro-Site/en/blog/winter-wheat-harvest/</loc>

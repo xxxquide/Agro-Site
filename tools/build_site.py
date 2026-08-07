@@ -313,6 +313,12 @@ def page_seo(c, page_id, variant):
     # A page lead is written for the page, not for a search result, so several
     # are too short to be useful as a description. Extend them from the page's
     # own data rather than authoring a second set of strings per locale.
+    if page_id in c.get("legal", {}):
+        doc = c["legal"][page_id]
+        return {"title": f'{doc["title"]} — {brand}',
+                "description": " ".join(doc["lead"].split())[:165],
+                "keywords": None, "og_title": doc["title"],
+                "og_description": " ".join(doc["lead"].split())[:165]}
     joiner = " · "
     src = {
         "about":    (c["about"]["title"], c["about"]["lead"]),
@@ -352,7 +358,8 @@ def detail_seo(c, item, kind):
     }
 
 
-def build_jsonld(c, lang, canonical, page_id, seo, entity=None, crumbs=None):
+def build_jsonld(c, lang, canonical, page_id, seo, entity=None, crumbs=None,
+                 imgs=None):
     org_id = BASE + "#org"
     addr = {
         "@type": "PostalAddress",
@@ -393,7 +400,26 @@ def build_jsonld(c, lang, canonical, page_id, seo, entity=None, crumbs=None):
             {"@type": "Person", "name": m["name"], "jobTitle": m["role"]}
             for m in c["team"]["items"]
         ],
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "sales",
+            "telephone": c["contact"]["phone"],
+            "email": c["contact"]["email"],
+            "availableLanguage": ["uk", "en"],
+            "areaServed": {"@type": "Country", "name": "Ukraine"},
+        },
     }
+
+    # sameAs, taxID and vatID are real identifiers or they are nothing — an
+    # invented ЄДРПОУ code in a knowledge graph is worse than a missing one. The
+    # keys exist in the content file and the markup appears the moment the owner
+    # fills them in, so nobody has to touch a template at launch.
+    if c["brand"].get("same_as"):
+        org["sameAs"] = c["brand"]["same_as"]
+    if c["brand"].get("tax_id"):
+        org["taxID"] = c["brand"]["tax_id"]
+    if c["brand"].get("vat_id"):
+        org["vatID"] = c["brand"]["vat_id"]
 
     place = {
         "@type": "LocalBusiness", "@id": BASE + "#place",
@@ -408,7 +434,12 @@ def build_jsonld(c, lang, canonical, page_id, seo, entity=None, crumbs=None):
             "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
             "opens": "08:00", "closes": "18:00",
         }],
+        "areaServed": {"@type": "Country", "name": "Ukraine"},
     }
+    # Same rule as the identifiers above: this site quotes no prices, so the
+    # field waits for a value rather than guessing a band.
+    if c["seo"].get("price_range"):
+        place["priceRange"] = c["seo"]["price_range"]
 
     site = {"@type": "WebSite", "@id": BASE + "#site", "url": BASE,
             "name": c["brand"]["name"], "publisher": {"@id": org_id},
@@ -486,13 +517,18 @@ def build_jsonld(c, lang, canonical, page_id, seo, entity=None, crumbs=None):
             "headline": entity["title"], "description": entity["excerpt"],
             "datePublished": entity["iso"], "dateModified": entity["iso"],
             "mainEntityOfPage": {"@id": canonical + "#page"},
-            "image": BASE + f'assets/img/{entity["img"]}-880.webp',
+            # Every width the manifest holds, largest last. Google asks for
+            # several aspect ratios as well; the news photography is 3:2 only, so
+            # that part needs new crops out of build_images.py and is noted in
+            # docs/CONTENT-GUIDE.md rather than faked by relabelling one file.
+            "image": [BASE + f'assets/img/{entity["img"]}-{w}.webp'
+                      for w in imgs[entity["img"]]["widths"]],
             "author": {"@id": org_id}, "publisher": {"@id": org_id},
             "inLanguage": lang,
         }
         graph.append(article)
         page["mainEntity"] = {"@id": article["@id"]}
-        page["primaryImageOfPage"] = {"@type": "ImageObject", "url": article["image"]}
+        page["primaryImageOfPage"] = {"@type": "ImageObject", "url": article["image"][-1]}
 
     if page_id == "crop" and entity:
         # additionalProperty is the substance here: moisture, protein, test
@@ -544,7 +580,20 @@ def build_jsonld(c, lang, canonical, page_id, seo, entity=None, crumbs=None):
 
 def build_side_files(uk, indexed_urls):
     write(".nojekyll", "")
-    write("robots.txt", f"User-agent: *\nAllow: /\n\nSitemap: {BASE}sitemap.xml\n")
+    # "User-agent: * / Allow: /" already permits every one of these, but it
+    # permits them by silence. Naming them makes the decision auditable, and means
+    # a future change of mind is a one-line edit in a file that already says what
+    # the policy is rather than an argument about what the default meant.
+    ai_agents = ["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot",
+                 "Claude-Web", "PerplexityBot", "Google-Extended",
+                 "Applebot-Extended", "CCBot", "meta-externalagent"]
+    lines = ["# Every crawler is welcome, including the AI ones named below.",
+             "# This site exists to be found and quoted.",
+             "User-agent: *", "Allow: /", ""]
+    for agent in ai_agents:
+        lines += [f"User-agent: {agent}", "Allow: /", ""]
+    lines += [f"Sitemap: {BASE}sitemap.xml", ""]
+    write("robots.txt", "\n".join(lines))
 
     urls = []
     for loc, lang in indexed_urls:
@@ -603,8 +652,11 @@ def build_crumbs(c, lang_prefix, vslug, page_files, page_id, item=None):
     trail = [(c["detail_labels"]["crumb_home"],
               section_url(lang_prefix, vslug, page_files["home"]))]
     if page_id != "home":
-        trail.append((nav_labels.get(page_id, page_id),
-                      section_url(lang_prefix, vslug, page_files[page_id])))
+        # nav_pages does not list the legal documents — they are reached from the
+        # consent line and from each other, not from the menu — so their label
+        # comes from the document itself.
+        label = nav_labels.get(page_id) or c.get("legal", {}).get(page_id, {}).get("title") or page_id
+        trail.append((label, section_url(lang_prefix, vslug, page_files[page_id])))
     if item is not None:
         trail.append((item.get("name") or item["title"], None))
     return trail
@@ -738,7 +790,8 @@ def main():
 
                 variants_rel = posixpath.relpath("variants.html", page_dir or ".")
 
-                html = env.get_template(f"pages/{pg['id']}.html.j2").render(
+                template_name = pg.get("template", pg["id"])
+                html = env.get_template(f"pages/{template_name}.html.j2").render(
                     c=c, V=V, p=prefix, imgs=imgs,
                     base=BASE, canonical=canonical, seo=seo, noindex=noindex,
                     page_id=pg["id"], year=BUILD_YEAR,
@@ -845,7 +898,7 @@ def main():
                         variants_url=variants_rel,
                         variant_switch_label=(V["label"] if lang == "uk" else V["label_en"]),
                         jsonld=Markup(build_jsonld(
-                            c, lang, canonical, kind, seo, item,
+                            c, lang, canonical, kind, seo, item, imgs=imgs,
                             crumbs=[(n, u or canonical) for n, u in build_crumbs(
                                 c, lang_prefix, V["slug"], page_files, parent_id,
                                 item)])),

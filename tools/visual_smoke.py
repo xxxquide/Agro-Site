@@ -53,6 +53,17 @@ DEFAULT_PAGES = [
     "en/index.html",
     "en/blog/no-till-first-season/index.html",
     "en/about/team/serhii-kushnir/index.html",
+    # Crop and legal pages, one per variation. They are new templates rather than
+    # restatements of an audited layout, so leaving them out of a hand-picked list
+    # is a coverage gap rather than a saving.
+    "services/winter-wheat/index.html",
+    "v2/services/corn/index.html",
+    "v3/services/sugar-beet/index.html",
+    "en/services/winter-wheat/index.html",
+    "privacy/index.html",
+    "terms/index.html",
+    "v2/privacy/index.html",
+    "en/terms/index.html",
 ]
 VIEWPORTS = {
     "compact": (320, 568),

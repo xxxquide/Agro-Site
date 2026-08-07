@@ -838,7 +838,13 @@
   </div>
   <div class="form__ok" aria-live="polite">{{ I.tick() }}<span>{{ c.contact.form.demo_notice }}</span></div>
   <button class="btn" type="submit">{{ c.contact.form.submit }}<span class="btn__badge">{{ I.arrow() }}</span></button>
-  <p class="form__note">{{ c.contact.form.note }}</p>
+  {#- The consent line is where a privacy policy belongs, and until now it
+      promised a document that did not exist. Its middle clause becomes the link:
+      the sentence is unchanged word for word, and `a` inherits colour with no
+      decoration, so the line occupies exactly the same pixels. The link is
+      therefore invisible at rest — it underlines on hover, matching .cinfo__v a
+      — which is noted in the report as something the owner may want louder. -#}
+  <p class="form__note">{{ c.contact.form.note_before }}<a class="form__note-link" href="{{ url_for('privacy') }}">{{ c.contact.form.note_link }}</a>{{ c.contact.form.note_after }}</p>
 </form>
 {%- endmacro -%}
 

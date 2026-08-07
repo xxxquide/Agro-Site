@@ -16,6 +16,9 @@
 {%- endif %}
 <meta name="author" content="{{ c.brand.legal }}">
 <meta name="robots" content="{{ 'noindex, follow' if noindex else 'index, follow, max-image-preview:large' }}">
+{%- if c.seo.google_site_verification %}
+<meta name="google-site-verification" content="{{ c.seo.google_site_verification }}">
+{%- endif %}
 <meta name="theme-color" content="#131313">
 <meta name="format-detection" content="telephone=no">
 

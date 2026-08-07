@@ -318,6 +318,17 @@ def budgets():
 
 BASE = "https://xxxquide.github.io/Agro-Site/"
 
+# Cyrillic that belongs on an English page, spelled out so the list is a decision
+# rather than a loophole. The brand appears in its own alphabet in the logo lockup
+# and the legal name; the statute is cited by its official Ukrainian title
+# alongside the English one, which is how a citation is supposed to read — an
+# English-only paraphrase of a Ukrainian law is less useful, not more. Anything
+# outside this set is untranslated copy that leaked through.
+CYRILLIC_ALLOWED = {
+    "ЦЕНТРАГРО", "ПЛЮС", "ТОВ",
+    "Закон", "України", "Про", "захист", "персональних", "даних",
+}
+
 
 def canonical_of(page):
     """The URL a page should declare as its own canonical."""
@@ -379,9 +390,7 @@ def check_site_graph():
             body = re.sub(r"(?is)<script.*?</script>|<style.*?</style>", "", html)
             body = re.sub(r"(?s)<[^>]+>", " ", body)
             cyr = re.findall(r"[\u0400-\u04FF]+", body)
-            # The language switch legitimately says UA, and the legal name is
-            # transliterated in the footer's own copy; anything else is a leak.
-            leaked = [w for w in cyr if w not in ("ЦЕНТРАГРО", "ПЛЮС", "ТОВ")]
+            leaked = [w for w in cyr if w not in CYRILLIC_ALLOWED]
             if leaked:
                 fail(f"{page}: Cyrillic words on an English page: {sorted(set(leaked))[:8]}")
 

@@ -1226,6 +1226,12 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   box-shadow: 0 0 0 3px rgba(180, 35, 24, .12);
 }
 .form__note { font-size: var(--fs-xs); color: var(--muted-on-light); max-width: 46ch; }
+/* Underline on hover and on focus only, the way .cinfo__v a does it. At rest
+   the link is indistinguishable from the sentence around it, which is what
+   keeps the consent line pixel-identical; a permanent underline would be the
+   better link and a visual change nobody asked this pass to make. */
+.form__note-link:hover,
+.form__note-link:focus-visible { border-bottom: 1px solid currentColor; }
 .form__ok {
   display: none;
   gap: .6rem;
