@@ -1480,7 +1480,11 @@
         ],
         "head": "Wheat",
         "sub": "t/ha · 2021–2025",
-        "delta": "+18.5% over 5 years"
+        "delta": "+18.5% over 5 years",
+        "fig": "6.4",
+        "fig_unit": "t/ha",
+        "cap_k": "Five-season trend",
+        "cap_v": "+18.5%"
       },
       {
         "widget": "bars",
@@ -1511,7 +1515,11 @@
         "total": "58,000",
         "total_unit": "t",
         "key_a": "Elevator",
-        "key_b": "Floor stores"
+        "key_b": "Floor stores",
+        "fig": "58,000",
+        "fig_unit": "t",
+        "cap_k": "Used for segregated storage",
+        "cap_v": "79%"
       },
       {
         "widget": "orbit",
@@ -1525,7 +1533,11 @@
           "Vinnytsia 85 km"
         ],
         "head": "Delivery reach",
-        "sub": "from the elevator"
+        "sub": "from the elevator",
+        "fig": "4",
+        "fig_unit": "channels",
+        "cap_k": "Where the grain goes",
+        "cap_v": "no transfers"
       },
       {
         "widget": "lab",
@@ -1555,7 +1567,11 @@
         ],
         "head": "Lot protocol",
         "sub": "every dispatch",
-        "badge": "4/4"
+        "badge": "4/4",
+        "fig": "4/4",
+        "fig_unit": "measures",
+        "cap_k": "Protocol before dispatch",
+        "cap_v": "every lot"
       }
     ],
     "title_rich": "Why grain arrives [[shield]] at the quality we weighed it at"

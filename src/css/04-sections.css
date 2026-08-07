@@ -112,19 +112,33 @@
   perspective: 1600px;
   perspective-origin: 50% 40%;
   padding-inline: var(--gutter);
-  /* The outermost cards are pushed ~50px below the flex baseline by their fan
+  /* The outermost cards are pushed ~61px below the flex baseline by their fan
      transform, and each carries a 13px shadow. Without this reserve the hero's
      clip cut the bottom off the outer cards — the single most visible fault on
-     the opening screen. */
-  padding-bottom: 4.25rem;
-  transform-style: preserve-3d;
+     the opening screen. Deepening the arc in fan_transforms() moved that drop
+     from ~50px to ~61px, so the reserve grew with it and still leaves ~23px of
+     slack for the shadow. The idle levitation adds 6px more travel, which the
+     same slack absorbs. */
+  padding-bottom: 5.25rem;
+  /* Deliberately flat, not preserve-3d. `perspective` above is what gives the
+     cards their depth and it reaches the children either way; preserve-3d only
+     decides whether those children share a single 3D space. What it also does
+     in Chromium is break hit-testing for them — with preserve-3d the deepest
+     hovered node is .fan itself, so :hover never reached a card and the hover
+     lift silently did nothing. Confirmed by toggling the property at runtime.
+     Nothing is lost visually: the cards never intersect, and their paint order
+     is already pinned by the z-index on .fan__item rather than by depth
+     sorting. */
+  transform-style: flat;
 }
 .fan__item { flex: none; width: clamp(8.5rem, 12vw, 11.5rem); z-index: var(--z); }
-/* Short windows: shrink the fan rather than letting it eat the headline. */
+/* Short windows: shrink the fan rather than letting it eat the headline. The
+   cards get smaller but their fan transform does not, so this reserve has to
+   clear the same ~61px drop as the full-height one. */
 @media (max-height: 46rem) and (min-width: 64rem) {
   .fan__item { width: clamp(7.25rem, 10vw, 9.5rem); }
   .fcard { height: 10.5rem; }
-  .fan { padding-bottom: 3.25rem; }
+  .fan { padding-bottom: 4.25rem; }
 }
 
 .fcard {
@@ -142,20 +156,26 @@
 }
 .fcard--dark { background: var(--ink); color: var(--white); }
 .fcard--lime { background: var(--lime); }
+/* The card's own name — what the card is *about*. It is the primary label on
+   a widget this small, so it carries a little more size than the note beneath
+   it; the note stays where it was, because enlarging both would flatten the
+   hierarchy rather than sharpen it. */
 .fcard__l {
   font-family: var(--mono);
-  font-size: .53rem;
-  letter-spacing: .11em;
+  font-size: .575rem;
+  letter-spacing: .105em;
   text-transform: uppercase;
   color: var(--text-2);
   line-height: 1.3;
 }
 .fcard--dark .fcard__l { color: var(--on-dark-2); }
 .fcard--lime .fcard__l { color: #4a6110; }
+/* The headline figure. Bumped from 1.7rem: it is the one thing a visitor is
+   meant to read off the fan from across the viewport. */
 .fcard__big {
-  font-size: 1.7rem;
+  font-size: 1.9rem;
   font-weight: var(--fw-medium);
-  letter-spacing: -.06em;
+  letter-spacing: -.062em;
   line-height: 1;
   margin-top: auto;
 }
@@ -322,8 +342,11 @@
   background: var(--grey-100);
   border-radius: var(--r-md);
   padding: clamp(.9rem, 1.7vw, 1.3rem) clamp(.9rem, 1.7vw, 1.3rem) clamp(1.3rem, 2.4vw, 1.9rem);
-  aspect-ratio: 400 / 250;
-  min-height: 14.5rem;
+  /* The plate now occupies the top ~3.5rem of the panel, so the panel is taller
+     than it was: keeping the old ratio would have taken that height straight
+     out of the instrument and squeezed the readouts. */
+  aspect-ratio: 400 / 305;
+  min-height: 18rem;
   /* An aspect-ratio box derives whichever dimension is not constrained — with a
      min-height tall enough to bind, it starts inflating its own WIDTH and pushes
      the page into a horizontal scroll. The cap keeps the ratio advisory. */
@@ -332,6 +355,101 @@
   flex-direction: column;
   justify-content: stretch;
 }
+/* --- capacity: the instrument stands on a tilted plate -------------------
+   Two layers. The plate behind is where the card publishes its name and its
+   one headline figure; the instrument in front holds the readout. The tilt is
+   small (2.4deg) and pivots on the plate's bottom-left corner, so the plate
+   reads as something the instrument was set down on rather than as a card that
+   failed to align.
+
+   The plate is in normal reading order and is not aria-hidden — the figure on
+   it exists nowhere else in the card, so hiding it would cost a screen reader
+   the number. */
+.cap__stage { position: relative; display: flex; flex-direction: column; flex: 1; }
+.cap__back {
+  position: absolute;
+  /* Not flush to the top of the bench. A rotation lifts the far end of the
+     plate by tan(angle) x its length, and at the one-column breakpoint the
+     cards are wide enough for that to be ~10px — enough to push the plate's
+     corner up out of the grey panel. This inset is the headroom that lift
+     needs, which is also why the angle is small. */
+  inset: .65rem 7% auto 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-md);
+  background: linear-gradient(150deg, var(--field-2), var(--ink) 62%);
+  border-radius: var(--r-md);
+  /* Deep bottom padding: the instrument overlaps the plate, and this is the
+     strip that stays visible underneath it. */
+  padding: .8rem 1.05rem 2.1rem;
+  transform: rotate(-1.5deg);
+  transform-origin: 8% 100%;
+  box-shadow: 0 16px 34px -16px #07150e8c;
+  transition: transform var(--dur-md) var(--ease-out);
+}
+.cap__back-l b {
+  display: block;
+  color: var(--white);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  letter-spacing: -.02em;
+}
+.cap__back-l span,
+.cap__back-r i {
+  display: block;
+  font-family: var(--mono);
+  font-size: .5625rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--on-dark-2);
+  margin-top: .3rem;
+  font-style: normal;
+}
+.cap__back-r { text-align: right; flex: none; }
+.cap__back-r b {
+  display: block;
+  color: var(--white);
+  font-size: 1.4rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: -.045em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.cap__stage .gauge {
+  position: relative;
+  /* Clears the plate's label block with room to spare. At 3.5rem the sub-label
+     sat 2-4px off the instrument's top edge, which read as a collision. */
+  margin-top: 4.6rem;
+  flex: 1;
+  transition: transform var(--dur-md) var(--ease-out);
+}
+/* The mono caption strip that replaced the instrument's old dark header: the
+   name and the figure moved to the plate, so what is left here is the one line
+   that says what the readout underneath is measuring. */
+.gauge__cap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-md);
+  font-family: var(--mono);
+  font-size: .5625rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted-on-light);
+  padding-bottom: .6rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: .4rem;
+}
+.gauge__cap em { font-style: normal; color: var(--ink); }
+/* On hover the stack opens: the plate swings a little further out and the
+   instrument settles, which reads as two separate objects rather than one
+   printed graphic. */
+@media (hover: hover) and (pointer: fine) {
+  .cap__card:hover .cap__back { transform: rotate(-2.9deg) translateY(-4px); }
+  .cap__card:hover .cap__stage .gauge { transform: translateY(3px); }
+}
+
 /* Pinned to the bottom of the card, so every card's heading sits on one line. */
 .cap__txt { display: flex; flex-direction: column; gap: var(--s-sm); margin-top: auto; }
 .cap__txt p { font-size: var(--fs-sm); color: var(--text-2); }

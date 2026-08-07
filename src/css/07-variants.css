@@ -68,6 +68,16 @@
    instrument stands on. */
 .v2 #capacity .cap__viz { background: rgba(0, 0, 0, .3); }
 .v2 #capacity .cap__txt p { color: var(--on-dark-2); }
+/* The plate behind the instrument is near-black by default, which is invisible
+   against this band. v2's whole grammar is hairline borders instead of fills,
+   so the plate becomes an outline here and the figure picks up the lime the
+   band already uses for accents. */
+.v2 #capacity .cap__back {
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid var(--line-dark-2);
+  box-shadow: none;
+}
+.v2 #capacity .cap__back-r b { color: var(--lime); }
 
 .v2 #terms .plan {
   background: rgba(255, 255, 255, .05);
@@ -191,6 +201,28 @@
 .v3 .value { border-top: 1px solid var(--border); border-radius: 0; padding: var(--s-xl) 0 0; }
 .v3 .cap__card { border-top: 1px solid var(--border); border-radius: 0; padding: var(--s-huge) 0 0; }
 .v3 .cap__viz { background: transparent; border-radius: 0; padding: 0; min-height: 0; }
+/* v3 has no card containers at all, so a tilted plate would be the one boxed,
+   shadowed, rotated object on the page. The two tiers of information survive —
+   the card's name and its headline figure still lead the block — but they are
+   set as a plain typographic band on a rule, with no fill, no tilt and no
+   shadow, and the instrument follows directly underneath. */
+.v3 .cap__back {
+  position: static;
+  inset: auto;
+  background: none;
+  border-radius: 0;
+  border-top: 1px solid var(--border);
+  padding: var(--s-md) 0 0;
+  transform: none;
+  box-shadow: none;
+  align-items: baseline;
+}
+.v3 .cap__back-l b { color: var(--text); font-weight: var(--fw-light); font-size: var(--fs-lg); }
+.v3 .cap__back-l span, .v3 .cap__back-r i { color: var(--muted-on-light); }
+.v3 .cap__back-r b { color: var(--text); font-weight: var(--fw-light); font-size: 1.75rem; }
+.v3 .cap__stage .gauge { margin-top: var(--s-lg); }
+.v3 #capacity .cap__card:hover .cap__back,
+.v3 #capacity .cap__card:hover .cap__stage .gauge { transform: none; }
 .v3 .faq__i { border-bottom: 1px solid var(--border); border-radius: 0; }
 .v3 .faq__q { padding-inline: 0; }
 .v3 .faq__a { padding-inline: 0; }

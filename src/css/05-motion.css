@@ -125,6 +125,51 @@ h1 .w, .h-iconic .w, .stat__v .w, .post__title .w {
     scale(var(--sc));
 }
 
+/* --- hero fan: idle levitation ------------------------------------------
+   The bob lives on .fcard, one level in, rather than on .fan__item. The item's
+   transform is a composition of the per-card custom properties written by
+   fan_transforms(), and an animation on that same property would replace the
+   whole fan geometry instead of adding to it — every card would snap flat the
+   moment the animation started. Animating the child composes with the parent
+   for free.
+
+   Phase comes off --i so the cards drift out of step; the amplitude is 6px,
+   inside the shadow reserve .fan already holds. transform only, so this stays
+   on the compositor and costs no layout. */
+@keyframes fanFloat {
+  from { transform: translate3d(0, 2px, 0); }
+  to   { transform: translate3d(0, -4px, 0); }
+}
+.fan__item .fcard {
+  animation: fanFloat 6.5s var(--ease-soft) infinite alternate;
+  animation-delay: calc(var(--i, 0) * -.62s);
+}
+
+/* --- hero fan: hover brings one card toward the viewer -------------------
+   The hover state re-declares the whole transform rather than transitioning a
+   custom property, so it works without @property support: the browser
+   interpolates `transform` natively, and the per-card values stay in play
+   because the hover rule reads the same variables. rotateY/rotateZ relax
+   toward zero so the card turns to face the visitor as it comes forward, and
+   z-index lifts it clear of the neighbours it would otherwise grow into.
+
+   Pausing the float stops the bob from fighting the pop mid-hover. */
+@media (hover: hover) and (pointer: fine) {
+  .fan__item { transition: transform var(--dur-md) var(--ease-out); }
+  .fan__item .fcard { transition: box-shadow var(--dur-md) var(--ease-out); }
+  .fan__item:hover {
+    transform:
+      translateY(calc(var(--ty) - 8px)) translateZ(calc(var(--tz) + 78px))
+      rotateY(calc(var(--ry) * .5)) rotateZ(calc(var(--rz) * .35))
+      scale(calc(var(--sc) + .025));
+    z-index: 40;
+  }
+  .fan__item:hover .fcard {
+    animation-play-state: paused;
+    box-shadow: var(--shadow-lift);
+  }
+}
+
 /* --- soft continuous drift, for widgets that would otherwise sit dead --- */
 @keyframes drift {
   from { transform: translate3d(0, 0, 0); }
@@ -198,5 +243,11 @@ h1 .w, .h-iconic .w, .stat__v .w, .post__title .w {
   .ukraine-map__route { stroke-dashoffset: 0 !important; }
   .stats-card__spark i { transform: none !important; }
 
+  /* The blanket rule above collapses every animation to .001ms with a single
+     iteration, which for an `alternate` loop means it lands on the `to` frame
+     and stays there — the fan would sit permanently 4px high. Switch the
+     levitation off outright instead. The !important transform below also
+     neutralises the hover pop, so hovering a card is a no-op here. */
+  .fan__item .fcard { animation: none !important; }
   .fan__item { transform: rotateY(var(--ry)) rotateZ(var(--rz)) !important; }
 }

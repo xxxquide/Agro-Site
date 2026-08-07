@@ -211,7 +211,20 @@ def fan_transforms(n):
 
     rotateZ is kept small (max ~1.5deg): at 4deg the small cards read as
     accidentally skewed rather than fanned, which is what "слегка криво" meant.
-    The arc now comes from rotateY and depth instead.
+    The arc comes from rotateY and depth instead.
+
+    The quadratic term on translateY is what turns the row into an arc rather
+    than a straight line, so it is the knob that decides "how curved". It stays
+    restrained on purpose — the brief asked for a row that reads *slightly*
+    bowed, not for a carousel ring — and it cannot grow without bound: the
+    outermost card's ty has to stay inside the shadow reserve .fan holds in its
+    padding-bottom, or the hero's clip takes the bottom off the outer cards and
+    the geometry audit reports it as a clipped shadow. At the values below the
+    outer card sits 60.9px low against an 84px reserve.
+
+    `i` rides along so the stylesheet can give each card its own levitation
+    phase. Deriving that phase from `z` instead would mirror left against
+    right, and the fan would breathe in symmetric pairs rather than drift.
     """
     mid = (n - 1) / 2
     out = []
@@ -219,11 +232,12 @@ def fan_transforms(n):
         a = i - mid
         d = abs(a)
         out.append({
-            "ry": round(-a * 9.5, 2),
+            "i": i,
+            "ry": round(-a * 10.2, 2),
             "rz": round(a * 0.5, 2),
-            "ty": round(d * d * 4.0 + d * 4.6, 1),
-            "tz": round(-d * 30, 1),
-            "sc": round(1 - d * 0.016, 3),
+            "ty": round(d * d * 5.2 + d * 4.7, 1),
+            "tz": round(-d * 36, 1),
+            "sc": round(1 - d * 0.018, 3),
             "z": n - int(d * 2),
         })
     return out

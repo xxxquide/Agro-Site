@@ -157,7 +157,7 @@
 <div class="fan" tabindex="0" role="group" aria-label="{{ c.a11y.fan_widgets }}">
   {%- for card in c.hero.cards %}
   {%- set f = fan[loop.index0] %}
-  <div class="fan__item" style="--ry:{{ f.ry }}deg;--rz:{{ f.rz }}deg;--ty:{{ f.ty }}px;--tz:{{ f.tz }}px;--sc:{{ f.sc }};--z:{{ f.z }}" aria-hidden="true">{{ fcard(card, loop.index0) }}</div>
+  <div class="fan__item" style="--i:{{ f.i }};--ry:{{ f.ry }}deg;--rz:{{ f.rz }}deg;--ty:{{ f.ty }}px;--tz:{{ f.tz }}px;--sc:{{ f.sc }};--z:{{ f.z }}" aria-hidden="true">{{ fcard(card, loop.index0) }}</div>
   {%- endfor %}
 </div>
 {%- endmacro -%}
@@ -347,19 +347,19 @@
         <div class="cap__meta"><span class="icon-badge" aria-hidden="true">{{ I.icon(capacity_icons[card.widget]) }}</span><span>{{ '%02d' % loop.index }}</span></div>
         <div class="cap__viz"
              {% if card.widget == 'chart' %}data-chart{% elif card.widget == 'bars' %}data-bars{% elif card.widget == 'orbit' %}data-orbit{% elif card.widget == 'lab' %}data-lab{% endif %}>
-          {#- Every readout sits in the same instrument: white card on the
-              template's 5px module, dark strip across the top with a title, a
-              muted caption and an icon, readout beneath. -#}
+          {#- Two layers. A dark plate carries the card's name and its headline
+              figure and sits tilted behind; the instrument itself sits square
+              in front of it, holding a mono caption strip and the readout.
+              Neither layer is aria-hidden: the plate is where the figure is
+              published, so hiding it would cost a screen reader the number. -#}
+          <div class="cap__stage">
+            <div class="cap__back">
+              <span class="cap__back-l"><b>{{ card.head }}</b><span>{{ card.sub }}</span></span>
+              <span class="cap__back-r"><b>{{ card.fig }}</b><i>{{ card.fig_unit }}</i></span>
+            </div>
           <div class="gauge">
-            <div class="gauge__head">
-              <span>
-                <b class="gauge__title">{{ card.head }}</b>
-                <small class="gauge__sub">{{ card.sub }}</small>
-              </span>
-              {%- if card.widget == 'chart' %}<span class="delta delta--dark">{{ card.delta }}</span>
-              {%- elif card.widget == 'lab' %}<span class="delta delta--dark">{{ card.badge }}</span>
-              {%- else %}<span class="gauge__icon" aria-hidden="true">{{ I.icon(capacity_icons[card.widget]) }}</span>
-              {%- endif %}
+            <div class="gauge__cap">
+              <span>{{ card.cap_k }}</span><em>{{ card.cap_v }}</em>
             </div>
             <div class="gauge__body">
           {%- if card.widget == 'chart' %}
@@ -432,6 +432,7 @@
           </div>
           {%- endif %}
             </div>
+          </div>
           </div>
         </div>
         <div class="cap__txt"><h3>{{ card.title }}</h3><p>{{ card.text }}</p></div>

@@ -99,6 +99,12 @@
     --ty: 0px; --tz: 0px; --ry: 0deg; --rz: 0deg; --sc: 1;
     transform: none !important;
   }
+  /* No levitation on the rail. Flat cards bobbing out of step while a thumb
+     drags them sideways reads as a rendering fault rather than as life, and
+     the animation would be running on exactly the devices least able to
+     spare the frames. The fan is also the reserve here: the rail's own
+     padding-block is sized for the shadow, not for extra travel. */
+  .fan__item .fcard { animation: none; }
   /* Below this width the fan collapses to a stacked list, so a locked viewport
      height would either crush the copy or leave the cards stranded. Let the
      hero size to its content again. */
