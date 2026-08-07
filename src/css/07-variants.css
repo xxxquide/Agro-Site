@@ -46,8 +46,14 @@
 .v2 #capacity h2, .v2 #terms h2, .v2 #journey h2,
 .v2 #capacity h3, .v2 #terms h3, .v2 #journey h3 { color: var(--white); }
 .v2 #capacity .lead, .v2 #terms .lead, .v2 #journey .lead { color: var(--on-dark-2); }
-.v2 #capacity .tag, .v2 #terms .tag, .v2 #journey .tag { color: var(--on-dark-2); }
-.v2 #capacity .tag::before, .v2 #terms .tag::before, .v2 #journey .tag::before { background: var(--lime); }
+/* #services and the two dark detail heroes were never added to this variation's
+   own on-dark rules, so the eyebrow kept its light-surface grey at 2.6:1. */
+.v2 #capacity .tag, .v2 #terms .tag, .v2 #journey .tag,
+.v2 #services .tag, .v2 .detail-hero__copy .tag,
+.v2 .profile-hero__copy .tag { color: var(--on-dark-2); }
+.v2 #capacity .tag::before, .v2 #terms .tag::before, .v2 #journey .tag::before,
+.v2 #services .tag::before, .v2 .detail-hero__copy .tag::before,
+.v2 .profile-hero__copy .tag::before { background: var(--lime); }
 
 /* cards inside a dark band invert */
 .v2 #capacity .cap__card {
@@ -69,10 +75,13 @@
   border: 1px solid var(--line-dark);
   color: var(--white);
 }
-.v2 #terms .plan__desc, .v2 #terms .plan__name { color: var(--on-dark-2); }
+/* the price unit was left on --text-2, which is 2.3:1 against the dark card */
+.v2 #terms .plan__desc, .v2 #terms .plan__name,
+.v2 #terms .plan__price span { color: var(--on-dark-2); }
 .v2 #terms .plan__list svg { color: var(--lime); }
 .v2 #terms .plan--hot { background: var(--lime); color: var(--black); border-color: var(--lime); }
-.v2 #terms .plan--hot .plan__desc, .v2 #terms .plan--hot .plan__name { color: #3f5610; }
+.v2 #terms .plan--hot .plan__desc, .v2 #terms .plan--hot .plan__name,
+.v2 #terms .plan--hot .plan__price span { color: #3f5610; }
 .v2 #terms .plan--hot .plan__list svg { color: var(--ink); }
 
 .v2 #journey::before { display: none; }
@@ -344,9 +353,15 @@
   border-radius:var(--r-sm); background:var(--ink); color:var(--white);
 }
 .v2 .detail-hero__copy h1, .v2 .profile-hero__copy h1 { color:var(--white); }
-.v2 .detail-hero__copy .lead, .v2 .detail-meta, .v2 .detail-back,
+/* Scoped to the ink panel, not to the page. On an article .detail-meta is inside
+   that panel; on a crop page it holds the breadcrumb and sits outside it, on
+   white, where on-dark grey measures 1.69:1. Same mistake the unscoped
+   .detail-back selector used to make. */
+.v2 .detail-hero__copy .lead, .v2 .detail-hero__copy .detail-meta,
+.v2 .detail-hero__copy .muted,
 .v2 .profile-hero__copy .lead, .v2 .profile-hero__copy .detail-back { color:var(--on-dark-2); }
 .v2 .profile-hero__copy { padding:clamp(2rem,5vw,4.5rem); border-radius:var(--r-sm); background:var(--ink); color:var(--white); border-top:0; }
+.v2 .profile-hero__copy .profile-role { color:var(--lime); }
 .v2 .detail-hero__media, .v2 .profile-hero__media { --media-radius:var(--r-sm); }
 
 .v3 .logo-bar {
@@ -388,7 +403,7 @@
   font-family: var(--mono);
   font-size: var(--fs-xs);
   letter-spacing: .12em;
-  color: var(--grey-300);
+  color: var(--muted-on-light);
   display: block;
   margin-bottom: var(--s-sm);
 }
@@ -495,7 +510,7 @@
 .v3 .stats-card--ink .stat__l, .v3 .stats-card--ink .stat__u,
 .v3 .stats-card--lime .stat__l, .v3 .stats-card--lime .stat__u { color: var(--text-2); }
 .v3 .stats-card--ink .stats-card__index,
-.v3 .stats-card--lime .stats-card__index { color: var(--grey-300); }
+.v3 .stats-card--lime .stats-card__index { color: var(--muted-on-light); }
 .v3 .stats-card--ink { border-top: 2px solid var(--ink); }
 .v3 .stats-card--lime { border-top: 2px solid var(--lime-lo); }
 .v3 .stats-card--ink .icon-badge { --badge-bg: var(--ink); --badge-fg: var(--white); box-shadow: none; }

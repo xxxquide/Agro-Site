@@ -160,7 +160,7 @@
   margin-top: auto;
 }
 .fcard__big em { font-style: normal; font-size: .46em; letter-spacing: -.02em; }
-.fcard__n { font-size: .58rem; line-height: 1.4; color: var(--grey-300); }
+.fcard__n { font-size: .58rem; line-height: 1.4; color: var(--muted-on-light); }
 .fcard--dark .fcard__n { color: var(--on-dark-2); }
 .fcard--lime .fcard__n { color: #4a6110; }
 .fcard__ph { margin: -.85rem -.85rem 0; aspect-ratio: 4 / 3; }
@@ -351,7 +351,7 @@
 .step__n {
   display: inline-flex; align-items: center; gap: .6rem;
   font-family: var(--mono); font-size: var(--fs-xs);
-  letter-spacing: .12em; color: var(--grey-300);
+  letter-spacing: .12em; color: var(--muted-on-light);
 }
 .step__n::after { content: ""; height: 1px; flex: 1; background: var(--border); }
 .step h3 { font-size: var(--fs-h4); font-weight: var(--fw-medium); letter-spacing: -.03em; }
@@ -606,7 +606,7 @@
   font-family: var(--mono);
   font-size: .68rem;
   letter-spacing: .12em;
-  color: var(--grey-300);
+  color: var(--muted-on-light);
 }
 .svc-signal {
   display: grid;
@@ -637,7 +637,7 @@
 .why__n {
   font-family: var(--mono);
   font-size: var(--fs-lg);
-  color: var(--lime-lo);
+  color: var(--lime-on-light);
   padding-bottom: var(--s-sm);
   border-bottom: 1px solid var(--border);
 }
@@ -684,7 +684,7 @@
 .cinfo__row:first-child { border-top: 1px solid var(--border); }
 .cinfo__k {
   font-family: var(--mono); font-size: .64rem;
-  letter-spacing: .1em; text-transform: uppercase; color: var(--grey-300);
+  letter-spacing: .1em; text-transform: uppercase; color: var(--muted-on-light);
 }
 .cinfo__v { font-size: var(--fs-sm); line-height: 1.55; }
 .cinfo__v a:hover { border-bottom: 1px solid currentColor; }
@@ -1062,7 +1062,7 @@
 .ccard:hover { transform: translateY(-5px); box-shadow: var(--shadow-lift), var(--shadow); }
 .ccard__k {
   font-family: var(--mono); font-size: .64rem;
-  letter-spacing: .1em; text-transform: uppercase; color: var(--grey-300);
+  letter-spacing: .1em; text-transform: uppercase; color: var(--muted-on-light);
 }
 .ccard__v { font-size: var(--fs-lg); font-weight: var(--fw-medium); letter-spacing: -.03em; }
 .ccard__n { font-size: var(--fs-xs); color: var(--text-2); margin-top: auto; }
@@ -1379,9 +1379,30 @@
   color:var(--text-2); border-bottom:1px solid var(--border); padding-bottom:.35rem;
 }
 .detail-back svg { width:.72rem; height:.72rem; }
+/* The breadcrumb on a crop page puts chevrons in this row, and an inline SVG with
+   no intrinsic size stretches to fill whatever contains it — unsized, a single
+   separator covered the entire viewport. Matched to .detail-back above rather
+   than invented. No existing page has an SVG inside .detail-meta (checked
+   against the built output), so this cannot move an article or a profile. */
+.detail-meta svg { width:.72rem; height:.72rem; flex:none; }
 .detail-hero { display:flex; flex-direction:column; gap:clamp(1.5rem,3vw,2.5rem); }
 .detail-hero__copy { max-width:61rem; display:flex; flex-direction:column; align-items:center; text-align:center; gap:var(--s-lg); margin-inline:auto; }
 .detail-hero__copy h1 { max-width:18ch; text-wrap:balance; }
+/* A long Ukrainian compound in a 40px display size does not fit a 320px screen:
+   "конфіденційності" measures 300px against 284px of column, and on v2 the ink
+   panel's padding took it 34px past the viewport. The headings already carry
+   overflow-wrap:break-word, which by spec permits a break but does NOT reduce
+   min-content width — and each word here is wrapped in an inline-block for the
+   reveal, so the heading's min-content width is that atomic box and nothing can
+   break inside it.
+   hyphens gives the break a hyphen where the dictionary has one; `anywhere` is
+   the guarantee for words it does not know, and unlike break-word it does lower
+   min-content width. Both only engage when a word cannot fit on a line by
+   itself, so headings that already fit are untouched — verified against the
+   reference matrix. */
+.detail-hero__copy h1,
+.detail-hero__copy h1 .w,
+.detail-hero__copy h1 .w__i { hyphens: auto; overflow-wrap: anywhere; }
 .detail-hero__copy .lead { max-width:62ch; }
 .detail-meta { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:.65rem 1rem; font: .68rem/1.4 var(--mono); color:var(--text-2); letter-spacing:.06em; text-transform:uppercase; }
 .detail-hero__media { --media-radius:var(--r-lg); aspect-ratio:16/8.2; box-shadow:var(--shadow); }
@@ -1399,7 +1420,7 @@
 .profile-hero { display:grid; grid-template-columns:minmax(0,1fr) minmax(22rem,.8fr); gap:clamp(2rem,6vw,6rem); align-items:stretch; }
 .profile-hero__copy { display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:var(--s-lg); border-top:1px solid var(--border); padding-block:clamp(2rem,6vw,5rem); }
 .profile-hero__copy h1 { max-width:12ch; }
-.profile-role { font:500 .72rem/1.4 var(--mono); letter-spacing:.12em; text-transform:uppercase; color:var(--lime-lo); }
+.profile-role { font:500 .72rem/1.4 var(--mono); letter-spacing:.12em; text-transform:uppercase; color:var(--lime-on-light); }
 .profile-hero__media { --media-radius:var(--r-lg); min-height:34rem; }
 .profile-hero__media img { object-position:50% 24%; }
 .profile-body__grid { display:grid; grid-template-columns:.85fr 1.15fr; gap:clamp(2rem,6vw,6rem); align-items:start; }

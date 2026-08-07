@@ -156,6 +156,8 @@
   margin-top: .2rem;
 }
 .hdr:not(.is-stuck):not(.hdr--onlight) .brand__t2 { color: var(--lime); }
+.hdr--onlight .brand__t2,
+.hdr.is-stuck .brand__t2 { color: var(--ink); }
 
 .nav { display: flex; align-items: center; gap: .2rem; margin-inline: auto; }
 .nav__link {
@@ -443,7 +445,7 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 }
 .chart__years span {
   flex: 1 1 0; text-align: center;
-  font-family: var(--mono); font-size: .62rem; color: var(--grey-300);
+  font-family: var(--mono); font-size: .62rem; color: var(--muted-on-light);
 }
 
 /* --- widget: progress rows ---------------------------------------------- */
@@ -513,8 +515,10 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   font-size: .55rem;
   letter-spacing: .09em;
   text-transform: uppercase;
-  /* the reference's muted caption is white at 40 percent, not a grey token */
-  color: rgba(255, 255, 255, .42);
+  /* the reference's muted caption is white at 40 percent, not a grey token.
+     47 rather than 42: at 42 it measures 4.09:1 on the ink strip and this is
+     the smallest step that clears 4.5:1, at 4.83:1. */
+  color: rgba(255, 255, 255, .47);
 }
 .gauge__icon {
   flex: none;
@@ -620,7 +624,7 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 .frac__rest {
   font-size: clamp(.9rem, .7rem + .5vw, 1.1rem);
   letter-spacing: -.03em;
-  color: rgba(19, 19, 19, .24);
+  color: var(--muted-on-light);
   font-variant-numeric: tabular-nums lining-nums;
 }
 .frac__track {
@@ -1221,7 +1225,13 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   border-color: #b42318;
   box-shadow: 0 0 0 3px rgba(180, 35, 24, .12);
 }
-.form__note { font-size: var(--fs-xs); color: var(--grey-300); max-width: 46ch; }
+.form__note { font-size: var(--fs-xs); color: var(--muted-on-light); max-width: 46ch; }
+/* Underline on hover and on focus only, the way .cinfo__v a does it. At rest
+   the link is indistinguishable from the sentence around it, which is what
+   keeps the consent line pixel-identical; a permanent underline would be the
+   better link and a visual change nobody asked this pass to make. */
+.form__note-link:hover,
+.form__note-link:focus-visible { border-bottom: 1px solid currentColor; }
 .form__ok {
   display: none;
   gap: .6rem;
@@ -1534,7 +1544,7 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   background: radial-gradient(circle, rgba(209,255,92,.2), transparent 66%);
 }
 .stats-card__top { display: flex; align-items: center; justify-content: space-between; gap: var(--s-md); }
-.stats-card__index { font-family: var(--mono); font-size: .62rem; letter-spacing: .12em; color: var(--grey-300); }
+.stats-card__index { font-family: var(--mono); font-size: .62rem; letter-spacing: .12em; color: var(--muted-on-light); }
 .stats-card__spark {
   height: 2.4rem;
   margin-top: auto;

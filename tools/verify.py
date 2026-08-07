@@ -193,13 +193,31 @@ def check_page(page):
             for need in ("Organization", "LocalBusiness", "WebSite"):
                 if need not in types:
                     fail(f"{tag}: JSON-LD missing @type {need}")
-            page_types = {"WebPage", "AboutPage", "CollectionPage", "ContactPage", "ProfilePage"}
+            page_types = {"WebPage", "AboutPage", "CollectionPage", "ContactPage",
+                          "ProfilePage", "ItemPage"}
             if not page_types & set(types):
                 fail(f"{tag}: JSON-LD has no page-level type {sorted(page_types)}")
             if re.search(r'(^|/)blog/[^/]+/index\.html$', page) and "Article" not in types:
                 fail(f"{tag}: article detail page has no Article JSON-LD")
             if "/about/team/" in "/" + page and "Person" not in types:
                 fail(f"{tag}: profile detail page has no Person JSON-LD")
+            if re.search(r'(^|/)services/[^/]+/index\.html$', page):
+                if "Product" not in types:
+                    fail(f"{tag}: crop detail page has no Product JSON-LD")
+                else:
+                    # additionalProperty is the point of the Product node here: it
+                    # is what turns moisture, protein and falling number into
+                    # machine-readable facts about the goods. A Product without it
+                    # would pass a validator and be worth nothing.
+                    product = next(n for n in data["@graph"] if n.get("@type") == "Product")
+                    if not product.get("additionalProperty"):
+                        fail(f"{tag}: Product JSON-LD carries no additionalProperty")
+            # Breadcrumbs are the one rich result still rendered for a site like
+            # this, and every page except a home page sits at least one level down.
+            deep = page not in ("index.html",) and not re.fullmatch(
+                r"(en/)?(v[23]/)?index\.html", page)
+            if deep and page != "404.html" and "BreadcrumbList" not in types:
+                fail(f"{tag}: no BreadcrumbList JSON-LD")
 
         # --- head essentials --------------------------------------------
         for pat, label in [
@@ -298,6 +316,101 @@ def budgets():
     return first
 
 
+BASE = "https://xxxquide.github.io/Agro-Site/"
+
+# Cyrillic that belongs on an English page, spelled out so the list is a decision
+# rather than a loophole. The brand appears in its own alphabet in the logo lockup
+# and the legal name; the statute is cited by its official Ukrainian title
+# alongside the English one, which is how a citation is supposed to read — an
+# English-only paraphrase of a Ukrainian law is less useful, not more. Anything
+# outside this set is untranslated copy that leaked through.
+CYRILLIC_ALLOWED = {
+    "ЦЕНТРАГРО", "ПЛЮС", "ТОВ",
+    "Закон", "України", "Про", "захист", "персональних", "даних",
+}
+
+
+def canonical_of(page):
+    """The URL a page should declare as its own canonical."""
+    d = os.path.dirname(page)
+    return BASE + (d + "/" if d else "")
+
+
+def is_variant(page):
+    return bool(re.match(r"^(en/)?v[23]/", page))
+
+
+def check_site_graph():
+    """Cross-page invariants: the sitemap, uniqueness, canonicals and hreflang.
+
+    Each of these is invisible from inside a single page, which is why they get
+    their own pass. They are also exactly the class of thing that rots quietly
+    when pages are added — a new page type that forgets a canonical or lands
+    outside the sitemap costs nothing at build time and everything in search.
+    """
+    content_pages = [p for p in PAGES if p not in ("404.html", "variants.html")]
+    indexable, titles, descriptions = [], {}, {}
+
+    for page in content_pages:
+        html = open(os.path.join(ROOT, page), encoding="utf-8").read()
+        noindex = 'content="noindex' in html
+
+        m = re.search(r'<link rel="canonical" href="([^"]+)"', html)
+        if not m:
+            fail(f"{page}: no canonical")
+        elif m.group(1) != canonical_of(page):
+            fail(f"{page}: canonical points at {m.group(1)}, expected {canonical_of(page)}")
+
+        # hreflang has to name this page's own locale as well as the other one,
+        # or the pair is not reciprocal and Google drops the cluster.
+        alts = dict(re.findall(r'<link rel="alternate" hreflang="([^"]+)" href="([^"]+)"', html))
+        for need in ("uk", "en", "x-default"):
+            if need not in alts:
+                fail(f"{page}: missing hreflang {need}")
+        if alts.get("x-default") != alts.get("uk"):
+            fail(f"{page}: x-default should match the uk URL")
+        own = "en" if page.startswith("en/") else "uk"
+        if alts.get(own) != canonical_of(page):
+            fail(f"{page}: hreflang {own} is {alts.get(own)}, not its own canonical")
+
+        if noindex:
+            if not is_variant(page):
+                fail(f"{page}: noindex outside a v2/v3 tree")
+            continue
+        indexable.append(page)
+
+        t = re.search(r"<title>(.*?)</title>", html, re.S)
+        d = re.search(r'<meta name="description" content="([^"]*)"', html)
+        if t:
+            titles.setdefault(t.group(1).strip(), []).append(page)
+        if d:
+            descriptions.setdefault(d.group(1).strip(), []).append(page)
+
+        if page.startswith("en/"):
+            body = re.sub(r"(?is)<script.*?</script>|<style.*?</style>", "", html)
+            body = re.sub(r"(?s)<[^>]+>", " ", body)
+            cyr = re.findall(r"[\u0400-\u04FF]+", body)
+            leaked = [w for w in cyr if w not in CYRILLIC_ALLOWED]
+            if leaked:
+                fail(f"{page}: Cyrillic words on an English page: {sorted(set(leaked))[:8]}")
+
+    for label, table in (("title", titles), ("description", descriptions)):
+        for value, pages in table.items():
+            if len(pages) > 1:
+                fail(f"duplicate {label} across indexed pages {pages}: {value[:60]!r}")
+
+    sitemap = open(os.path.join(ROOT, "sitemap.xml"), encoding="utf-8").read()
+    listed = set(re.findall(r"<loc>([^<]+)</loc>", sitemap))
+    expected = {canonical_of(p) for p in indexable}
+    if listed != expected:
+        for extra in sorted(listed - expected):
+            fail(f"sitemap lists a URL that is not an indexable page: {extra}")
+        for missing in sorted(expected - listed):
+            fail(f"indexable page missing from sitemap: {missing}")
+    print(f"  indexable pages {len(indexable)}, sitemap URLs {len(listed)}, "
+          f"unique titles {len(titles)}, unique descriptions {len(descriptions)}")
+
+
 def check_parity():
     a = json.load(open(os.path.join(ROOT, "content/uk.json"), encoding="utf-8"))
     b = json.load(open(os.path.join(ROOT, "content/en.json"), encoding="utf-8"))
@@ -330,16 +443,36 @@ def check_third_party():
 
 
 def main():
-    if len(PAGES) != 92:
-        fail(f"page count: expected 92 generated HTML pages including 404, found {len(PAGES)}")
+    # Derived rather than three unrelated literals, so adding an eighth crop or a
+    # seventh article moves one number here instead of leaving the count checks
+    # to be reconciled by hand. VARIATIONS x LOCALES is the multiplier every
+    # generated page shares; the two singletons are variants.html and 404.html.
+    VARIATIONS, LOCALES = 3, 2
+    with open(os.path.join(ROOT, "content", "variants.json"), encoding="utf-8") as fh:
+        vcfg = json.load(fh)
+    with open(os.path.join(ROOT, "content", "uk.json"), encoding="utf-8") as fh:
+        uk_content = json.load(fh)
+    MAIN_PAGES = len(vcfg["pages"])
+    VARIATIONS = len(vcfg["variants"])
+    ARTICLES = len(uk_content["blog_page"]["posts"])
+    PROFILES = len(uk_content["team"]["items"])
+    CROPS = len(uk_content["crops"]["items"])
+    per_build = MAIN_PAGES + ARTICLES + PROFILES + CROPS
+    expected = per_build * VARIATIONS * LOCALES + 2
+    if len(PAGES) != expected:
+        fail(f"page count: expected {expected} generated HTML pages including 404, "
+             f"found {len(PAGES)}")
     article_pages = [p for p in PAGES if re.search(r'(^|/)blog/[^/]+/index\.html$', p)]
     profile_pages = [p for p in PAGES if "/about/team/" in "/" + p]
-    if len(article_pages) != 36:
-        fail(f"article detail count: expected 36, found {len(article_pages)}")
-    if len(profile_pages) != 24:
-        fail(f"profile detail count: expected 24, found {len(profile_pages)}")
+    crop_pages = [p for p in PAGES if re.search(r'(^|/)services/[^/]+/index\.html$', p)]
+    for label, found, want in (("article", len(article_pages), ARTICLES * VARIATIONS * LOCALES),
+                               ("profile", len(profile_pages), PROFILES * VARIATIONS * LOCALES),
+                               ("crop", len(crop_pages), CROPS * VARIATIONS * LOCALES)):
+        if found != want:
+            fail(f"{label} detail count: expected {want}, found {found}")
     for page in PAGES:
         check_page(page)
+    check_site_graph()
     check_parity()
     check_third_party()
     budgets()

@@ -43,6 +43,22 @@
   --text-2:       var(--grey-400);
   --on-dark:      var(--white);
   --on-dark-2:    var(--grey-300);
+
+  /* Light-surface counterparts of the two "on dark" colours above.
+     --grey-300 is labelled "text on dark" and --lime-lo is the brand accent, and
+     both had drifted into carrying small text on white as well: 1.69:1 and
+     1.37:1 against WCAG's 4.5:1. Neither original changes — --lime-lo still
+     reverses out of the dark header and --grey-300 is still correct on ink.
+     Lightness is the only channel moved, and only until the ratio passes:
+       --muted-on-light  #6f6f6f  5.02:1 on white, 4.59:1 on --grey-100
+       --lime-on-light   #5a7714  5.14:1 on white, 4.70:1 on --grey-100
+     Both are checked against --grey-100 and not just white, because the panels
+     on the contacts page are grey and that costs about 0.4 of a ratio point —
+     #767676 clears white at 4.54:1 and fails #f4f5f1 at 4.14:1, which is the
+     trap this pair exists to avoid. --lime-on-light sits at hue 77.6 against
+     --lime-lo's own 77.1, so it reads as the same green, darker. */
+  --muted-on-light: #6f6f6f;
+  --lime-on-light:  #5a7714;
   --line-dark:    rgba(255, 255, 255, .14);
   --line-dark-2:  rgba(255, 255, 255, .26);
 

@@ -1,7 +1,7 @@
 {% extends "base.html.j2" %}
 {%- import "blocks.html.j2" as B with context -%}
 {% block body %}
-<section class="detail-hero wrap" aria-labelledby="detail-t" data-page-hero>
+<section class="detail-hero wrap" data-page-hero>
   <a class="detail-back" href="{{ url_for('blog') }}">{{ I.chevron('left') }}<span>{{ c.detail_labels.back_blog }}</span></a>
   <div class="detail-hero__copy">
     <div class="detail-meta" data-page-item>
@@ -33,7 +33,7 @@
   </div>
 </section>
 
-<section class="section detail-related" aria-labelledby="related-t">
+<section class="section detail-related" role="region" aria-labelledby="related-t">
   <div class="wrap">
     <div class="head-row">
       <div class="head">

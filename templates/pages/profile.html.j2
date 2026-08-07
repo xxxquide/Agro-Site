@@ -1,7 +1,7 @@
 {% extends "base.html.j2" %}
 {%- import "blocks.html.j2" as B with context -%}
 {% block body %}
-<section class="profile-hero wrap" aria-labelledby="profile-t" data-page-hero>
+<section class="profile-hero wrap" data-page-hero>
   <div class="profile-hero__copy">
     <a class="detail-back" href="{{ url_for('about') }}#team">{{ I.chevron('left') }}<span>{{ c.detail_labels.back_about }}</span></a>
     <span class="tag tag--lime" data-page-item>{{ c.detail_labels.profile_eyebrow }}</span>
@@ -32,7 +32,7 @@
   </div>
 </section>
 
-<section class="section detail-related" aria-labelledby="profile-related-t">
+<section class="section detail-related" role="region" aria-labelledby="profile-related-t">
   <div class="wrap">
     <div class="head-row">
       <div class="head"><span class="tag tag--lime">{{ c.detail_labels.article_eyebrow }}</span><h2 id="profile-related-t">{{ c.detail_labels.profile_related }}</h2></div>

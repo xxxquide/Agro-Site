@@ -16,6 +16,9 @@
 {%- endif %}
 <meta name="author" content="{{ c.brand.legal }}">
 <meta name="robots" content="{{ 'noindex, follow' if noindex else 'index, follow, max-image-preview:large' }}">
+{%- if c.seo.google_site_verification %}
+<meta name="google-site-verification" content="{{ c.seo.google_site_verification }}">
+{%- endif %}
 <meta name="theme-color" content="#131313">
 <meta name="format-detection" content="telephone=no">
 
@@ -44,7 +47,12 @@
 <link rel="apple-touch-icon" href="{{ p }}assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="{{ p }}site.webmanifest">
 
+{#- Both families are on the first screen — Onest sets the headline, Geist Mono
+    sets the eyebrow, the buttons and the tags — but only one was preloaded, so
+    the mono face waited for the stylesheet to be parsed before it was even
+    requested. -#}
 <link rel="preload" href="{{ p }}assets/fonts/onest.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="{{ p }}assets/fonts/geistmono.woff2" as="font" type="font/woff2" crossorigin>
 {%- if hero_img %}
 <link rel="preload" as="image" type="image/avif" imagesrcset="{{ srcset(hero_img, 'avif') }}" imagesizes="100vw" fetchpriority="high">
 {%- endif %}
@@ -146,8 +154,13 @@
         <nav aria-label="{{ c.footer.columns[1].title }}">
           <p class="footer__ct">{{ c.footer.columns[1].title }}</p>
           <div class="footer__links">
+            {#- All four of these pointed at /services/. They name individual
+                crops, so each now goes to that crop's own page; the link text is
+                untouched, so nothing about the footer moves. The fourth reads
+                "Соя та ріпак" and can only resolve to one page — it goes to soy,
+                and rapeseed is one click away from there. -#}
             {%- for l in c.footer.columns[1].links %}
-            <a href="{{ url_for('services') }}">{{ l.label }}</a>
+            <a href="{{ crop_url(c.crops['items'][l.crop].slug) }}">{{ l.label }}</a>
             {%- endfor %}
           </div>
         </nav>

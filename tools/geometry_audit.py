@@ -40,14 +40,19 @@ except ImportError as exc:  # pragma: no cover
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# One page per layout family, times every variation. Detail pages reuse the same
-# components, so auditing them too would triple the runtime for no new coverage.
+# One page per layout family, times every variation. Article and profile detail
+# pages reuse the components audited here, so auditing them too would triple the
+# runtime for no new coverage — but a crop page composes those components into a
+# layout none of the others has (stat row, key/value sheet inside a card, two-up
+# terms), and a legal page is a bare text column, so both earn a row.
 PAGES = [
     ("home", ""),
     ("about", "about/"),
     ("services", "services/"),
     ("blog", "blog/"),
     ("contacts", "contacts/"),
+    ("crop", "services/winter-wheat/"),
+    ("privacy", "privacy/"),
 ]
 VARIANTS = [("v1", ""), ("v2", "v2/"), ("v3", "v3/")]
 WIDTHS = [(1920, 1080), (1440, 900), (1280, 800), (768, 1024), (390, 844)]

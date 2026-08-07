@@ -10,12 +10,29 @@
 
 /* --- flash guard ---------------------------------------------------------
    `.js` is set by a tiny inline script in <head>, so a no-JS visitor never
-   sees hidden content. GSAP writes visibility back as it animates. */
+   sees hidden content. GSAP writes the opacity back as it animates.
+
+   `opacity: 0` and not `visibility: hidden`, which is what this was. Both
+   render nothing, so the page looks identical either way — but `visibility`
+   also takes the node out of the accessibility tree and out of the tab order,
+   and this selector covers most of the page. Measured before the change: 22 of
+   the home page's 23 headings were absent from Chromium's accessibility tree
+   until something scrolled, and no keyboard could reach a link below the first
+   screen. There is a second-order effect too: `aria-labelledby` on a section
+   pointed at a heading whose words were hidden, so the name resolved empty, so
+   the section stopped being a `region` landmark and the attribute became
+   invalid on it — one CSS declaration was generating the aria-prohibited-attr
+   failures as well.
+
+   An opaque-zero node stays in the tree and stays focusable, so a keyboard can
+   reach it, the browser scrolls it into view, and its own trigger reveals it.
+   Both branches below still force full visibility, and GSAP's `autoAlpha` was
+   swapped to plain `opacity` in app.js so nothing writes `visibility` back. */
 html.js [data-r],
 html.js [data-card],
 html.js [data-split],
 html.js [data-stagger] > * {
-  visibility: hidden;
+  opacity: 0;
 }
 
 /* If GSAP failed to load, or motion is reduced, show everything immediately. */

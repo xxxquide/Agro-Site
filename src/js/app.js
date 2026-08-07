@@ -56,10 +56,28 @@
   } catch (e) {
     numberFormatter = { format: function (n) { return String(n); } };
   }
+  /* The locale-correct way to print a counter's final value. Deliberately NOT
+     used by settleCounters() below: every non-animating branch has always
+     printed the raw digits, so a visitor with reduced motion reads "14200"
+     where everyone else reads "14 200". Wiring this in would fix that
+     inconsistency and change what those visitors see, which is a decision for
+     the owner and not a side effect of a performance pass. Kept here because it
+     is where that fix belongs when it is signed off. */
   function renderCounterFinal(el) {
     var target = parseFloat(el.getAttribute('data-count'));
     if (isNaN(target)) return;
     el.textContent = numberFormatter.format(target) + (el.getAttribute('data-suffix') || '');
+  }
+
+  /* Final values for every branch that never animates them — the reduced-motion
+     and no-GSAP paths, and the failsafe. One helper so a future change cannot
+     move one of them and leave the others behind. Formatting is byte-for-byte
+     what the reduced-motion branch already produced; see above. */
+  function settleCounters() {
+    all('[data-count]').forEach(function (el) {
+      var t = parseFloat(el.getAttribute('data-count'));
+      if (!isNaN(t)) el.textContent = t + (el.getAttribute('data-suffix') || '');
+    });
   }
 
   /* =========================================================================
@@ -140,252 +158,282 @@
      there. That is exactly what pinned every testimonial card 52px low, and it
      would have done the same to the stats grid and the news cards. Spelling
      both ends out removes the ambiguity for good.
+
+     Every entrance animates `opacity`, never GSAP's `autoAlpha`. autoAlpha is
+     opacity plus `visibility`, and the visibility half is what put most of the
+     page's text outside the accessibility tree: an unrevealed section was not
+     merely invisible, it was unreadable to a screen reader and unreachable by
+     tab, and 22 of this page's 23 headings were missing from the tree until
+     something scrolled. Opacity alone renders identically — the flash guard in
+     05-motion.css moved to `opacity: 0` to match — while leaving the node in
+     the tree and in the tab order, so focus can enter it, the browser scrolls
+     it into view, and its own trigger fires. Do not trade that back for the
+     convenience of one property name.
      ========================================================================= */
-  function revealAll() {
+  /* Each pass below is its own function purely so boot() can spend them across
+     several idle callbacks. Their bodies are unchanged and the array order is
+     the order they used to be called in — see the ordering note in boot(),
+     which explains why that is not cosmetic. */
+  function revealPasses() {
     var gsap = window.gsap;
     var ST = window.ScrollTrigger;
-
-    /* --- headlines, word by word ----------------------------------------- */
-    all('[data-split]:not([data-page-title])').forEach(function (el) {
-      var words = splitWords(el);
-      if (!words.length) return;
-      gsap.set(el, { autoAlpha: 1 });
-      /* fromTo, not from — see the note above initReveal(). */
-      gsap.fromTo(words,
-        { yPercent: 116, autoAlpha: 0 },
-        {
-          yPercent: 0,
-          autoAlpha: 1,
-          duration: DUR.lg,
-          ease: EASE.expo,
-          stagger: STAGGER.word,
-          scrollTrigger: { trigger: el, start: 'top 88%', once: true },
-        });
-    });
-
-    /* --- generic fade-up, with optional group stagger -------------------- */
-    all('[data-r]').forEach(function (el) {
-      var mode = el.getAttribute('data-r') || 'up';
-      var from = { autoAlpha: 0 };
-      var to = {
-        autoAlpha: 1, x: 0, y: 0, scale: 1,
-        duration: DUR.lg, ease: EASE.out,
-        delay: parseFloat(el.getAttribute('data-delay') || 0),
-        scrollTrigger: { trigger: el, start: 'top 90%', once: true },
-      };
-      if (mode === 'up' || mode === '') from.y = 44;
-      if (mode === 'left') from.x = -44;
-      if (mode === 'right') from.x = 44;
-      if (mode === 'in') { from.scale = 0.94; from.y = 24; }
-      if (mode === 'none') from.y = 0;
-      gsap.fromTo(el, from, to);
-    });
-
-    /* --- containers whose children come in one after another ------------- */
-    all('[data-stagger]').forEach(function (box) {
-      var kids = box.children.length ? Array.prototype.slice.call(box.children) : [];
-      if (!kids.length) return;
-      gsap.fromTo(kids,
-        { y: 52, autoAlpha: 0 },
-        {
-          y: 0,
-          autoAlpha: 1,
-          duration: DUR.lg,
-          ease: EASE.out,
-          stagger: parseFloat(box.getAttribute('data-stagger')) || STAGGER.normal,
-          scrollTrigger: { trigger: box, start: 'top 86%', once: true },
-        });
-    });
-
-    /* --- cards: lift and settle ------------------------------------------ */
-    all('[data-card]').forEach(function (card) {
-      gsap.fromTo(card,
-        { y: 60, scale: 0.955, autoAlpha: 0 },
-        {
-          y: 0,
-          scale: 1,
-          autoAlpha: 1,
-          duration: DUR.xl,
-          ease: EASE.expo,
-          scrollTrigger: { trigger: card, start: 'top 88%', once: true },
-        });
-    });
-
-    /* --- capacity lifecycle and data visualizations ---------------------- */
-    all('[data-capacity-card]').forEach(function (card) {
-      var inView = false;
-      function syncCapacity() { card.classList.toggle('is-active', inView && !doc.hidden); }
-      if (ST) ST.create({
-        trigger: card, start: 'top bottom', end: 'bottom top',
-        onToggle: function (self) { inView = self.isActive; syncCapacity(); },
-      });
-      on(doc, 'visibilitychange', syncCapacity);
-    });
-
-    all('[data-bars]').forEach(function (box) {
-      // The template's own storage panel: the split track wipes open from the
-      // left, then the facility rows slide in from the right behind it.
-      var tl = gsap.timeline({
-        scrollTrigger: { trigger: box, start: 'top 85%', once: true },
-      });
-      tl.fromTo(all('.frac__seg', box),
-        { scaleX: 0 },
-        { scaleX: 1, duration: .9, ease: 'power2.inOut', stagger: .12 });
-      tl.fromTo(all('.grow', box),
-        { x: 20, autoAlpha: 0 },
-        { x: 0, autoAlpha: 1, duration: .4, ease: EASE.soft, stagger: .1 }, '-=.35');
-    });
-
-    all('.svc-signal').forEach(function (box) {
-      gsap.fromTo(all('.svc-signal__track i', box),
-        { scaleX: 0 },
-        {
-          scaleX: 1,
-          duration: DUR.lg,
-          ease: EASE.expo,
-          stagger: STAGGER.tight,
-          scrollTrigger: { trigger: box, start: 'top 90%', once: true },
-        });
-    });
-
-    all('[data-stat-card]').forEach(function (card) {
-      gsap.fromTo(all('.stats-card__spark i, .stats-card__plot i', card),
-        { scaleY: 0 },
-        {
-          scaleY: 1,
-          duration: DUR.lg,
-          ease: EASE.back,
-          stagger: STAGGER.tight,
-          scrollTrigger: { trigger: card, start: 'top 90%', once: true },
-        });
-    });
-
-    all('[data-route-map]').forEach(function (map) {
-      var routes = all('.ukraine-map__route', map);
-      var points = all('.ukraine-map__point', map);
-      var hub = one('.ukraine-map__hub', map);
-
-      // NOTE: never tween a transform on the marker <g> elements. Each one is
-      // positioned by transform="translate(x y)", and GSAP takes ownership of
-      // `transform` the moment it touches it — the markers drifted up and left
-      // of their own coordinates, which is what made every route look like it
-      // stopped short of its city. Opacity on the group, scale on the inner
-      // circles (which carry transform-box: fill-box), and the translate is
-      // never in play.
-      function popMarker(g, at) {
-        tl.fromTo(g, { autoAlpha: 0 }, { autoAlpha: 1, duration: DUR.sm }, at);
-        tl.fromTo(all('circle', g), { scale: 0.4 },
-          { scale: 1, duration: DUR.md, ease: EASE.back }, at);
-      }
-
-      var tl = gsap.timeline({
-        // Later than the old 'top 80%': the map has to be properly in view
-        // before anything starts, or the drawing is over before it is looked at.
-        scrollTrigger: { trigger: map, start: 'top 68%', once: true },
-      });
-
-      if (hub) popMarker(hub, 0);
-
-      // Each route draws, and its city lands as the line arrives — so the
-      // sequence reads as grain leaving the elevator rather than four lines
-      // switching on. Slow on purpose: 3.2s each, 0.75s apart.
-      var DRAW = 3.2;
-      var STEP = 0.75;
-      routes.forEach(function (route, i) {
-        var at = 0.35 + i * STEP;
-        tl.fromTo(route, { strokeDashoffset: 1 },
-          { strokeDashoffset: 0, duration: DRAW, ease: 'power1.inOut' }, at);
-        // Pair by place, never by document order: the generator emits the four
-        // routes in dispatch order and the four labels in reading order, so
-        // index-matching lit up Vinnytsia when the Kyiv line arrived.
-        var place = route.getAttribute('data-place');
-        var marker = place
-          ? one('.ukraine-map__point[data-place="' + place + '"]', map)
-          : points[i];
-        if (marker) popMarker(marker, at + DRAW * 0.82);
-      });
-
-      // Once drawn, a bright segment keeps running the length of each arc on
-      // its own period, so the map is never quite still.
-      var periods = [9, 11.5, 13, 10.5];
-      var tail = 0.35 + routes.length * STEP + DRAW;
-      routes.forEach(function (route, i) {
-        var spark = route.cloneNode(false);
-        spark.setAttribute('class', 'ukraine-map__spark');
-        spark.removeAttribute('filter');
-        route.parentNode.insertBefore(spark, route.nextSibling);
-        gsap.set(spark, { autoAlpha: 0 });
-        var loop = gsap.timeline({ repeat: -1, delay: tail + i * 0.5, paused: true });
-        loop.set(spark, { autoAlpha: .95, strokeDashoffset: 1 });
-        loop.to(spark, { strokeDashoffset: 0, duration: periods[i % 4] * .38, ease: 'none' });
-        loop.set(spark, { autoAlpha: 0 });
-        loop.to({}, { duration: periods[i % 4] * .62 });
-        if (ST) {
-          ST.create({
-            trigger: map, start: 'top bottom', end: 'bottom top',
-            onToggle: function (self) {
-              if (self.isActive && !doc.hidden) loop.play();
-              else loop.pause();
-            },
+    return [
+      function revealHeadlines() {
+      /* --- headlines, word by word ----------------------------------------- */
+      all('[data-split]:not([data-page-title])').forEach(function (el) {
+        var words = splitWords(el);
+        if (!words.length) return;
+        gsap.set(el, { opacity: 1 });
+        /* fromTo, not from — see the note above initReveal(). */
+        gsap.fromTo(words,
+          { yPercent: 116, opacity: 0 },
+          {
+            yPercent: 0,
+            opacity: 1,
+            duration: DUR.lg,
+            ease: EASE.expo,
+            stagger: STAGGER.word,
+            scrollTrigger: { trigger: el, start: 'top 88%', once: true },
           });
-        }
       });
-    });
-
-    all('[data-chart]').forEach(function (box) {
-      var cols = all('.chart__fill', box);
-      // The quiet years stay hidden until hovered; fading them in here would
-      // override the CSS that keeps them out of the way.
-      var vals = all('.chart__val:not(.chart__val--quiet)', box);
-      var tl = gsap.timeline({
-        scrollTrigger: { trigger: box, start: 'top 85%', once: true },
+      },
+      function revealGeneric() {
+      /* --- generic fade-up, with optional group stagger -------------------- */
+      all('[data-r]').forEach(function (el) {
+        var mode = el.getAttribute('data-r') || 'up';
+        var from = { opacity: 0 };
+        var to = {
+          opacity: 1, x: 0, y: 0, scale: 1,
+          duration: DUR.lg, ease: EASE.out,
+          delay: parseFloat(el.getAttribute('data-delay') || 0),
+          scrollTrigger: { trigger: el, start: 'top 90%', once: true },
+        };
+        if (mode === 'up' || mode === '') from.y = 44;
+        if (mode === 'left') from.x = -44;
+        if (mode === 'right') from.x = 44;
+        if (mode === 'in') { from.scale = 0.94; from.y = 24; }
+        if (mode === 'none') from.y = 0;
+        gsap.fromTo(el, from, to);
       });
-      tl.fromTo(cols, { scaleY: 0 },
-        { scaleY: 1, duration: DUR.md, ease: EASE.back, stagger: 0.12 });
-      tl.to(vals, { autoAlpha: 1, duration: DUR.sm, stagger: 0.12 }, '-=' + DUR.md);
-    });
-
-    all('[data-orbit]').forEach(function (box) {
-      var rings = all('.radar__ring', box);
-      var routes = all('.radar__route', box);
-      var hub = one('.radar__hub', box);
-      var pins = all('.radar__pin', box);
-      var nodes = all('.radar__node', box);
-      var tl = gsap.timeline({
-        scrollTrigger: { trigger: box, start: 'top 82%', once: true },
+      },
+      function revealStaggers() {
+      /* --- containers whose children come in one after another ------------- */
+      all('[data-stagger]').forEach(function (box) {
+        var kids = box.children.length ? Array.prototype.slice.call(box.children) : [];
+        if (!kids.length) return;
+        gsap.fromTo(kids,
+          { y: 52, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: DUR.lg,
+            ease: EASE.out,
+            stagger: parseFloat(box.getAttribute('data-stagger')) || STAGGER.normal,
+            scrollTrigger: { trigger: box, start: 'top 86%', once: true },
+          });
       });
-      // The field settles first, then the routes draw outward from the hub, and
-      // only then do the destinations appear — the order tells the story the
-      // card is about: everything leaves from one place.
-      tl.fromTo(rings, { scale: 0.6, autoAlpha: 0 },
-        { scale: 1, autoAlpha: 1, duration: DUR.md, ease: EASE.back, stagger: 0.1 });
-      if (hub) {
-        tl.fromTo(hub, { scale: 0.5, autoAlpha: 0 },
-          { scale: 1, autoAlpha: 1, duration: DUR.md, ease: EASE.back }, '-=' + DUR.sm);
-      }
-      tl.fromTo(routes, { autoAlpha: 0 }, { autoAlpha: 1, duration: DUR.sm }, '-=' + DUR.xs);
-      tl.fromTo(nodes, { scale: 0, autoAlpha: 0 },
-        { scale: 1, autoAlpha: 1, duration: DUR.sm, ease: EASE.back, stagger: 0.08 }, '-=' + DUR.xs);
-      tl.fromTo(pins, { y: 8, autoAlpha: 0 },
-        { y: 0, autoAlpha: 1, duration: DUR.md, ease: EASE.out, stagger: 0.09 },
-        '-=' + DUR.sm);
-    });
-
-    /* --- lab rows -------------------------------------------------------- */
-    all('[data-lab]').forEach(function (box) {
-      gsap.fromTo(all('.gmetric', box),
-        { y: 12, autoAlpha: 0 },
-        {
-          y: 0,
-          autoAlpha: 1,
-          duration: DUR.md,
-          ease: EASE.out,
-          stagger: .08,
-          scrollTrigger: { trigger: box, start: 'top 86%', once: true },
+      },
+      function revealCards() {
+      /* --- cards: lift and settle ------------------------------------------ */
+      all('[data-card]').forEach(function (card) {
+        gsap.fromTo(card,
+          { y: 60, scale: 0.955, opacity: 0 },
+          {
+            y: 0,
+            scale: 1,
+            opacity: 1,
+            duration: DUR.xl,
+            ease: EASE.expo,
+            scrollTrigger: { trigger: card, start: 'top 88%', once: true },
+          });
+      });
+      },
+      function revealCapacity() {
+      /* --- capacity lifecycle and data visualizations ---------------------- */
+      all('[data-capacity-card]').forEach(function (card) {
+        var inView = false;
+        function syncCapacity() { card.classList.toggle('is-active', inView && !doc.hidden); }
+        if (ST) ST.create({
+          trigger: card, start: 'top bottom', end: 'bottom top',
+          onToggle: function (self) { inView = self.isActive; syncCapacity(); },
         });
-    });
+        on(doc, 'visibilitychange', syncCapacity);
+      });
+      },
+      function revealBars() {
+      all('[data-bars]').forEach(function (box) {
+        // The template's own storage panel: the split track wipes open from the
+        // left, then the facility rows slide in from the right behind it.
+        var tl = gsap.timeline({
+          scrollTrigger: { trigger: box, start: 'top 85%', once: true },
+        });
+        tl.fromTo(all('.frac__seg', box),
+          { scaleX: 0 },
+          { scaleX: 1, duration: .9, ease: 'power2.inOut', stagger: .12 });
+        tl.fromTo(all('.grow', box),
+          { x: 20, opacity: 0 },
+          { x: 0, opacity: 1, duration: .4, ease: EASE.soft, stagger: .1 }, '-=.35');
+      });
+      },
+      function revealSignals() {
+      all('.svc-signal').forEach(function (box) {
+        gsap.fromTo(all('.svc-signal__track i', box),
+          { scaleX: 0 },
+          {
+            scaleX: 1,
+            duration: DUR.lg,
+            ease: EASE.expo,
+            stagger: STAGGER.tight,
+            scrollTrigger: { trigger: box, start: 'top 90%', once: true },
+          });
+      });
+      },
+      function revealStatCards() {
+      all('[data-stat-card]').forEach(function (card) {
+        gsap.fromTo(all('.stats-card__spark i, .stats-card__plot i', card),
+          { scaleY: 0 },
+          {
+            scaleY: 1,
+            duration: DUR.lg,
+            ease: EASE.back,
+            stagger: STAGGER.tight,
+            scrollTrigger: { trigger: card, start: 'top 90%', once: true },
+          });
+      });
+      },
+      function revealRouteMaps() {
+      all('[data-route-map]').forEach(function (map) {
+        var routes = all('.ukraine-map__route', map);
+        var points = all('.ukraine-map__point', map);
+        var hub = one('.ukraine-map__hub', map);
 
-    if (ST) scheduleRefresh();
+        // NOTE: never tween a transform on the marker <g> elements. Each one is
+        // positioned by transform="translate(x y)", and GSAP takes ownership of
+        // `transform` the moment it touches it — the markers drifted up and left
+        // of their own coordinates, which is what made every route look like it
+        // stopped short of its city. Opacity on the group, scale on the inner
+        // circles (which carry transform-box: fill-box), and the translate is
+        // never in play.
+        function popMarker(g, at) {
+          tl.fromTo(g, { opacity: 0 }, { opacity: 1, duration: DUR.sm }, at);
+          tl.fromTo(all('circle', g), { scale: 0.4 },
+            { scale: 1, duration: DUR.md, ease: EASE.back }, at);
+        }
+
+        var tl = gsap.timeline({
+          // Later than the old 'top 80%': the map has to be properly in view
+          // before anything starts, or the drawing is over before it is looked at.
+          scrollTrigger: { trigger: map, start: 'top 68%', once: true },
+        });
+
+        if (hub) popMarker(hub, 0);
+
+        // Each route draws, and its city lands as the line arrives — so the
+        // sequence reads as grain leaving the elevator rather than four lines
+        // switching on. Slow on purpose: 3.2s each, 0.75s apart.
+        var DRAW = 3.2;
+        var STEP = 0.75;
+        routes.forEach(function (route, i) {
+          var at = 0.35 + i * STEP;
+          tl.fromTo(route, { strokeDashoffset: 1 },
+            { strokeDashoffset: 0, duration: DRAW, ease: 'power1.inOut' }, at);
+          // Pair by place, never by document order: the generator emits the four
+          // routes in dispatch order and the four labels in reading order, so
+          // index-matching lit up Vinnytsia when the Kyiv line arrived.
+          var place = route.getAttribute('data-place');
+          var marker = place
+            ? one('.ukraine-map__point[data-place="' + place + '"]', map)
+            : points[i];
+          if (marker) popMarker(marker, at + DRAW * 0.82);
+        });
+
+        // Once drawn, a bright segment keeps running the length of each arc on
+        // its own period, so the map is never quite still.
+        var periods = [9, 11.5, 13, 10.5];
+        var tail = 0.35 + routes.length * STEP + DRAW;
+        routes.forEach(function (route, i) {
+          var spark = route.cloneNode(false);
+          spark.setAttribute('class', 'ukraine-map__spark');
+          spark.removeAttribute('filter');
+          route.parentNode.insertBefore(spark, route.nextSibling);
+          gsap.set(spark, { opacity: 0 });
+          var loop = gsap.timeline({ repeat: -1, delay: tail + i * 0.5, paused: true });
+          loop.set(spark, { opacity: .95, strokeDashoffset: 1 });
+          loop.to(spark, { strokeDashoffset: 0, duration: periods[i % 4] * .38, ease: 'none' });
+          loop.set(spark, { opacity: 0 });
+          loop.to({}, { duration: periods[i % 4] * .62 });
+          if (ST) {
+            ST.create({
+              trigger: map, start: 'top bottom', end: 'bottom top',
+              onToggle: function (self) {
+                if (self.isActive && !doc.hidden) loop.play();
+                else loop.pause();
+              },
+            });
+          }
+        });
+      });
+      },
+      function revealCharts() {
+      all('[data-chart]').forEach(function (box) {
+        var cols = all('.chart__fill', box);
+        // The quiet years stay hidden until hovered; fading them in here would
+        // override the CSS that keeps them out of the way.
+        var vals = all('.chart__val:not(.chart__val--quiet)', box);
+        var tl = gsap.timeline({
+          scrollTrigger: { trigger: box, start: 'top 85%', once: true },
+        });
+        tl.fromTo(cols, { scaleY: 0 },
+          { scaleY: 1, duration: DUR.md, ease: EASE.back, stagger: 0.12 });
+        tl.to(vals, { opacity: 1, duration: DUR.sm, stagger: 0.12 }, '-=' + DUR.md);
+      });
+      },
+      function revealOrbits() {
+      all('[data-orbit]').forEach(function (box) {
+        var rings = all('.radar__ring', box);
+        var routes = all('.radar__route', box);
+        var hub = one('.radar__hub', box);
+        var pins = all('.radar__pin', box);
+        var nodes = all('.radar__node', box);
+        var tl = gsap.timeline({
+          scrollTrigger: { trigger: box, start: 'top 82%', once: true },
+        });
+        // The field settles first, then the routes draw outward from the hub, and
+        // only then do the destinations appear — the order tells the story the
+        // card is about: everything leaves from one place.
+        tl.fromTo(rings, { scale: 0.6, opacity: 0 },
+          { scale: 1, opacity: 1, duration: DUR.md, ease: EASE.back, stagger: 0.1 });
+        if (hub) {
+          tl.fromTo(hub, { scale: 0.5, opacity: 0 },
+            { scale: 1, opacity: 1, duration: DUR.md, ease: EASE.back }, '-=' + DUR.sm);
+        }
+        tl.fromTo(routes, { opacity: 0 }, { opacity: 1, duration: DUR.sm }, '-=' + DUR.xs);
+        tl.fromTo(nodes, { scale: 0, opacity: 0 },
+          { scale: 1, opacity: 1, duration: DUR.sm, ease: EASE.back, stagger: 0.08 }, '-=' + DUR.xs);
+        tl.fromTo(pins, { y: 8, opacity: 0 },
+          { y: 0, opacity: 1, duration: DUR.md, ease: EASE.out, stagger: 0.09 },
+          '-=' + DUR.sm);
+      });
+      },
+      function revealLabRows() {
+      /* --- lab rows -------------------------------------------------------- */
+      all('[data-lab]').forEach(function (box) {
+        gsap.fromTo(all('.gmetric', box),
+          { y: 12, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: DUR.md,
+            ease: EASE.out,
+            stagger: .08,
+            scrollTrigger: { trigger: box, start: 'top 86%', once: true },
+          });
+      });
+      },
+      function revealSettle() {
+      if (ST) scheduleRefresh();
+      },
+    ];
   }
 
   /* =========================================================================
@@ -630,27 +678,27 @@
     var ornament = one('.hero__fan, .card-rail, .hero__foot', hero);
 
     if (media) {
-      tl.fromTo(media, { scale: 1.07, autoAlpha: 0 },
-        { scale: 1, autoAlpha: 1, duration: 1.8 }, 0);
+      tl.fromTo(media, { scale: 1.07, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 1.8 }, 0);
     }
     if (title) {
       var words = splitWords(title);
-      gsap.set(title, { autoAlpha: 1 });
+      gsap.set(title, { opacity: 1 });
       tl.fromTo(words,
-        { yPercent: 116, autoAlpha: 0 },
-        { yPercent: 0, autoAlpha: 1, duration: DUR.xl, stagger: STAGGER.word }, 0.15);
+        { yPercent: 116, opacity: 0 },
+        { yPercent: 0, opacity: 1, duration: DUR.xl, stagger: STAGGER.word }, 0.15);
       tl.fromTo(all('.hero-glyph', title),
-        { scale: 0, rotate: -24, autoAlpha: 0 },
-        { scale: 1, rotate: 0, autoAlpha: 1, duration: DUR.md, ease: EASE.back }, 0.45);
+        { scale: 0, rotate: -24, opacity: 0 },
+        { scale: 1, rotate: 0, opacity: 1, duration: DUR.md, ease: EASE.back }, 0.45);
     }
     if (sub.length) {
-      tl.fromTo(sub, { y: 30, autoAlpha: 0 },
-        { y: 0, autoAlpha: 1, duration: DUR.lg, stagger: 0.1 }, 0.5);
+      tl.fromTo(sub, { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: DUR.lg, stagger: 0.1 }, 0.5);
     }
     if (fanItems.length) {
       hero.classList.add('fan-ready');
-      tl.fromTo(fanItems, { y: 90, autoAlpha: 0 },
-        { y: 0, autoAlpha: 1, duration: DUR.xl, stagger: 0.075 }, 0.6);
+      tl.fromTo(fanItems, { y: 90, opacity: 0 },
+        { y: 0, opacity: 1, duration: DUR.xl, stagger: 0.075 }, 0.6);
     }
 
     tl.eventCallback('onComplete', function () {
@@ -666,7 +714,7 @@
         },
       });
       if (mediaImg) depth.to(mediaImg, { yPercent: compact ? 4 : 8, scale: compact ? 1.035 : 1.075, ease: 'none' }, 0);
-      if (copy) depth.to(copy, { yPercent: compact ? -3 : -9, autoAlpha: compact ? 0.72 : 0.42, ease: 'none' }, 0);
+      if (copy) depth.to(copy, { yPercent: compact ? -3 : -9, opacity: compact ? 0.72 : 0.42, ease: 'none' }, 0);
       if (ornament) depth.to(ornament, { yPercent: compact ? -2 : -13, ease: 'none' }, 0);
     });
   }
@@ -695,15 +743,15 @@
       }
       if (title) {
         var words = splitWords(title);
-        gsap.set(title, { autoAlpha: 1 });
-        tl.fromTo(words, { yPercent: 116, autoAlpha: 0 },
-          { yPercent: 0, autoAlpha: 1, duration: DUR.xl, stagger: STAGGER.word }, 0.12);
+        gsap.set(title, { opacity: 1 });
+        tl.fromTo(words, { yPercent: 116, opacity: 0 },
+          { yPercent: 0, opacity: 1, duration: DUR.xl, stagger: STAGGER.word }, 0.12);
         tl.fromTo(all('.ichip', title), { scale: 0, rotate: -24 },
           { scale: 1, rotate: 0, duration: DUR.md, ease: EASE.back }, 0.4);
       }
       if (items.length) {
-        tl.fromTo(items, { y: 30, autoAlpha: 0 },
-          { y: 0, autoAlpha: 1, duration: DUR.lg, stagger: .1 }, .45);
+        tl.fromTo(items, { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, duration: DUR.lg, stagger: .1 }, .45);
       }
 
       if (image && window.ScrollTrigger) {
@@ -988,7 +1036,91 @@
 
   /* =========================================================================
      boot
+
+     The init passes used to run back to back inside one DOMContentLoaded
+     callback: 83 ScrollTriggers and 137 tweens built in a single 551ms task on
+     a 4x-throttled phone. Total Blocking Time only counts what a task spends
+     past 50ms, so one 551ms task costs 501ms while ten 55ms tasks cost 50 —
+     the work is the same, the blocking is not. So the passes are spent across
+     idle callbacks instead of run in one breath.
+
+     Three properties this must preserve, in descending order of how badly
+     losing them would hurt:
+
+       1. Order. tagParallaxTargets() must have tagged every image before any
+          reveal timeline reads data-parallax off it. When that tagging lived
+          inside initParallax() an already-decoded image built its reveal first,
+          settled at scale 1, and the drift then slid it clean off the edge of
+          its frame. The queue is drained strictly front to back, one pass at a
+          time, and never reordered to fill a gap.
+       2. The first screen. initSmoothScroll, tagParallaxTargets, initHero,
+          initPageHero and initMarquees stay synchronous. A visitor is looking at
+          the hero while this runs, and an idle callback's worth of delay in its
+          opening timeline is visible where the same delay further down the page
+          is not.
+          initMarquees is in that list for a measured reason, not by category.
+          v2's card rail and v3's logo bar are both inside the hero, and building
+          a marquee changes its track's height. The webfont swap reflows the hero
+          at ~340ms; whether the rail had been built by then decides how much of
+          the viewport that one reflow moves. Queued, it landed on either side of
+          the swap depending on the run and v2's desktop CLS read 0.028 or 0.068
+          at random. Synchronous, the rail is always in place first and the figure
+          is 0.028 every time — the same as before this change. The reflow itself
+          is a separate, pre-existing problem.
+       3. One refresh at the end. ScrollTrigger.refresh() is expensive and it is
+          called once, after the last pass, not per pass.
      ========================================================================= */
+
+  /* requestIdleCallback yields to input and paint, which is the whole point;
+     Safari lacks it, and there setTimeout(0) still breaks the long task into
+     separate tasks even though it does not wait for idle. */
+  var idle = typeof window.requestIdleCallback === 'function'
+    ? function (fn) { window.requestIdleCallback(fn, { timeout: 250 }); }
+    : function (fn) { setTimeout(fn, 0); };
+
+  function drainQueue(queue, done) {
+    var i = 0;
+    var settled = false;
+
+    function runOne() {
+      var pass = queue[i++];
+      // A pass that throws must not stall the ones behind it. Before this the
+      // whole chain was one statement list, so the first exception left the
+      // rest of the page hidden for good.
+      try { pass(); } catch (e) { /* keep draining */ }
+    }
+
+    function settle() {
+      if (settled) return;
+      settled = true;
+      while (i < queue.length) runOne();
+      done();
+    }
+
+    function step(deadline) {
+      if (settled) return;
+      do {
+        if (i >= queue.length) { settle(); return; }
+        runOne();
+      } while (deadline && typeof deadline.timeRemaining === 'function'
+               && deadline.timeRemaining() > 8);
+      if (i >= queue.length) settle();
+      else idle(step);
+    }
+
+    idle(step);
+
+    /* Safety net. A visitor who starts scrolling immediately must not meet a
+       half-initialised page, and requestIdleCallback can be starved for a long
+       time on a busy main thread — a slow third-party-free page is still a page
+       decoding six hero images. At 2500ms the remainder runs synchronously
+       whatever it costs, because a visible page late beats a blank one on time.
+       This sits deliberately below the 3000ms no-motion failsafe, so on a
+       healthy page the queue always finishes first and the failsafe never
+       fires. */
+    setTimeout(settle, 2500);
+  }
+
   function boot() {
     initChrome();
     initCrops();
@@ -996,31 +1128,52 @@
     if (REDUCED || !hasGSAP) {
       // show everything in its final state
       doc.documentElement.classList.add('no-motion');
-      all('[data-count]').forEach(function (el) {
-        var t = parseFloat(el.getAttribute('data-count'));
-        if (!isNaN(t)) el.textContent = t + (el.getAttribute('data-suffix') || '');
-      });
+      settleCounters();
       return;
     }
 
+    armMotionFailsafe();
     window.gsap.registerPlugin(window.ScrollTrigger);
     window.gsap.config({ nullTargetWarn: false });
-    doc.documentElement.classList.add('motion-ready');
 
     initSmoothScroll();
     tagParallaxTargets();
     initHero();
     initPageHero();
-    revealAll();
-    initImageReveal();
-    initMagnetic();
-    initParallax();
     initMarquees();
-    initPartnerOrbit();
-    initCounters();
+
+    var queue = revealPasses().concat([
+      initImageReveal, initMagnetic, initParallax,
+      initPartnerOrbit, initCounters,
+    ]);
+
+    drainQueue(queue, function () {
+      /* Set only now that every pass is in place. The class had been set before
+         the first pass ran, which made it useless as a health signal: a boot
+         that died in the middle still looked ready. Nothing styles on it — it
+         exists so the failsafe below can tell a finished page from a stalled
+         one. */
+      doc.documentElement.classList.add('motion-ready');
+      window.ScrollTrigger.refresh();
+    });
 
     // late webfont/image sizing changes would otherwise leave triggers stale
     on(window, 'load', function () { window.ScrollTrigger.refresh(); });
+  }
+
+  /* Last line of defence. The REDUCED/!hasGSAP branch above covers a library
+     that never arrived; this covers one that arrived and then threw somewhere
+     the per-pass catch could not help — a GSAP version bump changing an API,
+     say. Without it the flash guard's `opacity: 0` is permanent and the page is
+     blank below the hero forever. On a healthy page the queue settles by 2500ms
+     and this never runs. */
+  function armMotionFailsafe() {
+    setTimeout(function () {
+      var root = doc.documentElement;
+      if (root.classList.contains('motion-ready')) return;
+      root.classList.add('no-motion');
+      settleCounters();
+    }, 3000);
   }
 
   if (doc.readyState === 'loading') {

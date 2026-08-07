@@ -14,14 +14,19 @@
     "description": "Full-cycle grain producer in Vinnytsia region: 14,200 ha of own land, 7 crops, 46,000 t elevator, 1,200 t/day drying. Wheat, maize, sunflower, soybean.",
     "og_title": "CENTRAGRO PLUS — grain from 14,200 ha of our own land",
     "og_description": "From crop rotation and crop monitoring to our own grain elevator and dispatch. Working with traders, flour mills and processors since 2008.",
-    "keywords": "grain wholesale, wheat, maize, sunflower, soybean, grain elevator, Vinnytsia region, agribusiness, forward contract"
+    "keywords": "grain wholesale, wheat, maize, sunflower, soybean, grain elevator, Vinnytsia region, agribusiness, forward contract",
+    "google_site_verification": "",
+    "price_range": ""
   },
   "brand": {
     "name": "CENTRAGRO PLUS",
     "legal": "CENTRAGRO PLUS LLC",
     "word_1": "CENTRAGRO",
     "word_2": "PLUS",
-    "tagline": "Full-cycle grain"
+    "tagline": "Full-cycle grain",
+    "same_as": [],
+    "tax_id": "",
+    "vat_id": ""
   },
   "nav": {
     "items": [
@@ -261,6 +266,163 @@
             "k": "Test weight",
             "v": "≥760 g/l"
           }
+        ],
+        "slug": "winter-wheat",
+        "seo_title": "Milling wheat wholesale — 30,700 t, Vinnytsia",
+        "seo_description": "Ukrainian milling wheat from 4,800 ha of own land: 12.5–13.8% protein, test weight from 760 g/l, falling number from 240 s. Lots from 100 t, own elevator.",
+        "lead": "Soft milling wheat, DSTU class 2–3, from 4,800 hectares of our own land. The 2026 season averaged 6.4 t/ha — 30,700 tonnes, held on our elevator separated by class and by field of origin.",
+        "body": [
+          {
+            "heading": "What is actually on offer",
+            "paragraphs": [
+              "Soft winter wheat of food grade, class 2 and class 3 under DSTU 3768:2019 — the Ukrainian standard. For a buyer used to other nomenclature, class 2 corresponds to standard milling wheat on a 12.5% protein basis, and class 3 to a feed-and-blend grade from 11%. Flour mills take the first for straight-run milling; exporters take it against protein-specified contracts.",
+              "The 2026 season closed at 6.4 t/ha across the whole area — 30,700 tonnes gross. Wheat occupies 4,800 of our 14,200 hectares, which makes it the largest crop in the rotation, and that is precisely why it is stored as separate clusters rather than as one tonnage.",
+              "Wheat is sold from our elevator rather than out of the field through an intermediary: the buyer is looking at a specific lot with a specific certificate and can decline it before loading, not after it has been accepted at their own plant."
+            ],
+            "items": [
+              "Class 2 — protein from 12.5%, for straight-run milling and export.",
+              "Class 3 — protein from 11%, for blending into technical formulations.",
+              "Lots are held by field of origin and are never commingled."
+            ]
+          },
+          {
+            "heading": "Agronomy behind a stable specification",
+            "paragraphs": [
+              "Wheat follows rapeseed and soybean in our rotation. Both leave structured soil and residual nitrogen, so establishment does not depend on September rainfall the way it does after a cereal. A longer rotation costs us area under the highest-value crop, and buys evenness across fields — and evenness is what a buyer is actually paying for.",
+              "Sowing date is set by measured soil moisture, not by the calendar. Nitrogen is applied variably: each field is divided into productivity zones from multi-year yield maps and NDVI imagery, and each zone gets its own rate. On weak zones that saves fertiliser; on strong ones it prevents lodging.",
+              "Crop protection follows scouting rather than a preventive calendar programme. Our own agronomist walks the fields, and every treatment decision is recorded with its date and its reason. Those records form part of the lot history and are available on request."
+            ],
+            "items": [
+              "Preceding crops: rapeseed and soybean, rotation of four fields or more.",
+              "Variable-rate nitrogen by productivity zone.",
+              "Treatments on scouting evidence, with date and rationale recorded."
+            ]
+          },
+          {
+            "heading": "Laboratory and lot certificate",
+            "paragraphs": [
+              "Analysis is done in our own laboratory at the elevator, not by a contractor called in for the season. Every truck coming off the field passes intake control for moisture, foreign matter, damaged kernels and test weight. A completed lot then receives a full certificate: protein, wet gluten, falling number, test weight and moisture.",
+              "We hold falling number at 240 seconds and above. That is the threshold below which baking strength collapses, and it is the parameter most often ruined by rain during harvest — which is why we take wheat off the field wetter and dry it, rather than waiting in the swath for a dry day.",
+              "The buyer receives the certificate before dispatch, not together with the truck. If a parameter does not suit, the lot stays on the elevator and we offer a different one. We do not ship on a \"load it and we will sort it out on the weighbridge\" basis.",
+              "Lot history is kept against a number: intake date, field, moisture on arrival, drying regime and the result of every analysis. If a buyer asks six months later where a consignment came from, the answer is the name of a field, not the name of a district."
+            ],
+            "items": [
+              "Intake control on every truck: moisture, foreign matter, test weight.",
+              "Full certificate on the completed lot, issued before dispatch.",
+              "Lot history by number: field, drying regime, every analysis."
+            ]
+          },
+          {
+            "heading": "Storage and drying",
+            "paragraphs": [
+              "Our own elevator holds 46,000 tonnes; with leased capacity the total is 58,000 tonnes. Drying runs at 1,200 tonnes per day across three units, so at peak harvest combines do not queue for a drier and grain does not sit in the swath under rain.",
+              "Wheat is stored separated by class and by field of origin. That costs more to administer than one large silo, and it lets a buyer assemble a required tonnage out of homogeneous lots instead of averaging everything down to the weakest figure. For repeat contracts it means the second truck matches the first.",
+              "The driers run on gas and on our own power supply with standby capacity, so a grid outage does not push the intake schedule back by a day. Through the 2026 season the elevator lost no intake days on wheat."
+            ],
+            "items": [
+              "46,000 t own storage, 58,000 t including leased capacity.",
+              "1,200 t/day drying across three units.",
+              "Segregated storage by class and by field of origin."
+            ]
+          },
+          {
+            "heading": "Logistics and dispatch",
+            "paragraphs": [
+              "The elevator stands in Soroka, Vinnytsia region: 35 km to Haisyn, 85 km to Vinnytsia, 230 km to Kyiv and 380 km to the port of Odesa. The port leg is a single run, with no transhipment through an intermediate warehouse.",
+              "Dispatch is by road, on your trucks or ours. A lot from 100 tonnes is scheduled for loading within three working days of agreement. Weighbridges are calibrated and certified, and weighing takes place in the presence of the buyer's representative if they wish to attend.",
+              "Our own fleet covers the peak of the season, when hired haulage doubles in price and disappears in the week it is most needed. For a buyer that means the dispatch schedule we signed does not depend on what a truck costs on the spot market that morning."
+            ],
+            "items": [
+              "35 km to Haisyn, 85 km to Vinnytsia, 230 km to Kyiv, 380 km to the port.",
+              "The port leg is a single run, with no intermediate warehouse.",
+              "Own fleet through the peak, hired trucks held as reserve."
+            ]
+          },
+          {
+            "heading": "Commercial terms",
+            "paragraphs": [
+              "We work under contract, VAT registered, with a complete document package. Minimum lot is 100 tonnes. Spot payment is 3–5 banking days after acceptance; on a forward, an advance and a payment schedule are fixed in the contract before sowing.",
+              "Spot price is the price on the day of dispatch. A forward makes sense when the tonnage is needed in a specific month: we commit the area to you, and you get a predictable volume and a fixed price formula. Since 2008 we have shipped grain to buyers in 14 countries, and in every contract the paperwork is prepared by our own accounts department rather than an intermediary.",
+              "The question we are asked most often is whether a smaller tonnage is possible. We do not go below 100 tonnes, and not out of stubbornness: a smaller lot does not cover the cost of its own certificate, weighing and paperwork, and saying so plainly is fairer than quietly raising the price per tonne."
+            ]
+          }
+        ],
+        "terms": [
+          {
+            "name": "LOT AND PAYMENT",
+            "desc": "Baseline commercial terms for winter wheat. The same terms apply on spot and on forward.",
+            "rows": [
+              {
+                "k": "Minimum lot",
+                "v": "100 t"
+              },
+              {
+                "k": "Payment, spot",
+                "v": "3–5 banking days after acceptance"
+              },
+              {
+                "k": "Payment, forward",
+                "v": "advance plus schedule in the contract"
+              },
+              {
+                "k": "VAT and documents",
+                "v": "VAT registered, full package"
+              },
+              {
+                "k": "Price",
+                "v": "day of dispatch, or a forward formula"
+              }
+            ]
+          },
+          {
+            "name": "DISPATCH",
+            "desc": "What happens once tonnage and price have been agreed.",
+            "rows": [
+              {
+                "k": "Delivery basis",
+                "v": "EXW Soroka elevator, FCA, CPT port of Odesa"
+              },
+              {
+                "k": "Transport",
+                "v": "buyer's trucks or our own fleet"
+              },
+              {
+                "k": "Loading window",
+                "v": "within 3 working days of agreement"
+              },
+              {
+                "k": "Quality certificate",
+                "v": "before dispatch, for every lot"
+              },
+              {
+                "k": "Weighing",
+                "v": "certified weighbridge, buyer may attend"
+              }
+            ]
+          }
+        ],
+        "related": [
+          1,
+          5,
+          4
+        ],
+        "specs_extra": [
+          {
+            "k": "Falling number",
+            "v": "≥ 240 s"
+          },
+          {
+            "k": "Wet gluten",
+            "v": "23–28%"
+          },
+          {
+            "k": "Foreign matter",
+            "v": "≤ 2%"
+          },
+          {
+            "k": "Damaged kernels",
+            "v": "≤ 5%"
+          }
         ]
       },
       {
@@ -287,6 +449,149 @@
           {
             "k": "Broken kernels",
             "v": "≤5%"
+          }
+        ],
+        "slug": "corn",
+        "seo_title": "Grain maize wholesale — 33,300 t, Vinnytsia",
+        "seo_description": "Ukrainian grain maize from 3,400 ha of own land: FAO 280–340 hybrids, moisture to 14%, starch from 72%. Lots from 100 t, drying 1,200 t/day.",
+        "lead": "Grain maize, FAO 280–340 hybrids, from 3,400 hectares of our own land. The 2026 season averaged 9.8 t/ha — 33,300 tonnes, dried in our own dryers to 14% and held on the elevator separated by hybrid and by moisture at harvest.",
+        "body": [
+          {
+            "heading": "What is actually on offer",
+            "paragraphs": [
+              "Grain maize, FAO 280–340 hybrids. That is a deliberate range: longer-season hybrids give higher yield potential on our fields, but demand a bigger heat-unit budget to reach maturity and a bigger drying load at harvest. We do not push into FAO 400+ for the extra tonnage — the risk of not maturing before frost outweighs the gain.",
+              "The 2026 season closed at 9.8 t/ha across the whole area — 33,300 tonnes gross. Maize occupies 3,400 of our 14,200 hectares, the second-largest crop in the rotation after wheat, and on the elevator lots are separated not into one tonnage but by hybrid and by moisture content at intake from the field."
+            ],
+            "items": [
+              "FAO 280–340 — the balance between yield potential and guaranteed maturity before frost.",
+              "Lots are kept separate by hybrid rather than averaged into one silo.",
+              "Every lot carries a known moisture history from field to dryer."
+            ]
+          },
+          {
+            "heading": "Why hybrid choice is also a drying decision",
+            "paragraphs": [
+              "Hybrid selection is not only about yield potential — it is sized against our own drying capacity. A longer-FAO hybrid matures later and comes off the field at 22–28% moisture, sometimes higher after a wet autumn. Planting too much of one late hybrid at once means the dryers cannot clear the incoming flow fast enough, and wet grain sits in the intake bins longer than is safe.",
+              "So we stagger planting across FAO groups by maturity date: some fields enter harvest up to two weeks ahead of others. That is not about the yield of any one field — it is about keeping the dryers loaded evenly instead of hitting a peak that forces combines to wait.",
+              "Combining starts once field moisture has dropped below 30%, not on a calendar date. Threshing wetter grain earlier causes more mechanical kernel damage in the threshing unit, and a damaged kernel is both an entry point for mould in storage and a direct source of broken grain in the lot."
+            ],
+            "items": [
+              "Planting dates for different hybrids are staggered to even out the load on the dryers.",
+              "Combining follows measured field moisture, not a calendar date.",
+              "Less mechanical kernel damage means less mould risk and fewer broken kernels."
+            ]
+          },
+          {
+            "heading": "Drying: the real economics of maize",
+            "paragraphs": [
+              "For maize, drying is not a routine finishing step — it is the main cost line and the main way to lose a lot. Grain comes off the field wet, often 22–28% moisture, and every point of moisture the dryer removes costs fuel and dryer-hours. We do not cut corners here: grain put into storage \"nearly dry\" heats up in the silo within weeks, and no amount of aeration afterwards fixes that.",
+              "Drying runs across three units with a combined capacity of 1,200 tonnes per day, and at the peak of maize harvest that throughput is scheduled by the hour to avoid a queue of combines at the intake point. Moisture is removed gradually, without overheating the kernel — a sharp temperature swing on high-moisture grain cracks the pericarp, and that is exactly the defect that later shows up as broken kernels on the buyer's scale.",
+              "Moisture is checked at every stage — on intake from the field, on the way out of the dryer, and again before dispatch, because grain can pick moisture back up in storage when temperatures swing. Every lot ships at 14% moisture or below, confirmed by a laboratory certificate rather than a visual reading off the intake moisture meter."
+            ]
+          },
+          {
+            "heading": "Storage and mycotoxin control",
+            "paragraphs": [
+              "Our own elevator holds 46,000 tonnes; with leased capacity the total is 58,000 tonnes. Maize is stored in silos with active aeration: grain dried to 14% is cooled to storage temperature immediately after the dryer, because a warm, humid air pocket inside a silo is enough to start mould growth even in grain that technically passed on moisture alone.",
+              "Mycotoxins — fumonisins and aflatoxins — are managed proactively, not after a buyer complaint. Any lot showing an elevated share of damaged or mould-affected kernels at intake is routed to a separate silo and never blended with a clean lot. We hold aflatoxin B1 at or below 5 µg/kg, a threshold agreed with our regular buyers as the benchmark for export lots — in line with the DSTU 4964 grain-safety requirements and comparable to the EU limit under Regulation (EC) No 1881/2006 for maize destined for further processing.",
+              "Ongoing temperature monitoring — sensors placed through the height of the grain column — flags a local hotspot before it becomes a whole-lot problem. If the thermometry shows a deviation, we aerate or transfer that section rather than waiting for a lab result to confirm it."
+            ],
+            "items": [
+              "Grain is cooled to storage temperature immediately after drying.",
+              "Suspect lots go to a dedicated silo, never blended with clean grain.",
+              "Column thermometry in every silo for early detection of heating."
+            ]
+          },
+          {
+            "heading": "Logistics and dispatch",
+            "paragraphs": [
+              "The elevator stands in Soroka, Vinnytsia region: 35 km to Haisyn, 85 km to Vinnytsia, 230 km to Kyiv and 380 km to the port of Odesa. Maize moves for export mainly through the port, and that distance is a single road run with no transhipment through an intermediate warehouse.",
+              "Dispatch is by road, on your trucks or ours. A lot from 100 tonnes is scheduled for loading within three working days of agreement; during peak season, in October and November, we ask for the loading date to be booked in advance, since the queue for outbound loading runs high. Weighbridges are calibrated and certified, and weighing takes place in the presence of the buyer's representative if they wish to attend."
+            ]
+          },
+          {
+            "heading": "Commercial terms",
+            "paragraphs": [
+              "We work under contract, VAT registered, with a complete document package. Minimum lot is 100 tonnes. Spot payment is 3–5 banking days after acceptance; on a forward, an advance and a payment schedule are fixed in the contract before sowing, early enough to commit a specific hybrid and area to the contract.",
+              "Spot price is the price on the day of dispatch. Forward volume on maize is typically taken for delivery after October, once dryer-confirmed quality is already known. Since 2008 we have shipped grain to buyers in 14 countries, and every lot ships with an elevator laboratory certificate — moisture, foreign matter, test weight, starch — issued before loading, not after."
+            ]
+          }
+        ],
+        "terms": [
+          {
+            "name": "LOT AND PAYMENT",
+            "desc": "Baseline commercial terms for grain maize. The same terms apply on spot and on forward.",
+            "rows": [
+              {
+                "k": "Minimum lot",
+                "v": "100 t"
+              },
+              {
+                "k": "Payment, spot",
+                "v": "3–5 banking days after acceptance"
+              },
+              {
+                "k": "Payment, forward",
+                "v": "advance plus schedule in the contract"
+              },
+              {
+                "k": "VAT and documents",
+                "v": "VAT registered, full package"
+              },
+              {
+                "k": "Price",
+                "v": "day of dispatch, or a forward formula"
+              }
+            ]
+          },
+          {
+            "name": "DISPATCH",
+            "desc": "What happens once tonnage and price have been agreed.",
+            "rows": [
+              {
+                "k": "Delivery basis",
+                "v": "EXW Soroka elevator, FCA, CPT port of Odesa"
+              },
+              {
+                "k": "Transport",
+                "v": "buyer's trucks or our own fleet"
+              },
+              {
+                "k": "Loading window",
+                "v": "within 3 working days of agreement"
+              },
+              {
+                "k": "Quality certificate",
+                "v": "before dispatch, for every lot"
+              },
+              {
+                "k": "Weighing",
+                "v": "certified weighbridge, buyer may attend"
+              }
+            ]
+          }
+        ],
+        "related": [
+          0,
+          3,
+          2
+        ],
+        "specs_extra": [
+          {
+            "k": "Test weight",
+            "v": "≥ 730 g/l"
+          },
+          {
+            "k": "Starch",
+            "v": "≥ 72%"
+          },
+          {
+            "k": "Aflatoxin B1",
+            "v": "≤ 5 µg/kg"
+          },
+          {
+            "k": "Colour uniformity",
+            "v": "yellow, ≥ 95%"
           }
         ]
       },
@@ -315,6 +620,150 @@
             "k": "Acid value",
             "v": "≤2.5"
           }
+        ],
+        "slug": "sunflower",
+        "seo_title": "High-oil sunflower seed wholesale — 8,800 t",
+        "seo_description": "Ukrainian high-oil sunflower seed from 2,600 ha: 46–49% oil content, moisture ≤8%, acid value ≤2.5. Lots from 100 t, own elevator and laboratory.",
+        "lead": "High-oil sunflower seed from 2,600 hectares of our own land. The 2026 season averaged 3.4 t/ha — 8,800 tonnes, dried down to 8% moisture and held on our elevator separated by harvest lot.",
+        "body": [
+          {
+            "heading": "What is actually on offer",
+            "paragraphs": [
+              "Sunflower seed of high-oleic and high-oil hybrids, 46–49% oil content on a dry matter basis. This is a crush-plant commodity, not planting seed: the buyer cares about oil yield per tonne, not germination or varietal purity. Lots from different fields are not commingled before a shipment lot is formed, so the oil content on the certificate is the measured figure for that specific tonnage, not an average across several intakes.",
+              "Sunflower occupies 2,600 of our 14,200 hectares — a profitable crop, but a demanding one in rotation: we do not return it to the same field sooner than every four to five years, otherwise both yield and oil content fall as field-specific pathogens build up in the soil. The 2026 season closed at 3.4 t/ha — 8,800 tonnes gross.",
+              "Of the seven crops in our rotation, sunflower is the most exacting about following the agronomic calendar precisely, because the cost of a mistake shows up not in the field but at the elevator: an under-dried or over-standing lot loses value faster than any cereal does. That is why our harvest schedule for sunflower is agreed with the drying complex in advance, rather than drying being fitted around whatever volume arrives from the field."
+            ],
+            "items": [
+              "High-oil hybrids, selected on yield and oil content together.",
+              "Lots are formed by field and harvest date, never blended in.",
+              "Seed for crushing, not for the planting-seed market."
+            ]
+          },
+          {
+            "heading": "Hybrid selection and why oil content stays stable",
+            "paragraphs": [
+              "We choose a hybrid not on maximum yield alone, but on the product of yield and oil content — that figure determines how much oil a plant physically extracts from our tonne. Crop protection follows the regional standard: sunflower is vulnerable to broomrape and Sclerotinia, so the field for a new planting is chosen with the previous years' history in mind, and we do not plant sunflower after sunflower.",
+              "Desiccation is used selectively, only when natural ripening is delayed by weather — it speeds up harvest in a wet, unstable September, but it is not our standard practice on every field. The main quality-control lever at this stage is harvest timing: sunflower left standing too long in the field loses oil content and picks up acid value before the combine ever reaches it.",
+              "Scouting for broomrape and head disease is done by our own agronomist field by field, so the decision on a given plot is made on the evidence from that plot, not on an average schedule for the whole farm."
+            ],
+            "items": [
+              "Hybrids are selected on the product of yield and oil content.",
+              "Rotation no more frequent than once every four to five years per field.",
+              "Harvest timing is set by head condition, not by the calendar."
+            ]
+          },
+          {
+            "heading": "Laboratory and lot certificate",
+            "paragraphs": [
+              "Analysis of sunflower seed is done in our own laboratory at the elevator. Every truck coming off the field passes intake control for moisture, foreign matter and seed damage. A completed lot then receives a full certificate: oil content, moisture, acid value, free fatty acid content, hull content, peroxide value and thousand-seed weight.",
+              "Acid value is our main indicator of how a lot has behaved after harvest, not just in the field. It rises during storage of wet or damaged seed: a broken hull lets moisture and air reach the kernel, enzymes start breaking down the oil, and after a few weeks of poor storage a lot that looked excellent in the field arrives at the plant with an acid value past the acceptance limit. That is why we do not hold sunflower seed wet \"until the weekend\" — it is dried on the day it comes in.",
+              "The buyer receives the certificate before dispatch. If a lot does not meet a given parameter, it stays on the elevator — we do not ship on a \"load it and trust the truck\" basis."
+            ]
+          },
+          {
+            "heading": "Drying and storage: why an oilseed is a different discipline",
+            "paragraphs": [
+              "Sunflower seed often arrives for drying at 12–14% moisture or higher and is brought down to a target of 6–8% — noticeably lower than for cereal grain. That is not a margin of safety taken for its own sake: oilseed behaves differently from grain in storage, and every extra percentage point of moisture sharply shortens the time a lot stays stable on acid value.",
+              "Drying an oilseed is a distinct fire-risk discipline, not the same regime used for wheat or maize. Sunflower hulls and pollen are combustible and can smoulder inside the mass without visible flame, so drier temperature settings for sunflower are held lower than for cereals, and temperature monitoring through the grain column is continuous, not spot-checked. Three drying units rated at 1,200 tonnes per day let us work carefully rather than push volume at the risk of overheating.",
+              "Sunflower is stored apart from cereal crops — in dedicated silos with active aeration and temperature monitoring through the height of the pile. We do not mix an oilseed with cereal grain in the same bin: different bulk density, different storage behaviour and a different self-heating risk make that a false economy even when free silo space is tight."
+            ],
+            "items": [
+              "Dried from 12–14% down to a target of 6–8%, a lower setting than for cereals.",
+              "Continuous temperature monitoring due to hull smouldering risk.",
+              "Dedicated silos for oilseed, never mixed with cereal grain."
+            ]
+          },
+          {
+            "heading": "Logistics and dispatch",
+            "paragraphs": [
+              "The elevator stands in Soroka, Vinnytsia region: 35 km to Haisyn, 85 km to Vinnytsia, 230 km to Kyiv and 380 km to the port of Odesa. The main buyers of our sunflower seed are regional crushing plants and port terminals that process seed for oil export, rather than buyers of the raw seed itself.",
+              "Dispatch is by road, on your trucks or ours. A lot from 100 tonnes is scheduled for loading within three working days of agreement. Because seed is lighter than grain by volume, the same tonnage needs more trucks — we account for that in the loading schedule in advance so dispatch does not stretch over extra days. Weighbridges are calibrated and certified, and weighing takes place in the presence of the buyer's representative for every truck if they wish to attend."
+            ]
+          },
+          {
+            "heading": "Commercial terms",
+            "paragraphs": [
+              "We work under contract, VAT registered, with a complete document package. Minimum lot is 100 tonnes. Spot payment is 3–5 banking days after acceptance; on a forward, an advance and a payment schedule are fixed in the contract before sowing.",
+              "Spot price is the price on the day of dispatch, and it is usually linked to oil quotations at the time of the deal, not to seed tonnage alone. A forward makes sense for a plant that is scheduling crushing capacity ahead of time: we commit the volume, and you get a predictable delivery. Since 2008 we have shipped seed to buyers in 14 countries, and the paperwork for every lot is prepared by our own accounts department rather than an intermediary."
+            ]
+          }
+        ],
+        "terms": [
+          {
+            "name": "LOT AND PAYMENT",
+            "desc": "Baseline commercial terms for sunflower seed. The same terms apply on spot and on forward.",
+            "rows": [
+              {
+                "k": "Minimum lot",
+                "v": "100 t"
+              },
+              {
+                "k": "Payment, spot",
+                "v": "3–5 banking days after acceptance"
+              },
+              {
+                "k": "Payment, forward",
+                "v": "advance plus schedule in the contract"
+              },
+              {
+                "k": "VAT and documents",
+                "v": "VAT registered, full package"
+              },
+              {
+                "k": "Price",
+                "v": "day of dispatch, or a forward formula"
+              }
+            ]
+          },
+          {
+            "name": "DISPATCH",
+            "desc": "What happens once tonnage and price have been agreed.",
+            "rows": [
+              {
+                "k": "Delivery basis",
+                "v": "EXW Soroka elevator, FCA, CPT crushing plant"
+              },
+              {
+                "k": "Transport",
+                "v": "buyer's trucks or our own fleet"
+              },
+              {
+                "k": "Loading window",
+                "v": "within 3 working days of agreement"
+              },
+              {
+                "k": "Quality certificate",
+                "v": "before dispatch, for every lot"
+              },
+              {
+                "k": "Weighing",
+                "v": "certified weighbridge, buyer may attend"
+              }
+            ]
+          }
+        ],
+        "related": [
+          3,
+          4,
+          1
+        ],
+        "specs_extra": [
+          {
+            "k": "Free fatty acids",
+            "v": "≤ 1.2%"
+          },
+          {
+            "k": "Hull content",
+            "v": "≤ 22%"
+          },
+          {
+            "k": "Peroxide value",
+            "v": "≤ 5 mmol O₂/kg"
+          },
+          {
+            "k": "Thousand-seed weight",
+            "v": "55–65 g"
+          }
         ]
       },
       {
@@ -341,6 +790,148 @@
           {
             "k": "Oil content",
             "v": "18–20%"
+          }
+        ],
+        "slug": "soybean",
+        "seo_title": "Non-GMO soybean wholesale — 4,350 t, Vinnytsia",
+        "seo_description": "Non-GMO soybean with confirmed origin from 1,500 ha of own land: 34–37% protein, 18–20% oil, moisture ≤ 12%. Lots from 100 t, own elevator, full IP chain.",
+        "lead": "Non-GMO soybean with confirmed origin, grown on 1,500 hectares of our own land. The 2026 season averaged 2.9 t/ha — 4,350 tonnes, received and stored as a segregated stream from the first truckload through to dispatch.",
+        "body": [
+          {
+            "heading": "What is actually on offer",
+            "paragraphs": [
+              "Non-GMO soybean of merchantable grade with confirmed origin: every lot is traceable to a specific field and harvest date. That is not a label claim — it rests on seed purchased with documented varietal purity, and on soybean fields physically separated from any GM crop in our own rotation and from neighbouring farms by a buffer strip.",
+              "The 2026 season closed at 2.9 t/ha across 1,500 hectares — 4,350 tonnes gross. Soybean is a small share of our 14,200 hectares, and that scale is exactly why we can keep it under full segregation: one stream from field to storage cell, with no commingling of other grain at any stage."
+            ],
+            "items": [
+              "Seed with documented varietal purity and no GM component.",
+              "Buffer strip and dedicated equipment at sowing and harvest.",
+              "Every lot traces back to its field of origin and harvest date."
+            ]
+          },
+          {
+            "heading": "Identity preservation: how we prove it",
+            "paragraphs": [
+              "Identity preservation means our soybean never touches a combine, trailer or storage cell that has handled a GM crop that day or the day before, until the line has gone through a documented purge and clean-down. Every clean-down is logged with a timestamp — part of the lot file, not a verbal understanding between crews.",
+              "Seed is bought from a supplier who provides a document on varietal identity and the absence of a GM component; that document sits in the lot file alongside the laboratory certificates. Sampling at every stage — from the truck on the weighbridge to the storage cell — is logged with a date, lot number and the responsible agronomist's name.",
+              "A buyer paying a premium for non-GMO status is paying for exactly this chain of records, not for one certificate at the end. We show the sampling log and the lot's route from field to truck as a standard part of the document package, not as an exception granted on request."
+            ],
+            "items": [
+              "Equipment purge and clean-down between GM and non-GM streams, time-stamped.",
+              "Supplier document on varietal identity kept in the lot file.",
+              "Sampling log from field to dispatch available to the buyer."
+            ]
+          },
+          {
+            "heading": "Laboratory and lot certificate",
+            "paragraphs": [
+              "Analysis is done in our own laboratory at the elevator. Every truck coming off the field passes intake control for moisture, foreign matter and the share of split or damaged beans. A completed lot then receives a full certificate: protein on a dry matter basis, oil content, urease activity, test weight and moisture.",
+              "We monitor urease activity because it indicates thermal or mechanical damage to the bean during handling: a reading outside 0.1–0.4 pH rise (the standard trypsin-inhibitor proxy under ISO 14902, referenced alongside DSTU 4230) points to overheating during drying, which is critical rather than merely informational for soybean destined for food-grade or seed use.",
+              "The buyer receives the certificate before dispatch. Alongside it comes the non-GMO confirmation and an extract from the sampling log for that specific lot. If a buyer needs an independent PCR test from an accredited laboratory, we provide a sample for it without holding up the shipment."
+            ]
+          },
+          {
+            "heading": "Storage and drying",
+            "paragraphs": [
+              "Our own elevator holds 46,000 tonnes; with leased capacity the total is 58,000 tonnes. Drying runs at 1,200 tonnes per day across three units. Soybean is dried carefully and in smaller batches at a time: the bean splits easily and loses merchantable appearance under an aggressive temperature regime, so our drying rate for soybean runs lower than for cereals.",
+              "Soybean is held in a dedicated group of storage cells that carry no GM crop in the current season. That costs more to administer than shared storage, but it is what keeps the lot clean from one loading to the next — not just clean on paper."
+            ],
+            "items": [
+              "46,000 t own storage, 58,000 t including leased capacity.",
+              "A dedicated cell group reserved for the non-GMO stream.",
+              "Reduced drying temperature to preserve bean integrity."
+            ]
+          },
+          {
+            "heading": "Logistics and dispatch",
+            "paragraphs": [
+              "The elevator stands in Soroka, Vinnytsia region: 35 km to Haisyn, 85 km to Vinnytsia, 230 km to Kyiv and 380 km to the port of Odesa. The port leg is a single run, with no transhipment through an intermediate warehouse.",
+              "Dispatch is by road, on your trucks or ours. Before loading, every truck taking soybean goes through the same clean-down check applied at intake: the non-GMO stream does not cross paths with other grain even in transport. A lot from 100 tonnes is scheduled for loading within three working days of agreement."
+            ]
+          },
+          {
+            "heading": "Commercial terms",
+            "paragraphs": [
+              "We work under contract, VAT registered, with a complete document package that includes non-GMO confirmation and a laboratory certificate for every lot. Minimum lot is 100 tonnes. Spot payment is 3–5 banking days after acceptance; on a forward, an advance and a payment schedule are fixed in the contract before sowing.",
+              "For us soybean is not only a cash crop but the preceding crop ahead of winter wheat: as a legume it fixes nitrogen in the soil, which is why the following wheat field establishes more evenly. Since 2008 we have shipped grain to buyers in 14 countries, and on every soybean contract the origin documents are prepared by our own accounts and agronomy teams, not by an intermediary."
+            ]
+          }
+        ],
+        "terms": [
+          {
+            "name": "LOT AND PAYMENT",
+            "desc": "Baseline commercial terms for non-GMO soybean. The same terms apply on spot and on forward.",
+            "rows": [
+              {
+                "k": "Minimum lot",
+                "v": "100 t"
+              },
+              {
+                "k": "Payment, spot",
+                "v": "3–5 banking days after acceptance"
+              },
+              {
+                "k": "Payment, forward",
+                "v": "advance plus schedule in the contract"
+              },
+              {
+                "k": "VAT and documents",
+                "v": "VAT registered, full package"
+              },
+              {
+                "k": "Price",
+                "v": "day of dispatch, or a forward formula"
+              }
+            ]
+          },
+          {
+            "name": "DISPATCH",
+            "desc": "What happens once tonnage and price have been agreed.",
+            "rows": [
+              {
+                "k": "Delivery basis",
+                "v": "EXW Soroka elevator, FCA, CPT port of Odesa"
+              },
+              {
+                "k": "Transport",
+                "v": "buyer's trucks or our own fleet"
+              },
+              {
+                "k": "Loading window",
+                "v": "within 3 working days of agreement"
+              },
+              {
+                "k": "Quality certificate",
+                "v": "before dispatch, for every lot"
+              },
+              {
+                "k": "Non-GMO confirmation",
+                "v": "supplier document and sampling log"
+              }
+            ]
+          }
+        ],
+        "related": [
+          4,
+          0,
+          2
+        ],
+        "specs_extra": [
+          {
+            "k": "Foreign matter",
+            "v": "≤ 2%"
+          },
+          {
+            "k": "Split and damaged beans",
+            "v": "≤ 3%"
+          },
+          {
+            "k": "Urease activity",
+            "v": "0.1–0.4 pH rise"
+          },
+          {
+            "k": "Test weight",
+            "v": "≥ 760 g/l"
           }
         ]
       },
@@ -369,6 +960,148 @@
             "k": "Erucic acid",
             "v": "≤2%"
           }
+        ],
+        "slug": "winter-rapeseed",
+        "seo_title": "Winter rapeseed wholesale — 3,240 t, Vinnytsia",
+        "seo_description": "Ukrainian double-low winter rapeseed from 900 ha: 42–45% oil content, erucic acid under 2%. First crop of the harvest. Lots from 100 t, own elevator.",
+        "lead": "Industrial-grade winter rapeseed from 900 hectares of our own land. The 2026 season averaged 3.6 t/ha — 3,240 tonnes, the first crop we bring in from the field every year, and the one that precedes wheat in our rotation.",
+        "body": [
+          {
+            "heading": "What is actually on offer",
+            "paragraphs": [
+              "Industrial-grade winter rapeseed, 42–45% oil content on a dry matter basis. The seed meets the \"double low\" specification — canola-type, erucic acid at or below 2% and glucosinolates at or below 18 µmol/g. That is the baseline any crushing plant in Europe accepts without a quality discount; it corresponds to the EU \"00\" rapeseed convention that international buyers already work to.",
+              "The 2026 season closed at 3.6 t/ha — 3,240 tonnes gross from 900 hectares. Rapeseed is the smallest crop we grow by area, just 900 of our 14,200 hectares, but it is the one that opens the harvest campaign every year: the first grain onto our elevator each season is rapeseed, ahead of wheat or maize."
+            ],
+            "items": [
+              "Double low — low erucic acid, low glucosinolates, no quality discount from the buyer.",
+              "Oil content 42–45%, uniform lot, no blending in of weaker fields.",
+              "No admixture of other oilseeds — fields and equipment are kept crop-dedicated."
+            ]
+          },
+          {
+            "heading": "Why the smallest crop is the most important one in the rotation",
+            "paragraphs": [
+              "900 hectares is the smallest area in our rotation, but not the smallest role. Rapeseed is the preceding crop for wheat: it clears the field early and leaves behind a loosened, deep soil profile and residual mineral nitrogen that the following winter wheat draws on at establishment. Without rapeseed in the rotation, wheat on the same fields yields lower and less consistently — we have seen this on our own ground whenever the rapeseed area was cut back.",
+              "For that reason we would not expand the rapeseed area even against a better price on rapeseed alone: the economics of this crop are not calculated on its own, they are calculated together with the wheat that follows it. It is the most expensive position in the rotation per hectare of input cost, and at the same time the most justified one — it pays itself back through the next crop's yield.",
+              "Rapeseed is demanding at establishment: a dry topsoil layer in August and emergence drops, stands come up uneven, and the field goes into winter weak. We plan rapeseed sowing around measured soil moisture with the same discipline we apply to wheat, not around a calendar date."
+            ],
+            "items": [
+              "Rapeseed precedes wheat, leaving nitrogen and structured soil behind.",
+              "Smallest area in the rotation, 900 ha, and the highest sensitivity to sowing timing.",
+              "Cutting rapeseed area has historically lowered wheat yield on the same fields."
+            ]
+          },
+          {
+            "heading": "Laboratory and lot certificate",
+            "paragraphs": [
+              "Analysis is done in our own laboratory at the elevator. Every truck coming off the field passes intake control for moisture, impurities and oil content by rapid method. A completed lot then receives a full certificate: oil content, moisture, impurities, erucic acid, glucosinolates, free fatty acids and chlorophyll.",
+              "We track free fatty acids and chlorophyll separately from the baseline specification, because those two are what most often let down a rapeseed lot harvested slightly green or over-dried at the elevator. Drying decisions are not made by eye — the operator runs the lot against the laboratory's moisture reading, not against how the seed looks.",
+              "The buyer receives the certificate before dispatch. If oil content or purity does not suit, we offer a different lot from a different field — lots are kept separate by field, not blended in one silo."
+            ]
+          },
+          {
+            "heading": "Harvest, drying, and why rapeseed comes off first",
+            "paragraphs": [
+              "Rapeseed ripens earlier than cereals, and harvest starts 3–4 weeks before wheat. That means the elevator and driers first run at full load on rapeseed — we stress-test all three drying units on the first crop of the season, while tonnage is still manageable, rather than at peak campaign on wheat or maize.",
+              "Our own elevator holds 46,000 tonnes; with leased capacity the total is 58,000 tonnes, with drying at 1,200 tonnes per day across three units. Rapeseed is dried more gently than cereal: a high drying temperature quickly raises free fatty acids and degrades oil colour, so rapeseed runs on its own, softer drier setting."
+            ],
+            "items": [
+              "Rapeseed harvest opens the season — 3–4 weeks ahead of wheat.",
+              "A separate, gentler drying setting to avoid raising free fatty acids.",
+              "46,000 t own storage, 58,000 t including leased capacity."
+            ]
+          },
+          {
+            "heading": "Logistics and dispatch",
+            "paragraphs": [
+              "The elevator stands in Soroka, Vinnytsia region: 35 km to Haisyn, 85 km to Vinnytsia, 230 km to Kyiv and 380 km to the port of Odesa. We move rapeseed to dispatch in the first weeks after harvest, before it has spent a season on the elevator and taken up space needed for the next crop coming in.",
+              "Dispatch is by road, on your trucks or ours. A lot from 100 tonnes is scheduled for loading within three working days of agreement. Weighbridges are calibrated and certified, and weighing takes place in the presence of the buyer's representative if they wish to attend."
+            ]
+          },
+          {
+            "heading": "Commercial terms",
+            "paragraphs": [
+              "We work under contract, VAT registered, with a complete document package. Minimum lot is 100 tonnes. Spot payment is 3–5 banking days after acceptance; on a forward, an advance and a payment schedule are fixed in the contract before sowing, already in the summer of the previous year.",
+              "Because rapeseed comes off first in the season, we are able to close a forward contract on it earlier than on other crops — tonnage is known before cereal harvest even starts. Since 2008 we have shipped grain and oilseeds to buyers in 14 countries, and the paperwork for every lot is prepared by our own accounts department rather than an intermediary."
+            ]
+          }
+        ],
+        "terms": [
+          {
+            "name": "LOT AND PAYMENT",
+            "desc": "Baseline commercial terms for winter rapeseed. The same terms apply on spot and on forward.",
+            "rows": [
+              {
+                "k": "Minimum lot",
+                "v": "100 t"
+              },
+              {
+                "k": "Payment, spot",
+                "v": "3–5 banking days after acceptance"
+              },
+              {
+                "k": "Payment, forward",
+                "v": "advance plus schedule in the contract"
+              },
+              {
+                "k": "VAT and documents",
+                "v": "VAT registered, full package"
+              },
+              {
+                "k": "Price",
+                "v": "day of dispatch, or a forward formula"
+              }
+            ]
+          },
+          {
+            "name": "DISPATCH",
+            "desc": "What happens once tonnage and price have been agreed.",
+            "rows": [
+              {
+                "k": "Delivery basis",
+                "v": "EXW Soroka elevator, FCA, CPT port of Odesa"
+              },
+              {
+                "k": "Transport",
+                "v": "buyer's trucks or our own fleet"
+              },
+              {
+                "k": "Loading window",
+                "v": "within 3 working days of agreement"
+              },
+              {
+                "k": "Quality certificate",
+                "v": "before dispatch, for every lot"
+              },
+              {
+                "k": "Weighing",
+                "v": "certified weighbridge, buyer may attend"
+              }
+            ]
+          }
+        ],
+        "related": [
+          0,
+          3,
+          2
+        ],
+        "specs_extra": [
+          {
+            "k": "Glucosinolates",
+            "v": "≤ 18 µmol/g"
+          },
+          {
+            "k": "Free fatty acids",
+            "v": "≤ 1.5%"
+          },
+          {
+            "k": "Chlorophyll",
+            "v": "≤ 25 mg/kg"
+          },
+          {
+            "k": "1,000-seed weight",
+            "v": "4.5–5.5 g"
+          }
         ]
       },
       {
@@ -396,6 +1129,149 @@
             "k": "Sprouted grains",
             "v": "≤2%"
           }
+        ],
+        "slug": "spring-barley",
+        "seo_title": "Malting & feed spring barley wholesale — 3,120 t",
+        "seo_description": "Ukrainian spring barley from 600 ha: test weight from 620 g/l, protein 9.5–11.5% malting lots sorted at intake. Lots from 100 t, own elevator and lab.",
+        "lead": "Spring barley for feed and malting, grown on 600 hectares of our own land. The 2026 season averaged 5.2 t/ha — 3,120 tonnes, split on the elevator not by a single figure but by buyer: brewery or feed mill.",
+        "body": [
+          {
+            "heading": "What is actually on offer",
+            "paragraphs": [
+              "Spring barley of a single origin serves two buyers with opposite requirements. Breweries want low protein, 9.5 to 11.5%, high germinative energy and minimal pre-harvest sprouting — they need a live, vigorous kernel for malting. Feed mills take the opposite: they are happy with higher-protein lots and do not care about germinative energy, because the grain is going to a hammer mill, not a steeping tank.",
+              "This is not two different crops or two fields under different agronomy — it is one crop on 600 hectares that we split into two commercial streams at the elevator. The malting share of the harvest is not fixed as a percentage in advance: however many lots meet malting specification is how much goes to a maltster, and the rest goes to feed."
+            ],
+            "items": [
+              "Malting lot — protein 9.5–11.5%, germinative energy from 95%, well-graded kernel.",
+              "Feed lot — the remainder of the crop, whether on protein or on sprouted-grain count.",
+              "The split happens at intake, not by re-screening or blending a finished lot."
+            ]
+          },
+          {
+            "heading": "Sorting at intake: where the specification is decided",
+            "paragraphs": [
+              "Malting selection happens on the elevator at the moment of intake, not later by re-screening or blending. Every truck off the field goes through intake control: protein, moisture, sprouted-grain content, and grading on a 2.5 mm sieve. A truck that falls inside the malting window is routed to a dedicated storage section; everything else goes to feed.",
+              "We also check germinative energy — a figure a feed buyer never asks for, but one no maltster will accept a lot without. Grain with low germinative energy, even at the right protein level, is routed to feed automatically: it is not fit for malting regardless of its other numbers.",
+              "We do not try to bring a feed-grade lot up to malting specification by blending in better grain — that produces an unstable result and undermines confidence in both lots. Each lot stays exactly as it arrived from the field and passed control."
+            ],
+            "items": [
+              "Intake control on every truck: protein, moisture, sprouted grains, grading.",
+              "Germinative energy checked separately for every potentially malting lot.",
+              "Lots are never blended into one another to improve a figure."
+            ]
+          },
+          {
+            "heading": "Agronomy behind the barley",
+            "paragraphs": [
+              "Spring barley follows row crops in our rotation — soybean or maize, which leave a weed-clean, well-structured field for early spring sowing. Early sowing is critical for spring barley: the sooner the seed goes into sufficiently warmed, moist soil, the higher both germinative energy and kernel uniformity turn out.",
+              "We keep nitrogen input moderate and split across applications, because excess nitrogen raises grain protein directly, and it is high protein that disqualifies a lot from the malting stream. On fields we are targeting for malting barley, we deliberately do not push yield with nitrogen — we aim at the quality parameter instead.",
+              "Fungicide protection against ear and leaf disease produces a clean, undamaged kernel, and that is what carries high germinative energy through to harvest. Treatments are scheduled by our agronomist on scouting results, and each decision is logged with its date."
+            ]
+          },
+          {
+            "heading": "Laboratory and lot certificate",
+            "paragraphs": [
+              "Analysis is carried out in our own laboratory at the elevator. Every completed lot gets its own certificate: test weight, protein, moisture, sprouted-grain content, grading on a 2.5 mm sieve, and foreign matter. For lots declared as malting grade, the certificate additionally reports germinative energy and nitrogen content on a dry-matter basis.",
+              "We hold test weight at 620 g/l and above — the threshold below which the coarse-fraction yield suffers on both malting and grinding. A lot whose test weight drops below that figure due to conditions during ripening is classified as feed grade automatically, regardless of its protein level.",
+              "The buyer receives the certificate before dispatch. We do not offer a maltster a lot \"to try\" without a completed laboratory result in hand — a purchase decision on malting barley is made on numbers, not on a visual inspection of the grain."
+            ]
+          },
+          {
+            "heading": "Storage and drying",
+            "paragraphs": [
+              "Our own elevator holds 46,000 tonnes; with leased capacity the total is 58,000 tonnes, with drying at 1,200 tonnes per day across three units. Spring barley on 600 hectares is a small crop next to wheat or maize, so we have spare capacity to take it in and dry it quickly, without a queue.",
+              "Malting and feed lots are held in separate, clearly marked sections of the elevator to rule out accidental mixing during handling. Drying runs on a gentle temperature regime — excessive drying temperature kills germinative energy faster than any other factor, so for potentially malting lots we hold the heat-carrier temperature lower than we do for feed grain."
+            ],
+            "items": [
+              "46,000 t own storage, 58,000 t including leased capacity.",
+              "Separate sections for malting and feed lots.",
+              "Gentle drying regime to preserve germinative energy."
+            ]
+          },
+          {
+            "heading": "Commercial terms",
+            "paragraphs": [
+              "We work under contract, VAT registered, with a complete document package. Minimum lot is 100 tonnes. Spot payment is 3–5 banking days after acceptance; on a forward we fix the tonnage and a payment schedule in the contract before sowing, which matters particularly for the malting stream, where a buyer needs volume certainty well ahead of harvest.",
+              "For a malting buyer we share an indicative volume of qualifying lots as the harvest comes in, based on preliminary intake results, and firm up the figure once the laboratory closes out the last certificates. Since 2008 we have shipped grain to buyers in 14 countries; feed lots go mostly to the domestic market, while malting lots move both domestically and on export, graded against DSTU 3769:2019 and against EBC malting barley criteria familiar to European maltsters."
+            ]
+          }
+        ],
+        "terms": [
+          {
+            "name": "LOT AND PAYMENT",
+            "desc": "Baseline commercial terms for spring barley. The same terms apply to malting and feed lots alike.",
+            "rows": [
+              {
+                "k": "Minimum lot",
+                "v": "100 t"
+              },
+              {
+                "k": "Payment, spot",
+                "v": "3–5 banking days after acceptance"
+              },
+              {
+                "k": "Payment, forward",
+                "v": "advance plus schedule in the contract"
+              },
+              {
+                "k": "VAT and documents",
+                "v": "VAT registered, full package"
+              },
+              {
+                "k": "Price",
+                "v": "day of dispatch, or a forward formula"
+              }
+            ]
+          },
+          {
+            "name": "DISPATCH",
+            "desc": "What happens once tonnage and lot destination have been agreed.",
+            "rows": [
+              {
+                "k": "Delivery basis",
+                "v": "EXW Soroka elevator, FCA, CPT port of Odesa"
+              },
+              {
+                "k": "Transport",
+                "v": "buyer's trucks or our own fleet"
+              },
+              {
+                "k": "Loading window",
+                "v": "within 3 working days of agreement"
+              },
+              {
+                "k": "Quality certificate",
+                "v": "before dispatch, for every lot"
+              },
+              {
+                "k": "Weighing",
+                "v": "certified weighbridge, buyer may attend"
+              }
+            ]
+          }
+        ],
+        "related": [
+          0,
+          1,
+          6
+        ],
+        "specs_extra": [
+          {
+            "k": "Germinative energy",
+            "v": "≥ 95%"
+          },
+          {
+            "k": "Grading, retained on 2.5 mm sieve",
+            "v": "≥ 90%"
+          },
+          {
+            "k": "Foreign matter",
+            "v": "≤ 2%"
+          },
+          {
+            "k": "Nitrogen, dry basis",
+            "v": "1.5–1.85%"
+          }
         ]
       },
       {
@@ -422,6 +1298,148 @@
           {
             "k": "Delivery",
             "v": "field to plant"
+          }
+        ],
+        "slug": "sugar-beet",
+        "seo_title": "Sugar beet on contract — 23,200 t, Vinnytsia region",
+        "seo_description": "Contract-grown sugar beet on 400 ha: 17.2% sugar content, 58 t/ha yield. Delivered field-to-plant during the campaign, paid on measured digestion at reception.",
+        "lead": "Contract-grown sugar beet from 400 hectares of our own land. The 2025 season averaged 58 t/ha — 23,200 tonnes, which do not go into storage at all: they run straight from the field to a sugar plant's reception point during the delivery campaign.",
+        "body": [
+          {
+            "heading": "What is actually on offer",
+            "paragraphs": [
+              "Sugar beet of technical hybrids grown under contract with sugar plants in the region. This is not a commodity held for open sale and not a position kept in a warehouse pending a better price — the plant's tonnage is agreed before sowing, and every tonne lifted from the field has an assigned recipient and a reception date. There is no such thing as buying this beet 'off the yard' after harvest: it is contracted ahead of the season, not sourced from storage once it is out of the ground.",
+              "400 hectares of beet is the smallest area but the most demanding crop in the rotation by input cost. The 2025 season closed at 58 t/ha — 23,200 tonnes gross. Hybrids are selected for sugar content and resistance to Cercospora leaf spot rather than for maximum root weight: a heavier root is not automatically a sweeter one, and the plant pays for sugar, not for kilograms."
+            ],
+            "items": [
+              "The plant contract is fixed before sowing — tonnage, price per unit of sugar, indicative campaign window.",
+              "Technical-type hybrids selected for sugar content and Cercospora leaf spot resistance.",
+              "Pelleted seed, 4.5–5.5 mm calibration, treated against beet leaf miner and flea beetle."
+            ]
+          },
+          {
+            "heading": "Rotation and soil: the most demanding crop",
+            "paragraphs": [
+              "Beet returns to the same field no sooner than every four years — a shorter interval lets nematode and Cercospora pressure build to a level no fungicide programme can offset. The preceding crop is winter cereal: it clears the field early, leaves it clean of weeds, and gives time for deep autumn tillage.",
+              "Beet draws more potassium and nitrogen from the soil than any other crop in the rotation, so fertiliser rates are set from a pre-sowing agrochemical analysis of each field, run by our own laboratory, rather than from an average recommendation. Liming is applied where pH drops below 6.0 — on acid soil, beet loses sugar content even at high yield.",
+              "Soil compaction is the root's principal enemy: a beet growing in a compacted subsoil layer forks, and a forked root is harder to clean of soil and harder to lift without loss. So on beet fields we limit the number of machinery passes and run wide-tyred tractors for every field operation, including top-dressing."
+            ]
+          },
+          {
+            "heading": "Crop protection and in-season monitoring",
+            "paragraphs": [
+              "The main threats are beet leaf miner at emergence, Cercospora leaf spot, and root rot in the second half of the growing season. Fields are scouted weekly by our agronomist from the forked-leaf stage through row closure, and every treatment decision is made against an actual damage threshold, not a calendar programme.",
+              "Herbicide protection is applied in a band sequence: beet grows slowly through the first six weeks and cannot withstand weed competition during that window, so the first application goes down at emergence rather than waiting until weeds are visible across the field. Fungicide treatment against Cercospora follows the weather forecast and measured canopy humidity, typically two to three applications in the second half of summer."
+            ],
+            "items": [
+              "Banded herbicide applied at emergence, ahead of visible weed pressure across the field.",
+              "Weekly scouting for beet leaf miner and Cercospora leaf spot from emergence to row closure.",
+              "Fungicide against Cercospora timed to forecast conditions, not a fixed calendar."
+            ]
+          },
+          {
+            "heading": "Lifting and the campaign clock",
+            "paragraphs": [
+              "Sugar in a lifted root degrades daily — a week in a field pile can cost 0.3–0.5 percentage points of sugar content, and more where the crown is damaged. So lifting is planned not for convenience but against the plant's actual reception slots: beet is lifted for a lot that reaches the plant within a day or two, not stockpiled in the field.",
+              "Crown removal is controlled to leaf-scar level: an under-cut crown carries leaf mass with low sugar and raises the lot's soil tare and impurity reading; an over-cut crown loses root mass and opens the root to rot. The harvester and loader work to the haulage schedule so that beet does not sit in a windrow for more than a day.",
+              "Haulage runs on our own and contracted trucks, coordinated with the plant's dispatch office: a reception slot is booked in advance, and each truck arrives within its own window rather than joining a general queue. The campaign runs from late September until the plant finishes processing, and the lifting schedule across fields is sequenced so that each field's peak sugar content reaches the plant instead of being lost in a pile."
+            ],
+            "items": [
+              "Lifting is scheduled against a specific plant reception slot, not held in a field pile.",
+              "Crown-cut quality checked to leaf-scar level on every harvesting unit.",
+              "Haulage books its reception window through the plant's dispatch office in advance."
+            ]
+          },
+          {
+            "heading": "How sugar content is measured and paid",
+            "paragraphs": [
+              "Sugar content and soil tare are determined by the plant's own laboratory at the reception point — that is the figure payment is calculated on, not a reading taken on our field. Our laboratory runs weekly pre-harvest digestion monitoring across fields from mid-August, to pin down the window of peak sugar accumulation for each field so a lot is never dispatched too early or too late.",
+              "Settlement is built on digestion: tonnes of root multiplied by the measured sugar percentage, net of soil tare and any deduction for rotten roots beyond the allowed threshold. Where our pre-delivery reading and the plant laboratory's figure diverge, a duplicate sample is drawn at reception under a right-to-counter-sample clause, and in the event of a dispute it is analysed by an arbitration laboratory named in the contract."
+            ]
+          },
+          {
+            "heading": "The contract model",
+            "paragraphs": [
+              "We work under a seasonal contract with the sugar plant, signed before sowing, that fixes the area, the indicative tonnage, the price formula per unit of sugar, and the overall campaign window. This is a fundamentally different model from selling grain off an elevator — there is no finished-goods store here and no option to wait for a better price, because beet cannot be held for months.",
+              "The plant settles each delivered lot after laboratory analysis at reception, normally through the campaign on the schedule fixed in the contract. VAT registered, full document package. Haulage to the plant is arranged with our own and contracted transport, and the haulage cost is carried as a separate line in the contract price rather than added after the fact."
+            ]
+          }
+        ],
+        "terms": [
+          {
+            "name": "CONTRACT AND PAYMENT",
+            "desc": "Baseline terms of the seasonal contract for sugar beet with the plant.",
+            "rows": [
+              {
+                "k": "Contract form",
+                "v": "seasonal, signed before sowing"
+              },
+              {
+                "k": "Payment basis",
+                "v": "sugar content measured at plant reception"
+              },
+              {
+                "k": "Payment",
+                "v": "on the campaign schedule fixed in the contract"
+              },
+              {
+                "k": "VAT and documents",
+                "v": "VAT registered, full package"
+              },
+              {
+                "k": "Disputed readings",
+                "v": "duplicate sample, arbitration laboratory per contract"
+              }
+            ]
+          },
+          {
+            "name": "DELIVERY TO THE PLANT",
+            "desc": "What happens from lifting in the field to reception of the lot at the plant.",
+            "rows": [
+              {
+                "k": "Delivery basis",
+                "v": "field to the plant's reception point"
+              },
+              {
+                "k": "Transport",
+                "v": "own and contracted fleet, cost carried in the price"
+              },
+              {
+                "k": "Campaign window",
+                "v": "late September until the plant finishes processing"
+              },
+              {
+                "k": "Reception slot",
+                "v": "booked through the plant's dispatch office"
+              },
+              {
+                "k": "Lifting-to-reception window",
+                "v": "within 1–2 days"
+              }
+            ]
+          }
+        ],
+        "related": [
+          1,
+          5,
+          0
+        ],
+        "specs_extra": [
+          {
+            "k": "Alpha-amino nitrogen",
+            "v": "≤ 20 mmol/kg"
+          },
+          {
+            "k": "Potassium + sodium",
+            "v": "≤ 45 mmol/kg"
+          },
+          {
+            "k": "Crown removal quality",
+            "v": "cut to leaf-scar level"
+          },
+          {
+            "k": "Average root mass",
+            "v": "450–650 g"
           }
         ]
       }
@@ -810,8 +1828,10 @@
       "message": "Comments",
       "message_ph": "Quality parameters you need, timing, delivery basis…",
       "submit": "Send request",
-      "note": "By submitting this form you consent to the processing of the data provided in order to reply to your enquiry.",
-      "demo_notice": "This is a demonstration site — the form does not send data to a server."
+      "demo_notice": "This is a demonstration site — the form does not send data to a server.",
+      "note_before": "By submitting this form you consent to the ",
+      "note_link": "processing of the data provided",
+      "note_after": " in order to reply to your enquiry."
     }
   },
   "footer": {
@@ -846,19 +1866,23 @@
         "links": [
           {
             "label": "Winter wheat",
-            "href": "#crops"
+            "href": "#crops",
+            "crop": 0
           },
           {
             "label": "Maize",
-            "href": "#crops"
+            "href": "#crops",
+            "crop": 1
           },
           {
             "label": "Sunflower",
-            "href": "#crops"
+            "href": "#crops",
+            "crop": 2
           },
           {
             "label": "Soybean and rapeseed",
-            "href": "#crops"
+            "href": "#crops",
+            "crop": 3
           }
         ]
       },
@@ -890,7 +1914,11 @@
   },
   "a11y": {
     "logo_home": "CENTRAGRO PLUS — back to top of page",
-    "chart_caption": "Wheat yield by year, tonnes per hectare"
+    "chart_caption": "Wheat yield by year, tonnes per hectare",
+    "rail_testimonials": "Partner testimonials — horizontally scrollable list",
+    "rail_team": "Team — horizontally scrollable list",
+    "fan_widgets": "Farm figures at a glance",
+    "breadcrumb": "Breadcrumb"
   },
   "nav_pages": {
     "items": [
@@ -1597,6 +2625,143 @@
     "responsibilities": "Responsibilities",
     "reading": "min read",
     "profile_eyebrow": "Team",
-    "article_eyebrow": "Farm journal"
+    "article_eyebrow": "Farm journal",
+    "crumb_home": "Home",
+    "crumb_services": "Services",
+    "back_services": "All services",
+    "crop_more": "About this crop",
+    "specs_eyebrow": "SPECIFICATION",
+    "specs_title": "Lot quality parameters",
+    "terms_title": "Terms for this crop",
+    "related_crops": "Other crops in the rotation"
+  },
+  "legal": {
+    "privacy": {
+      "eyebrow": "DOCUMENTS",
+      "title": "Privacy Policy",
+      "lead": "This page explains what data the CENTRAGRO PLUS LLC website processes, why, and what happens to it once the site's forms are connected to a real handler.",
+      "updated": "Last updated 6 August 2026",
+      "body": [
+        {
+          "heading": "1. What the site's forms collect",
+          "paragraphs": [
+            "The site has exactly two forms, and they are the only places a visitor enters personal data.",
+            "The contact form asks for name, email, crop (a dropdown), volume (free text), and message (free text). The newsletter form in the footer asks only for an email address.",
+            "No other part of the site collects personal data: the company, crops, and contact sections only display content that was not entered by you."
+          ]
+        },
+        {
+          "heading": "2. This is a demo site: nothing is transmitted",
+          "paragraphs": [
+            "Neither form has a backend. Whatever you type is not transmitted, stored, or processed by us or by anyone else. After a valid submission, an on-screen notice says exactly that.",
+            "This is a deliberate feature of a demonstration layout, not an oversight or a hidden mechanism. We state it plainly so nobody assumes their data is being kept somewhere when it is not."
+          ]
+        },
+        {
+          "heading": "3. Purpose and legal basis once a handler is connected",
+          "paragraphs": [
+            "When the forms are connected to a real handler, the sole purpose of processing will be to handle a commercial enquiry: to contact you back, clarify details about the crop and volume, and respond. Data will not be used for profiling, unsolicited marketing, or transfers to third parties.",
+            "The legal basis will be the data subject's consent, given by completing and submitting the form, under Ukraine's Law on Personal Data Protection (Закон України «Про захист персональних даних»). For enquiries originating from the EU, the General Data Protection Regulation (GDPR) will also apply as the framework governing that consent and the associated rights."
+          ]
+        },
+        {
+          "heading": "4. Retention period and data controller",
+          "paragraphs": [
+            "Once a handler is connected, contact-form data will be kept for as long as needed to handle the enquiry and any resulting correspondence, and in any case no longer than 12 months from the last contact, after which it will be deleted. Email addresses collected through the newsletter form will be kept until the subscriber unsubscribes or withdraws consent.",
+            "The data controller will be CENTRAGRO PLUS LLC, 4 Zarichna St, Soroka, Vinnytsia region, 22731, Ukraine. Data will not be shared with third parties except where required by law."
+          ]
+        },
+        {
+          "heading": "5. Cookies, analytics, and third-party requests",
+          "paragraphs": [
+            "This site sets no cookies, runs no analytics or advertising services, and makes no requests to third-party servers. Fonts, scripts, and images are all served from the site's own hosting.",
+            "In practice, your browser loads nothing beyond the site itself while you browse it, and no browsing behaviour is tracked in any form."
+          ]
+        },
+        {
+          "heading": "6. Your rights as a data subject",
+          "paragraphs": [
+            "Under Ukraine's Law on Personal Data Protection, you have the right to know that your data is being processed, to access it, to request correction or deletion, to withdraw consent at any time, and to lodge a complaint with Ukraine's Parliament Commissioner for Human Rights.",
+            "To exercise any of these rights, email hello@centragro.example describing your request. We respond within our working hours, Monday to Friday, 08:00-18:00, and provide a substantive reply within 30 days."
+          ],
+          "items": [
+            "Right to access your personal data",
+            "Right to correct inaccurate data",
+            "Right to erasure (the \"right to be forgotten\")",
+            "Right to withdraw consent at any time",
+            "Right to lodge a complaint with the Commissioner for Human Rights"
+          ]
+        },
+        {
+          "heading": "7. Changes to this policy",
+          "paragraphs": [
+            "If our approach to data processing changes — in particular once a real handler is connected to the forms — we will update this page and the date shown at the top. Material changes affecting your rights will be flagged on this page for 30 days after publication.",
+            "Continuing to use the site after an updated version is published means you have had the opportunity to review the current policy."
+          ]
+        }
+      ]
+    },
+    "terms": {
+      "eyebrow": "DOCUMENTS",
+      "title": "Terms of Use",
+      "lead": "These terms set out how the CENTRAGRO PLUS LLC demonstration website may be used and the status of the information published on it.",
+      "updated": "Last updated 6 August 2026",
+      "body": [
+        {
+          "heading": "1. Site operator",
+          "paragraphs": [
+            "This site is owned and operated by CENTRAGRO PLUS LLC, an agricultural producer and wholesale grain supplier, registered at 4 Zarichna St, Soroka, Vinnytsia region, 22731, Ukraine.",
+            "For any question about the site, contact hello@centragro.example or +380 (43) 219-70-40, Monday to Friday, 08:00-18:00. By using this site, you agree to the terms set out below; if you do not agree with any part of them, please do not use the site and reach out to us at the contacts above instead."
+          ]
+        },
+        {
+          "heading": "2. Informational content and illustrative figures",
+          "paragraphs": [
+            "This site is a demonstration layout. All figures, volumes, prices, delivery timelines, and photographs shown on it are illustrative only, included to demonstrate page layout and structure, and do not reflect actual commercial terms.",
+            "No text, image, or form on this site constitutes a public offer, nor a binding price quotation or availability guarantee from CENTRAGRO PLUS LLC.",
+            "This also applies to the crops section: variety descriptions, indicative moisture content, protein levels, and other agronomic figures are included as layout examples, not as the specification of a particular grain lot actually available for sale at the time you view the site."
+          ]
+        },
+        {
+          "heading": "3. Specifications, availability, and contract terms",
+          "paragraphs": [
+            "Exact crop specifications, batch volumes, delivery conditions, pricing, and timelines are negotiated individually and become legally binding only once set out in a contract signed by both parties.",
+            "Any information submitted through the contact form is treated as a preliminary enquiry, not as acceptance of terms or confirmation of a deal.",
+            "The mere mention of a product on the site does not guarantee its availability at the time of enquiry; volumes available for delivery are confirmed by CENTRAGRO PLUS LLC individually for each enquiry, taking into account the current harvest and logistics."
+          ]
+        },
+        {
+          "heading": "4. Intellectual property",
+          "paragraphs": [
+            "The text, photography, design, code, and structure of this site are protected by copyright and belong to CENTRAGRO PLUS LLC or are used under a lawful licence.",
+            "Reproducing, copying, distributing, or reusing these materials in another project without the rightsholder's written permission is prohibited, except as permitted under applicable copyright law.",
+            "The company name and any associated marks may not be used in a way that misleads readers as to the origin of a third party's goods or services."
+          ]
+        },
+        {
+          "heading": "5. Acceptable use",
+          "paragraphs": [
+            "Visitors agree not to use the site's forms to send spam, to scrape or automate data collection, to attempt to disrupt the site's operation, or to submit knowingly false information.",
+            "Because the forms have no backend, any such attempt has no technical effect, but the rules above remain the standard for proper use of the site.",
+            "It is likewise prohibited to attempt unauthorised access to the site's source code, to bypass its navigation structure through automated tools, or to use the site in any way that breaches Ukrainian law."
+          ]
+        },
+        {
+          "heading": "6. Limitation of liability",
+          "paragraphs": [
+            "CENTRAGRO PLUS LLC is not liable for decisions made on the basis of the illustrative figures shown on this demonstration site, nor for temporary unavailability of the site due to technical reasons.",
+            "The site is provided \"as is\", without any warranty as to the completeness or currency of the information displayed, beyond what is expressly confirmed in a signed contract.",
+            "This limitation does not narrow any right that is mandatory under applicable Ukrainian law and cannot be waived by contract."
+          ]
+        },
+        {
+          "heading": "7. Governing law",
+          "paragraphs": [
+            "These terms are governed by and construed in accordance with the law of Ukraine. Any dispute arising from the use of this site is to be resolved under Ukrainian law, in the jurisdiction of CENTRAGRO PLUS LLC's registered address.",
+            "If any provision of these terms is found invalid or unenforceable, the remaining provisions continue in full force."
+          ]
+        }
+      ]
+    }
   }
 }
