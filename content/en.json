@@ -890,7 +890,10 @@
   },
   "a11y": {
     "logo_home": "CENTRAGRO PLUS — back to top of page",
-    "chart_caption": "Wheat yield by year, tonnes per hectare"
+    "chart_caption": "Wheat yield by year, tonnes per hectare",
+    "rail_testimonials": "Partner testimonials — horizontally scrollable list",
+    "rail_team": "Team — horizontally scrollable list",
+    "fan_widgets": "Farm figures at a glance"
   },
   "nav_pages": {
     "items": [

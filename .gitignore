@@ -9,3 +9,8 @@ __pycache__/
 
 # build cache for tools/build_map.py — regenerate with --refresh
 tools/.cache/
+
+# QA harness for the accessibility/performance pass: axe copy, screenshot
+# matrices and metric reports. Regenerate with the scripts in .qa/, never commit
+# the artefacts — the screenshot matrix alone is ~15 MB per run.
+.qa/
