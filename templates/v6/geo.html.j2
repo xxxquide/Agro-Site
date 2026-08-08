@@ -1,53 +1,81 @@
 {#- ============================================================================
-    v6 "geo" — ports the mockup's #geo section (src6/v6-geo.html) onto the
-    site's existing geography content (c.geo). Same H2/eyebrow/lead as the
-    #geo section it replaces (blocks.html.j2's sec_geo()). Imported with
-    context from blocks.html.j2, so `c`, `V`, `p`, `I`, `iconic` are already
-    in scope.
+    v6 "geo" — the client's own extruded/shaded 3D Ukraine scene (ported 1:1
+    from src6/v6-map.svg + src6/v6.js), wrapped in the same panel/filter/
+    distance-list/stat/hint chrome as before.
 
-    The mockup's map is a hand-tilted, JS-projected 3D scene (v6.js computes
-    every route length and chip position at runtime). The site already ships
-    a flat, static equivalent at templates/ukraine-map.svg.j2 — 27 oblast
-    paths, one flagged is-home, four fixed data-place routes/points with
-    labels already bound to c.geo.distances[0..3] in a fixed
-    vinnytsia/haisyn/odesa/kyiv order, pathLength="1" normalised for a
-    zero-JS dash-in. That include is reused as-is (not edited — this macro
-    only wraps and restyles its output) rather than porting the mockup's 74KB
-    inline SVG or its projection math, which would require new JS to
-    reproduce.
+    The map itself now lives in templates/v6/ukraine-3d.svg.j2 (included
+    below) instead of the flat, restyled templates/ukraine-map.svg.j2 this
+    section used previously — the client asked for their own map, 1:1 in
+    form, only recoloured per variant. That partial carries the terrain
+    (27 oblasts + home cut-out), the slab extrusion, the 40/100km rings, the
+    ballistic-arc routes and the pin markers, all pre-computed to the same
+    static numbers v6.js produced at runtime (see that partial's own header
+    comment for the maths). No JS ships with any of it.
 
-    Pill layer: the mockup's floating chips over each point are JS-positioned
-    (v6.js's fly()/build()). Rather than reproduce that with JS, this macro
-    renders its own HTML pill for each place plus the 40km ring, both
-    absolutely positioned inside .v6geo__mapbox — a wrapper forced to the
-    include's own 760x512 aspect ratio via `aspect-ratio`, so percentage
-    offsets computed once here from each point's fixed <g transform="translate(x y)">
-    coordinate (see ukraine-map.svg.j2) line up with the rendered SVG at every
-    width with no JS and no per-breakpoint tuning. The include's own inline
-    <text> labels are hidden (08-v6-geo.css) to avoid a second, unstyled copy
-    underneath the pills; its circles remain as the literal map markers.
+    Pill layer: the client SVG has no on-canvas text labels of its own (the
+    mockup drew those in JS, positioned per frame). This macro renders one
+    HTML pill per place plus the hub ("Елеватор") and the 40km ring caption,
+    absolutely positioned inside .v6geo__mapbox from the *same* projected
+    coordinates baked into the SVG partial (project(x,y) applied by hand to
+    v6.js's PLACES table, then expressed as % of the partial's own
+    `viewBox="0 86 760 330"`) — so every pill sits exactly on its marker's
+    pole-top at every width with no JS measuring the rendered SVG.
 
-    Content: c.geo (existing) supplies eyebrow/title/lead/note/distances[].
-    New copy — legend/filter labels, per-distance icon+subtitle+kind, the two
-    stat tiles, the hover hint and the corner caption — lives in
-    src6/content-geo.json under the same c.geo namespace and is assumed
-    merged into content/*.json by the build (not edited here).
+    Content: c.geo (existing, already ships hub.name/hub.value, map_alt,
+    distance_meta[].mode/kind/sub, distances[].to/.km) — nothing new needed.
     ============================================================================ -#}
 
 {%- macro section() -%}
 {%- set places = ['vinnytsia', 'haisyn', 'odesa', 'kyiv'] -%}
 {%- set mode_icon = {'auto': 'truck', 'rail': 'route', 'port': 'ship'} -%}
-{#- Fixed centres lifted from ukraine-map.svg.j2's <g transform="translate(x y)">
-    on each point/hub, expressed as % of the shared partial's 760x512 viewBox.
-    .v6geo__mapbox is locked to that same aspect ratio, so these percentages
-    stay correct at every width without any JS measuring the rendered SVG. -#}
-{%- set point_pos = {
-  'vinnytsia': {'x': (284 / 760 * 100), 'y': (210 / 512 * 100)},
-  'haisyn':    {'x': (317 / 760 * 100), 'y': (232 / 512 * 100)},
-  'odesa':     {'x': (365 / 760 * 100), 'y': (358 / 512 * 100)},
-  'kyiv':      {'x': (358 / 760 * 100), 'y': (144 / 512 * 100)},
+{#- Chip anchor points, in % of the SVG partial's own viewBox (0 86 760 330).
+    Each is the projected pole-top (project(x,y) from v6.js's PLACES table,
+    minus that place's own pole height) that the corresponding marker in
+    ukraine-3d.svg.j2 is drawn at — ported by hand from v6.js, not eyeballed.
+    .v6geo__mapbox is locked to this same 760x330 aspect ratio so these
+    percentages line up with the rendered SVG at every width. -#}
+{%- set chip_pos = {
+  'hub':        {'x': 38.868, 'y': 20.838},
+  'vinnytsia':  {'x': 21.558, 'y': 31.491},
+  'haisyn':     {'x': 49.745, 'y': 39.547},
+  'kyiv':       {'x': 57.399, 'y': 12.784},
+  'odesa':      {'x': 56.295, 'y': 64.941},
 } -%}
-{%- set hub_pos = {'x': (316 / 760 * 100), 'y': (218 / 512 * 100)} -%}
+{%- set ring_pos = {'x': 32.815, 'y': 52.353} -%}
+{#- English transliterations for the SVG partial's 27 decorative <title>
+    elements (one per oblast path), so the EN locale never renders bare
+    Cyrillic text — verify.py's Cyrillic-leak check scans every page's text
+    content, <title> included. Same transliteration set already used by
+    templates/ukraine-map.svg.j2 for its own oblast titles. -#}
+{%- set oblast_en = {
+  'Чернігівська': "Chernihivs'ka Oblast'",
+  'Волинська': "Volyns'ka Oblast'",
+  'Рівненська': "Rivnens'ka Oblast'",
+  'Житомирська': "Zhytomyrs'ka Oblast'",
+  'Київська': "Kyyivs'ka Oblast'",
+  'Закарпатська': "Zakarpattia Oblast",
+  'Чернівецька': "Chernivets'ka Oblast'",
+  'Івано-Франківська': "Ivano-Frankivs'ka Oblast'",
+  'Одеська': "Odes'ka Oblast'",
+  'Львівська': "L'vivs'ka Oblast'",
+  'Сумська': "Sums'ka Oblast'",
+  'Харківська': "Kharkivs'ka Oblast'",
+  'Луганська': "Luhans'ka Oblast'",
+  'Донецька': "Donets'ka Oblast'",
+  'Херсонська': "Khersons'ka Oblast'",
+  'Запорізька': "Zaporiz'ka Oblast'",
+  'Миколаївська': "Mykolayivs'ka Oblast'",
+  'Полтавська': "Poltavs'ka Oblast'",
+  'Хмельницька': "Khmel'nyts'ka Oblast'",
+  'Тернопільська': "Ternopil's'ka Oblast'",
+  'Дніпропетровська': "Dnipropetrovska Oblast'",
+  'Черкаська': "Cherkas'ka Oblast'",
+  'Кіровоградська': "Kirovohrads'ka Oblast'",
+  'Київ': "Misto Kyyiv",
+  'Крим': "Avtonomna Respublika Krym",
+  'Севастополь': "Misto Sevastopol'",
+  'Вінницька': "Vinnyts'ka Oblast'",
+} -%}
 <section class="section v6geo" id="geo" role="region" aria-labelledby="geo-t">
   <div class="wrap">
     <div class="head">
@@ -64,14 +92,22 @@
         </div>
 
         <div class="v6geo__mapbox">
-          {% include "ukraine-map.svg.j2" %}
+          {% include "v6/ukraine-3d.svg.j2" %}
 
-          <span class="v6geo__ring" aria-hidden="true" style="left:{{ '%.3f'|format(hub_pos.x) }}%; top:{{ '%.3f'|format(hub_pos.y) }}%;"></span>
+          <div class="v6geo__pill v6geo__pill--hub" style="left:{{ '%.3f'|format(chip_pos.hub.x) }}%; top:{{ '%.3f'|format(chip_pos.hub.y) }}%;" aria-hidden="true">
+            <span class="v6geo__pill-ic">{{ I.icon('silo') }}</span>
+            <span class="v6geo__pill-name">{{ c.geo.hub.name }}</span>
+            <span class="v6geo__pill-km">{{ c.geo.hub.value }}</span>
+          </div>
+
+          <div class="v6geo__pill v6geo__pill--ring" style="left:{{ '%.3f'|format(ring_pos.x) }}%; top:{{ '%.3f'|format(ring_pos.y) }}%;" aria-hidden="true">
+            <span class="v6geo__pill-name">{{ c.geo.legend.ring }}</span>
+          </div>
 
           {%- for d in c.geo.distances %}
           {%- set place = places[loop.index0] -%}
           {%- set meta = c.geo.distance_meta[loop.index0] -%}
-          {%- set pos = point_pos[place] %}
+          {%- set pos = chip_pos[place] %}
           <div class="v6geo__pill v6geo__pill--{{ place }}" data-place="{{ place }}" style="left:{{ '%.3f'|format(pos.x) }}%; top:{{ '%.3f'|format(pos.y) }}%;" aria-hidden="true">
             <span class="v6geo__pill-ic">{{ I.icon(mode_icon[meta.mode]) }}</span>
             <span class="v6geo__pill-name">{{ d.to }}</span>
