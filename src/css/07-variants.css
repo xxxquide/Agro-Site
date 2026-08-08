@@ -558,3 +558,50 @@
    same way every other surface in this direction does. */
 .v3 .gauge { box-shadow: none; border: 1px solid var(--border); }
 .v3 .cap__viz { padding: 0; }
+
+/* --- partner orbit, per variation ---------------------------------------
+   The orbit ships on all three now. v1 keeps the lime-lit version defined in
+   03-components.css; the two below re-finish it without changing its geometry,
+   so the three sites say the same thing in their own voice. */
+
+/* v2 is a banded, hairline variation, and its strip sits on the dark. Rings
+   drawn in --border are invisible there, the lime bloom behind the hub reads
+   as a smudge, and the marks need to become outlines like every other v2 card. */
+.v2 .strip--orbit { background: var(--field); color: var(--on-dark); }
+.v2 .strip--orbit .partner-stage__copy p { color: var(--on-dark-2); }
+/* No bloom. v1 lights the orbit from behind with lime; on v2's dark band the
+   same bloom blends with --field into a warm brown cast around the hub, and
+   v2 draws with hairlines rather than with light anyway. */
+.v2 .partner-orbit::before { display: none; }
+.v2 .partner-orbit__ring { border-color: var(--line-dark); }
+.v2 .partner-orbit__ring--mid { border-color: var(--line-dark); opacity: .6; }
+.v2 .partner-orbit__hub { background: var(--ink); border: 1px solid var(--line-dark-2); box-shadow: none; }
+.v2 .partner-orbit__node .pm {
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid var(--line-dark);
+  box-shadow: none;
+  color: var(--white);
+}
+.v2 .partner-orbit__node .pm__t { color: var(--white); }
+
+/* v3 has no card containers anywhere, so the marks lose theirs: the ring is
+   the only structure, the type is the mark, and the lime is spent once — on
+   the hub — exactly as the rest of the variation spends it. */
+.v3 .partner-orbit::before { display: none; }
+.v3 .partner-orbit__ring { border-color: var(--border); }
+.v3 .partner-orbit__ring--inner { border-style: solid; opacity: .8; }
+.v3 .partner-orbit__ring--mid { opacity: .65; }
+.v3 .partner-orbit__hub {
+  background: none;
+  color: var(--text);
+  box-shadow: none;
+  border: 1px solid var(--border);
+}
+.v3 .partner-orbit__hub span { font-weight: var(--fw-light); }
+.v3 .partner-orbit__hub small { color: var(--lime-on-light); }
+.v3 .partner-orbit__node .pm {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  padding: .3rem .4rem;
+}

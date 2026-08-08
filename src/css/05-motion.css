@@ -145,25 +145,50 @@ h1 .w, .h-iconic .w, .stat__v .w, .post__title .w {
   animation-delay: calc(var(--i, 0) * -.62s);
 }
 
-/* --- hero fan: hover brings one card toward the viewer -------------------
+/* --- hero fan: hover flies one card out toward the viewer ----------------
    The hover state re-declares the whole transform rather than transitioning a
    custom property, so it works without @property support: the browser
    interpolates `transform` natively, and the per-card values stay in play
    because the hover rule reads the same variables. rotateY/rotateZ relax
    toward zero so the card turns to face the visitor as it comes forward, and
-   z-index lifts it clear of the neighbours it would otherwise grow into.
+   z-index lifts it clear of the neighbours it grows into.
 
-   Pausing the float stops the bob from fighting the pop mid-hover. */
+   The flight is long (820ms) on a near-expo curve: it covers most of the
+   distance early and then eases out for a long tail, which is what reads as
+   "floating out" rather than "snapping out". The return is a touch quicker so
+   the fan settles rather than drifting after the cursor has gone.
+
+   The transition lives on .fan__item, which GSAP never touches — the entrance
+   is on .fan__rise inside it. Sharing one element would mean the transition
+   chasing a 60fps tween and smearing the whole entrance. */
+.fan__item { transition: transform 560ms cubic-bezier(.22, .9, .3, 1); }
+/* The glow: a soft dark halo that swells behind the card as it comes forward,
+   so the card reads as lifting off the field rather than just getting bigger.
+   A radial-gradient with a long tail rather than filter: blur() — same
+   softness, no extra raster pass on a 3D-transformed layer. */
+.fan__item::before {
+  content: "";
+  position: absolute;
+  inset: -16% -30% -34%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(50% 50% at 50% 56%, #04100ae0, #04100a96 38%, #04100a3d 60%, #04100a00 78%);
+  opacity: 0;
+  transform: scale(.82);
+  transition: opacity 620ms var(--ease-soft), transform 820ms var(--ease-out);
+  pointer-events: none;
+}
 @media (hover: hover) and (pointer: fine) {
-  .fan__item { transition: transform var(--dur-md) var(--ease-out); }
-  .fan__item .fcard { transition: box-shadow var(--dur-md) var(--ease-out); }
+  .fan__item:hover { transition-duration: 820ms; transition-timing-function: var(--ease-out); }
+  .fan__item .fcard { transition: box-shadow 820ms var(--ease-out); }
   .fan__item:hover {
     transform:
-      translateY(calc(var(--ty) - 8px)) translateZ(calc(var(--tz) + 78px))
-      rotateY(calc(var(--ry) * .5)) rotateZ(calc(var(--rz) * .35))
-      scale(calc(var(--sc) + .025));
+      translateY(calc(var(--ty) - 11px)) translateZ(calc(var(--tz) + 96px))
+      rotateY(calc(var(--ry) * .42)) rotateZ(calc(var(--rz) * .3))
+      scale(calc(var(--sc) + .035));
     z-index: 40;
   }
+  .fan__item:hover::before { opacity: 1; transform: scale(1); }
   .fan__item:hover .fcard {
     animation-play-state: paused;
     box-shadow: var(--shadow-lift);
@@ -249,5 +274,6 @@ h1 .w, .h-iconic .w, .stat__v .w, .post__title .w {
      levitation off outright instead. The !important transform below also
      neutralises the hover pop, so hovering a card is a no-op here. */
   .fan__item .fcard { animation: none !important; }
+  .fan__item::before { opacity: 0 !important; transform: none !important; }
   .fan__item { transform: rotateY(var(--ry)) rotateZ(var(--rz)) !important; }
 }

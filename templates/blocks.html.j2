@@ -157,7 +157,13 @@
 <div class="fan" tabindex="0" role="group" aria-label="{{ c.a11y.fan_widgets }}">
   {%- for card in c.hero.cards %}
   {%- set f = fan[loop.index0] %}
-  <div class="fan__item" style="--i:{{ f.i }};--ry:{{ f.ry }}deg;--rz:{{ f.rz }}deg;--ty:{{ f.ty }}px;--tz:{{ f.tz }}px;--sc:{{ f.sc }};--z:{{ f.z }}" aria-hidden="true">{{ fcard(card, loop.index0) }}</div>
+  {#- Three layers, each owning exactly one transform, because they cannot
+      share one. .fan__item holds the resting fan geometry and the hover lift
+      (CSS only). .fan__rise is the entrance GSAP animates. .fcard carries the
+      idle levitation. Collapsing any two of these means one animation
+      overwrites the other's transform — which is precisely what made the cards
+      jump into place when the entrance handed control back. -#}
+  <div class="fan__item" style="--i:{{ f.i }};--ry:{{ f.ry }}deg;--rz:{{ f.rz }}deg;--ty:{{ f.ty }}px;--tz:{{ f.tz }}px;--sc:{{ f.sc }};--z:{{ f.z }}" aria-hidden="true"><div class="fan__rise">{{ fcard(card, loop.index0) }}</div></div>
   {%- endfor %}
 </div>
 {%- endmacro -%}
@@ -171,9 +177,13 @@
 </div>
 {%- endmacro -%}
 
+{#- The partner ecosystem, as an orbit on every variation. It used to be an
+    orbit on v1 and a marquee on v2, and absent from v3 entirely; the orbit is
+    the thing the copy actually describes ("everything turns around one lot
+    standard"), so all three now say it the same way and differ in finish
+    rather than in idea. Three rings, six partners, one hub. -#}
 {%- macro logo_strip() -%}
-{%- if V.id == 'v1' -%}
-<div class="strip strip--orbit">
+<div class="strip strip--orbit{{ ' strip--quiet' if V.id == 'v3' }}">
   <div class="wrap partner-stage">
     <div class="partner-stage__copy">
       <span class="tag tag--lime">{{ c.partners.label }}</span>
@@ -181,6 +191,7 @@
     </div>
     <div class="partner-orbit" data-partner-orbit>
       <span class="partner-orbit__ring partner-orbit__ring--outer" aria-hidden="true"></span>
+      <span class="partner-orbit__ring partner-orbit__ring--mid" aria-hidden="true"></span>
       <span class="partner-orbit__ring partner-orbit__ring--inner" aria-hidden="true"></span>
       <span class="partner-orbit__hub"><span>{{ c.brand.word_1 }}</span><small>{{ c.brand.word_2 }}</small></span>
       {%- for ptn in c.partners['items'][:6] %}
@@ -189,16 +200,6 @@
     </div>
   </div>
 </div>
-{%- else -%}
-<div class="strip{{ ' strip--quiet' if V.id == 'v3' }}">
-  <div class="strip__in">
-    <p class="strip__l"><span class="tag tag--lime">{{ c.partners.label }}</span></p>
-    <div class="marq marq--logos" data-marquee="left" data-speed="52" data-marquee-hover tabindex="0" role="group" aria-label="{{ c.partners.label }}">
-      <div class="marq__track">{{ P.row(c.partners['items']) }}</div>
-    </div>
-  </div>
-</div>
-{%- endif -%}
 {%- endmacro -%}
 
 {%- macro tag_band() -%}
@@ -477,9 +478,14 @@
         {% include "ukraine-map.svg.j2" %}
       </div>
       <div class="geo__side">
+        {#- The map's four points already carry data-place, in this order and
+            built from these same four entries. Repeating the key on the rows
+            lets the stylesheet tie a row to its pin with :has() — no JS, and
+            nothing to keep in sync, because both sides read one list. -#}
+        {%- set places = ['vinnytsia', 'haisyn', 'odesa', 'kyiv'] %}
         <div class="dists" data-r="right">
           {%- for d in c.geo.distances %}
-          <div class="dist"><span class="dist__to">{{ d.to }}</span><span class="dist__km">{{ d.km }}</span></div>
+          <div class="dist" data-place="{{ places[loop.index0] }}"><span class="dist__to">{{ d.to }}</span><span class="dist__km">{{ d.km }}</span></div>
           {%- endfor %}
         </div>
         <p class="geo__note" data-r="right" data-delay=".1">{{ c.geo.note }}</p>

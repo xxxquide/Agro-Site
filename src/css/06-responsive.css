@@ -105,6 +105,8 @@
      spare the frames. The fan is also the reserve here: the rail's own
      padding-block is sized for the shadow, not for extra travel. */
   .fan__item .fcard { animation: none; }
+  /* No hover on a touch rail, so the halo would only ever be dead weight. */
+  .fan__item::before { display: none; }
   /* Below this width the fan collapses to a stacked list, so a locked viewport
      height would either crush the copy or leave the cards stranded. Let the
      hero size to its content again. */
@@ -166,6 +168,14 @@
     aspect-ratio: auto;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: .6rem;
+    /* The orbit centres its children so the ring can sit around the hub. Once
+       it is a plain two-column grid that centring is what lets a mark be wider
+       than its own track: a non-stretched grid item is sized by its content,
+       minmax(0,1fr) notwithstanding, and `width:100%` on the mark then
+       resolves against that content width instead of the column. The longest
+       partner name pushed the page 11px sideways on a 320px screen. Stretch
+       makes the track the authority again. */
+    place-items: stretch;
   }
   .partner-orbit::before,
   .partner-orbit__ring,

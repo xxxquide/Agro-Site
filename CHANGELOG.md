@@ -1,5 +1,48 @@
 # Changelog
 
+## Unreleased — v6 elements: hero fan, capacity plate, partner orbit, geo link, journey rail
+
+A deliberate redesign of five blocks, from two client mockups whose headings match
+the published copy word for word. Content was not rewritten; four keys per capacity
+card were added to both locales.
+
+Split out onto its own branch: the preceding pass accepted on pixel-for-pixel
+equality of existing pages, and a redesign cannot honour that rule.
+
+Five defects, none of them visible in a screenshot, all found by measuring:
+
+    hero cards jumped into place       GSAP owned .fan__item's transform and handed
+                                       it back to CSS in a different composition
+                                       order. Split into three layers, one
+                                       transform each. Matrix now identical across
+                                       all 47 frames of the entrance.
+    hover never fired                  transform-style: preserve-3d breaks
+                                       hit-testing in Chromium. flat is
+                                       pixel-identical (0 px differing >30/channel)
+    capacity plate escaped its bench   13px at the one-column breakpoint
+    orbit pushed the page sideways     11px on v2 at 320px: place-items:center
+                                       lets a grid item outgrow its own track
+    capacity card inflated its width   425px card in a 420px viewport: a binding
+                                       min-height made aspect-ratio derive width
+
+After the last edit:
+
+    verify.py            ALL CHECKS PASSED, 0 warnings
+    geometry_audit.py    parallax 0  glyph 0  shadow 0  centre 0  overflow 0
+    interaction_smoke    keyboard, reduced motion, no-JS — passed
+    visual_smoke.py      224 screenshots, 0 findings (2 before the fixes)
+    measure_runtime.py   CLS 0.0001 on all six cases, frames p50 16.7 ms
+    width sweep          17 widths x 3 variants, no horizontal overflow
+
+    JS gzip           55.9 KB -> 55.9 KB   (limit 60, hard fail)
+    CSS gzip          20.9 KB -> 22.2 KB
+    first view gzip  201.7 KB -> 203.1 KB  (limit 420)
+    third-party requests             0     (limit 0, hard fail)
+
+Not verified: real Safari/iOS and touch, field CWV, GitHub Pages after merge.
+Known and untouched: a transient sideways scroll on mobile while the map and
+about-photo reveals play — pre-existing, and it lives in the reveal layer.
+
 ## Unreleased — accessibility, blocking time, crop pages, legal pages
 
 Five phases, each measured against a screenshot matrix captured before the first

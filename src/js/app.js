@@ -671,7 +671,13 @@
     var tl = gsap.timeline({ defaults: { ease: EASE.expo } });
     var title = one('[data-hero-title]', hero);
     var sub = all('[data-hero-item]', hero);
-    var fanItems = all('.fan__item', hero);
+    // The entrance animates .fan__rise, never .fan__item. The item's transform
+    // is the fan geometry itself, and GSAP takes ownership of whatever property
+    // it touches: it decomposes the existing matrix into its own translate ->
+    // rotate -> scale order, which is not the order the stylesheet composes in,
+    // so handing control back at the end snapped every card into a slightly
+    // different place. Animating the inner wrapper leaves the geometry alone.
+    var fanItems = all('.fan__rise', hero);
     var media = one('[data-hero-media]', hero);
     var mediaImg = media && one('img', media);
     var copy = one('.hero__in', hero);
@@ -702,14 +708,6 @@
     }
 
     tl.eventCallback('onComplete', function () {
-      // Hand the fan's resting transform back to the stylesheet. GSAP leaves an
-      // inline transform behind when the entrance finishes, and an inline
-      // transform outranks the :hover rule in 05-motion.css, so the cards
-      // simply never popped — the same collision the mobile rail already works
-      // around with `transform: none !important`. clearProps is scoped to the
-      // transform channel so the tween's opacity:1 stays inline and the
-      // no-JS / reduced-motion contract (nothing left hidden) is untouched.
-      if (fanItems.length) gsap.set(fanItems, { clearProps: 'transform,translate,rotate,scale' });
       if (!window.ScrollTrigger) return;
       var compact = window.matchMedia('(max-width: 56.25rem)').matches;
       var depth = gsap.timeline({

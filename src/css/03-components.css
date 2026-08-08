@@ -1407,6 +1407,10 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   border-radius: 50%;
 }
 .partner-orbit__ring--outer { inset: 8%; }
+/* A third ring between the two: the orbit reads as a system of shells rather
+   than as a target with a bullseye, and the marks sit on a track instead of
+   floating in the gap. */
+.partner-orbit__ring--mid { inset: 18%; border-color: color-mix(in srgb, var(--border) 62%, transparent); }
 .partner-orbit__ring--inner { inset: 28%; border-style: dashed; }
 .partner-orbit__hub {
   width: 7rem;
@@ -1437,6 +1441,11 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   animation-play-state: paused;
 }
 .partner-orbit.is-spinning .partner-orbit__node { animation-play-state: running; }
+/* Stop the carousel while someone is reading it. Rotating text that will not
+   hold still is the single most common complaint about orbits like this one,
+   and a pointer resting on a mark is the clearest possible signal to stop. */
+.partner-orbit:hover .partner-orbit__node,
+.partner-orbit:focus-within .partner-orbit__node { animation-play-state: paused; }
 .partner-orbit__node .pm {
   padding: .62rem .88rem;
   border-radius: var(--r-pill);

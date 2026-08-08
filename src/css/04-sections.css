@@ -131,7 +131,16 @@
      sorting. */
   transform-style: flat;
 }
-.fan__item { flex: none; width: clamp(8.5rem, 12vw, 11.5rem); z-index: var(--z); }
+.fan__item {
+  flex: none;
+  width: clamp(8.5rem, 12vw, 11.5rem);
+  z-index: var(--z);
+  /* positions the hover glow pseudo-element */
+  position: relative;
+}
+/* Pure carrier for the entrance tween. No box of its own, so the card's
+   geometry is unchanged whether or not JavaScript ever runs. */
+.fan__rise { display: block; }
 /* Short windows: shrink the fan rather than letting it eat the headline. The
    cards get smaller but their fan transform does not, so this reserve has to
    clear the same ~61px drop as the full-height one. */
@@ -329,6 +338,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--s-xl);
+  /* Grid items refuse to go below min-content unless told otherwise. */
+  min-width: 0;
 }
 /* One ratio for all four visualizations. Sized by ratio rather than by content
    means the illustration frame cannot grow or shrink with the length of the
@@ -347,9 +358,15 @@
      out of the instrument and squeezed the readouts. */
   aspect-ratio: 400 / 305;
   min-height: 18rem;
-  /* An aspect-ratio box derives whichever dimension is not constrained — with a
-     min-height tall enough to bind, it starts inflating its own WIDTH and pushes
-     the page into a horizontal scroll. The cap keeps the ratio advisory. */
+  /* An aspect-ratio box derives whichever dimension is not constrained, so a
+     binding min-height makes it inflate its own WIDTH instead. max-width:100%
+     alone did not hold: the card is a grid item, grid items default to
+     min-width:auto, so the card simply grew to its min-content width and took
+     the page with it — 425px of card inside a 420px viewport. Pinning the
+     width makes it the definite axis, which leaves height as the derived one,
+     which is the way round this box was always meant to work. The card is told
+     it may shrink in the rule below. */
+  width: 100%;
   max-width: 100%;
   display: flex;
   flex-direction: column;
@@ -1562,3 +1579,107 @@
   .profile-hero__media { aspect-ratio:4/5; }
 }
 
+
+/* --- geo: the list and the map answer each other ------------------------
+   Hovering a distance lights its pin, and hovering a pin lights its row. The
+   pairing is keyed on data-place, which the map's four points already carried
+   and the rows now repeat, so the two sides cannot drift.
+
+   Decorative by design, and hover-only on purpose. Every figure here is
+   already published twice — once in the list, once as a label on the map — so
+   a keyboard or touch visitor loses no information by not getting the
+   highlight, and making four static rows focusable to deliver a colour change
+   would add tab stops that lead nowhere. */
+.dist,
+.ukraine-map__point { transition: color var(--dur-sm) var(--ease-out); }
+.ukraine-map__point circle:not(.ukraine-map__pulse) { transition: r var(--dur-sm) var(--ease-out), fill var(--dur-sm) var(--ease-out); }
+
+@media (hover: hover) and (pointer: fine) {
+  .geo__grid:has(.dist[data-place="vinnytsia"]:hover) .ukraine-map__point--vinnytsia,
+  .geo__grid:has(.dist[data-place="haisyn"]:hover)    .ukraine-map__point--haisyn,
+  .geo__grid:has(.dist[data-place="odesa"]:hover)     .ukraine-map__point--odesa,
+  .geo__grid:has(.dist[data-place="kyiv"]:hover)      .ukraine-map__point--kyiv,
+  .ukraine-map__point:hover { color: var(--ink); }
+
+  .geo__grid:has(.dist[data-place="vinnytsia"]:hover) .ukraine-map__point--vinnytsia circle:not(.ukraine-map__pulse),
+  .geo__grid:has(.dist[data-place="haisyn"]:hover)    .ukraine-map__point--haisyn    circle:not(.ukraine-map__pulse),
+  .geo__grid:has(.dist[data-place="odesa"]:hover)     .ukraine-map__point--odesa     circle:not(.ukraine-map__pulse),
+  .geo__grid:has(.dist[data-place="kyiv"]:hover)      .ukraine-map__point--kyiv      circle:not(.ukraine-map__pulse),
+  .ukraine-map__point:hover circle:not(.ukraine-map__pulse) { r: 6.5; fill: var(--lime-lo); }
+
+  .geo__grid:has(.ukraine-map__point--vinnytsia:hover) .dist[data-place="vinnytsia"],
+  .geo__grid:has(.ukraine-map__point--haisyn:hover)    .dist[data-place="haisyn"],
+  .geo__grid:has(.ukraine-map__point--odesa:hover)     .dist[data-place="odesa"],
+  .geo__grid:has(.ukraine-map__point--kyiv:hover)      .dist[data-place="kyiv"],
+  .dist:hover { color: var(--ink); }
+  .geo__grid:has(.ukraine-map__point--vinnytsia:hover) .dist[data-place="vinnytsia"] .dist__km,
+  .geo__grid:has(.ukraine-map__point--haisyn:hover)    .dist[data-place="haisyn"]    .dist__km,
+  .geo__grid:has(.ukraine-map__point--odesa:hover)     .dist[data-place="odesa"]     .dist__km,
+  .geo__grid:has(.ukraine-map__point--kyiv:hover)      .dist[data-place="kyiv"]      .dist__km,
+  .dist:hover .dist__km { color: var(--lime-on-light); }
+}
+
+/* The map's markers are 4px dots. Findable, but not comfortably hoverable, and
+   they are now interactive targets that light their row in the list. A wide
+   transparent stroke gives each one a ~20-unit hit area without changing a
+   single painted pixel; pointer-events:all is what makes an unpainted stroke
+   hit-test. */
+.ukraine-map__point circle:not(.ukraine-map__pulse) {
+  stroke: transparent;
+  stroke-width: 16;
+  pointer-events: all;
+}
+
+/* --- journey: a rail through the cards ----------------------------------
+   The six entries were a plain 2x3 grid of cards, which reads as six facts
+   rather than as eighteen seasons in one direction. A rail down the gutter
+   with a node against each year turns the same cards into a sequence, without
+   moving any of them. Drawn on the container so it cannot end up between two
+   cards, and hidden once the grid collapses to one column. */
+.jgrid__cards { position: relative; }
+.jgrid__cards::before {
+  content: "";
+  position: absolute;
+  top: var(--s-lg);
+  bottom: var(--s-lg);
+  /* 2px and no half-pixel nudge. At 1px with translateX(-.5px) the rail landed
+     between two device pixels and antialiased to (221,222,220) against a
+     (244,245,241) ground — present in the DOM, invisible on screen. */
+  left: calc(50% - 1px);
+  width: 2px;
+  /* --border on --grey-100 is a 3% step and simply did not read. */
+  background: linear-gradient(180deg, transparent, var(--grey-300) 12%, var(--grey-300) 88%, transparent);
+  pointer-events: none;
+}
+.jcard { position: relative; }
+.jcard__y { position: relative; }
+.jcard__y::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: .4rem;
+  height: .4rem;
+  border-radius: 50%;
+  background: var(--lime-lo);
+  box-shadow: 0 0 0 3px var(--grey-100);
+  transform: translateY(-50%);
+}
+/* One node per row, not per card. In a two-column grid the odd card is the left
+   one and the even card is the right one *of the same row*, so giving both a
+   node put two dots at the same point on the rail. The left card carries it. */
+.jcard__y::after { display: none; }
+.jgrid__cards > .jcard:nth-child(odd) .jcard__y::after {
+  display: block;
+  right: calc(-1 * var(--s-md) / 2 - .2rem);
+}
+/* One column: there is no gutter between two columns left to run a rail down,
+   and the nodes would hang off the outer edges of the cards pointing at
+   nothing. The stack is already a sequence on its own. */
+@media (max-width: 48rem) {
+  .jgrid__cards::before { display: none; }
+  .jcard__y::after { display: none; }
+}
+/* v3 lays the cards out in three columns, so a single centre rail would run
+   through the middle column rather than between columns. */
+.v3 .jgrid__cards::before,
+.v3 .jcard__y::after { display: none; }

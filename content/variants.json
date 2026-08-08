@@ -88,6 +88,7 @@
       "accent_widget": "logo-bar",
       "home_sections": [
         "about",
+        "logos",
         "crops",
         "testimonials",
         "capacity",
