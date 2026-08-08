@@ -179,6 +179,13 @@ PROBE = r"""
   document.querySelectorAll('.card, .stat, .stats-card, .quote, .cap__card, .fcard, .post, .member').forEach((card) => {
     const cs = getComputedStyle(card);
     if (!identity(cs.transform)) return;
+    /* A card with no box cannot show a clipped shadow. display:none returns an
+       all-zero rect, and comparing that against a clipper that has scrolled
+       away yields a large negative slack — a defect that is not on screen and
+       cannot be. The hero fan drops its two outermost decorative cards at
+       widths where nine will not fit, which is what surfaced this. */
+    const cb = card.getBoundingClientRect();
+    if (cb.width === 0 || cb.height === 0) return;
     const sh = cs.boxShadow;
     if (!sh || sh === 'none') return;
     const nums = sh.match(/-?\d+(\.\d+)?px/g) || [];

@@ -1,0 +1,202 @@
+/* ==========================================================================
+   v6 hero fan — card contents
+   ----------------------------------------------------------------------------
+   Ported from the mockup's nine-card set (src6/hero-fan.html + hero.css,
+   `fcard`-prefixed rules). Geometry, levitation and entrance stay untouched —
+   this file only restyles what is INSIDE each .fcard and adds the kinds the
+   richer set needs (photo stat footer, dark lab dot, land sparkline).
+
+   Everything here overrides 04-sections.css by load order (this file is
+   concatenated last), so no edits land there. No side blur / haze / dissolve
+   mask / rAF spring ring is reintroduced — those stay rejected.
+   ========================================================================== */
+
+/* --- taller card: richer content needs more room than the old seven ----- */
+.fcard { height: 14.5rem; gap: .55rem; }
+@media (max-height: 46rem) and (min-width: 64rem) {
+  .fcard { height: 12.25rem; }
+}
+
+/* --- card label: small dot for the lab card, ported verbatim ------------ */
+.fcard__dot {
+  width: .3rem; height: .3rem; flex: none;
+  display: inline-block;
+  margin-right: .3rem;
+  border-radius: 50%;
+  background: var(--lime-lo);
+  box-shadow: 0 0 0 .13rem rgba(185, 237, 55, .28);
+}
+.fcard--dark .fcard__dot { background: var(--lime); }
+.fcard__l { display: flex; align-items: center; }
+
+/* --- lab rows: highlight the in-spec reading in lime, as in the mockup -- */
+.fcard--dark .lab__row--ok .lab__val { color: var(--lime); }
+.lab__row--ok .lab__val { color: var(--lime-on-light); }
+
+/* --- bar chart inside the fan: show the values the mockup prints above
+   each bar. The sitewide chart is scroll-triggered by [data-chart], which the
+   fan cards never carry, so the sitewide `.chart__val{opacity:0}` motion
+   guard would leave them permanently invisible — these are static from build,
+   not scroll-revealed, so they render at full opacity from the first paint. */
+.fcard .chart__val { display: block; opacity: 1; }
+.fcard .chart__plot { height: 4.5rem; gap: .2rem; padding-top: .85rem; }
+.fcard .chart__years { padding-top: .3rem; }
+.fcard .chart__years span { font-size: .46rem; }
+
+/* --- sparkline (.land card) ---------------------------------------------- */
+.spark { display: block; width: 100%; height: 2.5rem; margin-top: auto; overflow: visible; flex: none; }
+.spark__area { fill: rgba(185, 237, 55, .3); stroke: none; }
+.spark__line {
+  fill: none;
+  stroke: var(--lime-on-light);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.spark__tip { fill: var(--lime-lo); stroke: var(--white); stroke-width: 1.6; vector-effect: non-scaling-stroke; }
+.spark + .fcard__big { margin-top: 0; }
+
+.fcard__delta {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: .18rem;
+  padding: .16rem .36rem;
+  border-radius: var(--r-pill);
+  background: rgba(185, 237, 55, .24);
+  color: var(--lime-on-light);
+  font-family: var(--mono);
+  font-size: .46rem;
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
+.fcard__delta svg { width: .4rem; height: .4rem; flex: none; }
+
+/* --- photo card: full-bleed image + frosted stat footer ------------------ */
+.fcard--photo { padding: 0; gap: 0; background: var(--field); position: relative; }
+.fcard--photo .fcard__ph {
+  position: absolute; inset: 0; margin: 0; aspect-ratio: auto; z-index: 0;
+}
+.fcard--photo .fcard__ph img { width: 100%; height: 100%; object-fit: cover; }
+.fcard--photo .fcard__ph::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg,
+    rgba(6, 20, 12, .48) 0%, rgba(6, 20, 12, .04) 32%,
+    rgba(6, 20, 12, .1) 56%, rgba(6, 20, 12, .62) 100%);
+}
+.fcard--photo > * { position: relative; z-index: 2; }
+.fcard--photo .fcard__l {
+  margin-top: auto;
+  color: rgba(255, 255, 255, .92);
+  padding: 0 .85rem;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, .55);
+}
+
+.fcard__live {
+  position: absolute; z-index: 3; top: .6rem; right: .6rem;
+  display: inline-flex; align-items: center; gap: .22rem;
+  padding: .16rem .38rem .16rem .3rem;
+  border-radius: var(--r-pill);
+  background: rgba(19, 19, 19, .62);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .16);
+  font-family: var(--mono);
+  font-size: .42rem;
+  letter-spacing: .07em;
+  color: #fff;
+  text-transform: uppercase;
+}
+.fcard__live i {
+  width: .28rem; height: .28rem; flex: none;
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 0 .12rem rgba(209, 255, 92, .3);
+}
+/* Static dot — no runtime pulse. The mockup's rAF ring is rejected; this is a
+   plain CSS-only accent, not an animation loop. */
+
+.glass {
+  margin: 0 .55rem .55rem;
+  padding: .5rem .58rem;
+  border-radius: .8rem;
+  background: rgba(255, 255, 255, .9);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .6), 0 6px 16px -6px rgba(4, 14, 8, .4);
+  display: flex;
+  gap: .5rem;
+}
+.glass__cell { display: flex; flex-direction: column; gap: .1rem; min-width: 0; flex: 1; }
+.glass__cell + .glass__cell { padding-left: .5rem; border-left: 1px solid rgba(14, 32, 22, .1); }
+.glass__k {
+  font-family: var(--mono);
+  font-size: .44rem;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--muted-on-light);
+  white-space: nowrap;
+}
+.glass__v {
+  font-size: .8rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: -.04em;
+  color: var(--black);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.glass__v em { font-style: normal; font-size: .58em; color: var(--muted-on-light); }
+
+/* --- mobile rail: fixed height still needs to fit the richer content ---- */
+@media (max-width: 56.25rem) {
+  .fcard { height: 14.5rem; }
+  .glass__k { font-size: .48rem; }
+  .glass__v { font-size: .85rem; }
+}
+@media (max-width: 24.375rem) {
+  .fcard { height: 14.25rem; }
+}
+
+/* --- the fan's shadow reserve grows a little with the taller card, so the
+   outermost card's drop shadow still clears the hero's clip. The geometry in
+   fan_transforms() and the .fan rules themselves are untouched; only the
+   reserve below the flex row is topped up here. */
+.fan { padding-bottom: 5.75rem; }
+@media (max-height: 46rem) and (min-width: 64rem) {
+  .fan { padding-bottom: 4.5rem; }
+}
+@media (max-width: 56.25rem) {
+  .fan { padding-block: 1.25rem 1.65rem; margin-block: -1.25rem -1.65rem; }
+}
+
+/* --- card-rail (marquee, v2 hero) reuses .fcard: keep its own fixed height
+   in step so the taller content does not overflow the rail's clip. --------- */
+.card-rail .fcard { height: 13.25rem; }
+
+/* --- nine cards in a fan that is not nine cards wide ---------------------
+   The mockup runs nine cards and lets the outermost pair bleed off both
+   edges, hiding the seam under a haze. The haze was rejected, and a bleeding
+   card without one does not read as "the fan continues" — it reads as
+   clipped. Measured: at the design's card width nine cards need ~1850px of
+   room, so they only fit on a very wide display.
+
+   So below that, the outermost pair drops out. Those two are the purely
+   decorative photo cards the mockup itself keeps behind the haze, and the
+   seven that remain are indices 1..7 of a nine-card arc — still symmetric
+   about the centre, so the geometry and the levitation phases still hold.
+   All nine come back on the mobile rail, where the fan is a swipeable strip
+   and there is no edge to bleed past. */
+.fan__item:first-child,
+.fan__item:last-child { display: none; }
+
+@media (min-width: 118rem) {
+  .fan__item:first-child,
+  .fan__item:last-child { display: block; }
+}
+
+@media (max-width: 56.25rem) {
+  .fan__item:first-child,
+  .fan__item:last-child { display: block; }
+}

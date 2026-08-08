@@ -1,0 +1,507 @@
+/* ==========================================================================
+   V6 GEO — dark map panel + sidebar, ported from src6/v6-geo.html + v6.css.
+
+   Reuses templates/ukraine-map.svg.j2's existing static output (27 oblast
+   paths, one is-home, four pathLength="1" routes/points already labelled
+   from c.geo.distances) instead of the mockup's own 74KB hand-tilted SVG —
+   see templates/v6/geo.html.j2's header comment for why. This file only
+   restyles that partial's existing class names (.ukraine-map__*) inside its
+   own .v6geo__map scope, plus lays out the new panel chrome: caption,
+   legend, filter, distance list, stat tiles, hint.
+
+   v1 "Light"   — the dark green panel as-is: a deliberate dark island.
+   v2 "Banded"  — reads as one of the page's own dark bands: hairline
+                  borders, flatter fills, no independent shadow/gradient.
+   v3 "Quiet"   — no card container at all: light, borderless, map sits on
+                  the page ground, list becomes plain typography on rules.
+   ========================================================================== */
+
+.v6geo__panel {
+  --map-hi: #35503c;
+  --map-lo: #16281c;
+  margin-top: clamp(2rem, 4vw, 3rem);
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background:
+    radial-gradient(130% 100% at 18% 4%, rgba(209,255,92,.15) 0%, rgba(209,255,92,.08) 26%, rgba(209,255,92,.03) 52%, transparent 82%),
+    radial-gradient(100% 90% at 92% 96%, rgba(57,191,238,.11) 0%, rgba(57,191,238,.05) 34%, transparent 84%),
+    linear-gradient(168deg, var(--field-2), var(--field) 62%);
+  border: 1px solid rgba(255, 255, 255, .07);
+  color: var(--white);
+}
+.v6geo__panel > * { min-width: 0; }
+
+/* --- map cell ------------------------------------------------------------ */
+.v6geo__map {
+  position: relative;
+  padding: clamp(1.5rem, 3vw, 2.75rem);
+  padding-bottom: clamp(3.25rem, 5vw, 4.25rem);
+  display: flex;
+  align-items: center;
+  overflow: visible;
+}
+/* Full-country crop: the include's whole 0 0 760 512 silhouette is shown
+   (unlike the mockup's own tighter 0 86 760 330 crop), sized to the panel
+   with margin on every side rather than scaled/shifted to fake a crop —
+   that scale+translate hack cut Ukraine off at the edge and read oversized.
+   .v6geo__mapbox pins the box to the include's exact aspect ratio so the
+   ring and pill layer below can be positioned as plain percentages of this
+   box and stay pixel-locked to the SVG's own viewBox coordinates at every
+   width, with no JS measuring anything. */
+.v6geo__mapbox {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 760 / 512;
+  /* Clears the corner caption regardless of its exact rendered width, so a
+     point pill near the top edge (Kyiv) can never sit under it. */
+  margin-top: clamp(1.75rem, 3.4vw, 2.5rem);
+}
+.v6geo__map .ukraine-map {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Restyle the shared map partial for a dark ground: the light theme's white
+   oblast gradient and dark route/point ink invert to lime-on-dark. Scoped to
+   this wrapper so 04-sections.css's light-theme rules are untouched. */
+.v6geo__map .ukraine-map__oblast {
+  stroke: rgba(255, 255, 255, .16);
+  stroke-width: .7;
+}
+.v6geo__map .ukraine-map__oblast.is-home {
+  fill: var(--lime);
+  stroke: rgba(255, 255, 255, .5);
+}
+@media (hover: hover) and (pointer: fine) {
+  .v6geo__map .ukraine-map__oblast:hover { fill: rgba(255, 255, 255, .1); }
+  .v6geo__map .ukraine-map__oblast.is-home:hover { fill: var(--lime-hi); }
+}
+.v6geo__map .ukraine-map__route { stroke: var(--lime-lo); }
+.v6geo__map .ukraine-map__route--north { stroke: var(--sky); }
+.v6geo__map .ukraine-map__route--regional,
+.v6geo__map .ukraine-map__route--local { stroke: rgba(255, 255, 255, .65); opacity: .85; }
+
+.v6geo__map .ukraine-map__point circle:not(.ukraine-map__pulse) {
+  fill: var(--field);
+  stroke: var(--lime);
+}
+/* The include's own <text> labels are superseded by the HTML pill layer
+   (.v6geo__pill, below) — hidden rather than left to render bare/unstyled
+   text underneath the pills. The circles stay as the literal map markers. */
+.v6geo__map .ukraine-map__point text {
+  display: none;
+}
+.v6geo__map .ukraine-map__pulse { fill: var(--lime); }
+.v6geo__map .ukraine-map__hub circle:not(.ukraine-map__pulse) {
+  fill: var(--lime);
+  stroke: var(--field);
+}
+
+/* --- point pills -----------------------------------------------------------
+   HTML layer over .v6geo__mapbox, one pill per place. left/top come inline
+   from geo.html.j2 (see the header comment there) as % of the include's own
+   760x512 viewBox, so each pill tracks its SVG point at every width. */
+.v6geo__pill {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .3rem .55rem .3rem .3rem;
+  border-radius: var(--r-pill);
+  background: rgba(7, 21, 14, .78);
+  border: 1px solid rgba(255, 255, 255, .16);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .25);
+  font-family: var(--mono);
+  font-size: .6875rem;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  z-index: 2;
+  pointer-events: none;
+}
+.v6geo__pill-ic {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .1);
+  color: var(--lime);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.v6geo__pill-ic svg { width: 11px; height: 11px; }
+.v6geo__pill-name { color: var(--white); font-weight: var(--fw-medium); }
+.v6geo__pill-km { color: rgba(255, 255, 255, .55); }
+.v6geo__pill--odesa .v6geo__pill-ic,
+.v6geo__pill--kyiv .v6geo__pill-ic { color: var(--sky); }
+
+/* 40km radius ring: the include has no ring of its own (that geometry is not
+   part of the shared partial), so it is drawn here as a plain dashed circle.
+   Its left/top are set inline per-instance by geo.html.j2 from the hub's own
+   <g transform="translate(316 218)"> in the include's fixed 760x512 viewBox,
+   expressed as % of .v6geo__mapbox — which is itself pinned to that same
+   760x512 aspect ratio — so the ring stays centred on the hub across every
+   width without eyeballed percentages. Drawn above the map (not behind it):
+   the home oblast it circles is filled the same lime as a subtle low-alpha
+   ring, so a ring layered behind it would all but disappear against that
+   fill — a brighter dash on top keeps it legible on every finish. */
+.v6geo__ring {
+  position: absolute;
+  width: 15%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 1.5px dashed rgba(209, 255, 92, .85);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 2;
+}
+.v6geo__map .ukraine-map { position: relative; z-index: 1; }
+
+.v6geo__caption {
+  position: absolute;
+  left: clamp(1.5rem, 3vw, 2.75rem);
+  top: clamp(1.25rem, 2.4vw, 1.75rem);
+  font-family: var(--mono);
+  font-size: .6875rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .55);
+  display: flex;
+  gap: .5rem;
+  z-index: 2;
+  padding: .3rem .6rem;
+  border-radius: var(--r-pill);
+  background: rgba(7, 21, 14, .55);
+  backdrop-filter: blur(3px);
+}
+.v6geo__caption b { color: var(--lime); font-weight: var(--fw-medium); }
+
+.v6geo__legend {
+  position: absolute;
+  left: clamp(1.5rem, 3vw, 2.75rem);
+  bottom: clamp(1.25rem, 2.4vw, 1.75rem);
+  display: flex;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+  z-index: 2;
+}
+.v6geo__lgi {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  font-family: var(--mono);
+  font-size: .625rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .5);
+}
+.v6geo__lgi i { width: 16px; height: 3px; border-radius: 2px; background: var(--lime); flex: none; }
+.v6geo__lgi--rail i { background: var(--sky); }
+.v6geo__lgi--ring i { width: 14px; height: 9px; border-radius: 9px; background: none; border: 1px dashed rgba(209, 255, 92, .75); }
+
+/* --- sidebar -------------------------------------------------------------- */
+.v6geo__side {
+  padding: clamp(1.5rem, 2.6vw, 2.25rem);
+  border-left: 1px solid rgba(255, 255, 255, .08);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 2vw, 1.5rem);
+}
+
+/* Filter: real radios, visually a segmented control. Checking one dims (not
+   removes) the rows and routes whose kind does not match, purely in CSS. */
+.v6geo__filter {
+  display: flex;
+  gap: .25rem;
+  padding: .25rem;
+  border: 0;
+  margin: 0;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, .06);
+}
+.v6geo__filter input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+.v6geo__filter label {
+  flex: 1;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: .625rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .55);
+  padding: .55rem .5rem;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: background var(--dur-sm) var(--ease), color var(--dur-sm) var(--ease);
+}
+.v6geo__filter label:hover { color: rgba(255, 255, 255, .85); }
+.v6geo__filter input:checked + label { background: var(--lime); color: var(--field); font-weight: var(--fw-medium); }
+.v6geo__filter input:focus-visible + label { outline: 2px solid var(--lime); outline-offset: 2px; }
+
+.v6geo__dists { display: flex; flex-direction: column; }
+.v6geo__dist {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: .75rem;
+  padding: .85rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  transition: background var(--dur-sm) var(--ease), padding-left var(--dur-sm) var(--ease);
+}
+.v6geo__dist:last-child { border-bottom: 0; }
+.v6geo__dist-ic {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, .07);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.v6geo__dist-ic svg { width: 15px; height: 15px; color: var(--lime); }
+.v6geo__dist--export .v6geo__dist-ic svg { color: var(--sky); }
+.v6geo__dist-to { display: flex; flex-direction: column; font-weight: var(--fw-medium); min-width: 0; }
+.v6geo__dist-to small { font-size: .6875rem; font-weight: var(--fw-regular); color: rgba(255, 255, 255, .48); }
+.v6geo__dist-km { font-family: var(--mono); font-size: .8125rem; color: rgba(255, 255, 255, .7); white-space: nowrap; }
+
+/* Filter -> row/route dimming, keyed on the fieldset's checked value. */
+.v6geo__panel:has(#geo-f-local-v1:checked) .v6geo__dist--export,
+.v6geo__panel:has(#geo-f-export-v1:checked) .v6geo__dist--local,
+.v6geo__panel:has(#geo-f-local-v2:checked) .v6geo__dist--export,
+.v6geo__panel:has(#geo-f-export-v2:checked) .v6geo__dist--local,
+.v6geo__panel:has(#geo-f-local-v3:checked) .v6geo__dist--export,
+.v6geo__panel:has(#geo-f-export-v3:checked) .v6geo__dist--local { opacity: .35; }
+
+.v6geo__panel:has(#geo-f-local-v1:checked) .ukraine-map__route--north,
+.v6geo__panel:has(#geo-f-local-v1:checked) .ukraine-map__route--port,
+.v6geo__panel:has(#geo-f-export-v1:checked) .ukraine-map__route--regional,
+.v6geo__panel:has(#geo-f-export-v1:checked) .ukraine-map__route--local,
+.v6geo__panel:has(#geo-f-local-v2:checked) .ukraine-map__route--north,
+.v6geo__panel:has(#geo-f-local-v2:checked) .ukraine-map__route--port,
+.v6geo__panel:has(#geo-f-export-v2:checked) .ukraine-map__route--regional,
+.v6geo__panel:has(#geo-f-export-v2:checked) .ukraine-map__route--local,
+.v6geo__panel:has(#geo-f-local-v3:checked) .ukraine-map__route--north,
+.v6geo__panel:has(#geo-f-local-v3:checked) .ukraine-map__route--port,
+.v6geo__panel:has(#geo-f-export-v3:checked) .ukraine-map__route--regional,
+.v6geo__panel:has(#geo-f-export-v3:checked) .ukraine-map__route--local { opacity: .15; }
+
+/* hover-sync between a distance row and its map pin — same :has() pairing
+   04-sections.css already uses for the light-theme geo section, scoped here
+   to .v6geo__panel so the two stylesheets never collide. */
+@media (hover: hover) and (pointer: fine) {
+  .v6geo__panel:has(.v6geo__dist[data-place="vinnytsia"]:hover) .ukraine-map__point--vinnytsia,
+  .v6geo__panel:has(.v6geo__dist[data-place="haisyn"]:hover) .ukraine-map__point--haisyn,
+  .v6geo__panel:has(.v6geo__dist[data-place="odesa"]:hover) .ukraine-map__point--odesa,
+  .v6geo__panel:has(.v6geo__dist[data-place="kyiv"]:hover) .ukraine-map__point--kyiv,
+  .ukraine-map__point:hover {
+    color: var(--white);
+  }
+  .v6geo__panel:has(.v6geo__dist[data-place="vinnytsia"]:hover) .ukraine-map__point--vinnytsia circle:not(.ukraine-map__pulse),
+  .v6geo__panel:has(.v6geo__dist[data-place="haisyn"]:hover) .ukraine-map__point--haisyn circle:not(.ukraine-map__pulse),
+  .v6geo__panel:has(.v6geo__dist[data-place="odesa"]:hover) .ukraine-map__point--odesa circle:not(.ukraine-map__pulse),
+  .v6geo__panel:has(.v6geo__dist[data-place="kyiv"]:hover) .ukraine-map__point--kyiv circle:not(.ukraine-map__pulse),
+  .ukraine-map__point:hover circle:not(.ukraine-map__pulse) { r: 6.5; fill: var(--lime-hi); }
+
+  .v6geo__panel:has(.ukraine-map__point--vinnytsia:hover) .v6geo__dist[data-place="vinnytsia"],
+  .v6geo__panel:has(.ukraine-map__point--haisyn:hover) .v6geo__dist[data-place="haisyn"],
+  .v6geo__panel:has(.ukraine-map__point--odesa:hover) .v6geo__dist[data-place="odesa"],
+  .v6geo__panel:has(.ukraine-map__point--kyiv:hover) .v6geo__dist[data-place="kyiv"],
+  .v6geo__dist:hover {
+    background: rgba(255, 255, 255, .055);
+    padding-left: .75rem;
+  }
+
+  /* Same pairing, applied to the pill layer: hovering either the sidebar row
+     or the underlying SVG point brightens that place's pill too. */
+  .v6geo__panel:has(.v6geo__dist[data-place="vinnytsia"]:hover) .v6geo__pill--vinnytsia,
+  .v6geo__panel:has(.v6geo__dist[data-place="haisyn"]:hover) .v6geo__pill--haisyn,
+  .v6geo__panel:has(.v6geo__dist[data-place="odesa"]:hover) .v6geo__pill--odesa,
+  .v6geo__panel:has(.v6geo__dist[data-place="kyiv"]:hover) .v6geo__pill--kyiv,
+  .v6geo__panel:has(.ukraine-map__point--vinnytsia:hover) .v6geo__pill--vinnytsia,
+  .v6geo__panel:has(.ukraine-map__point--haisyn:hover) .v6geo__pill--haisyn,
+  .v6geo__panel:has(.ukraine-map__point--odesa:hover) .v6geo__pill--odesa,
+  .v6geo__panel:has(.ukraine-map__point--kyiv:hover) .v6geo__pill--kyiv {
+    border-color: var(--lime);
+    background: rgba(7, 21, 14, .92);
+  }
+}
+
+.v6geo__stats { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+.v6geo__stat {
+  padding: 1rem;
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid rgba(255, 255, 255, .08);
+}
+.v6geo__stat b {
+  display: block;
+  font-size: 2rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: -.05em;
+  color: var(--white);
+}
+.v6geo__stat b i { font-style: normal; font-size: .75rem; color: rgba(255, 255, 255, .45); margin-left: .2rem; }
+.v6geo__stat span {
+  font-family: var(--mono);
+  font-size: .625rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .5);
+}
+
+.v6geo__hint {
+  padding: 1rem 1.15rem;
+  border-radius: var(--r-md);
+  background: rgba(209, 255, 92, .09);
+  border-left: 2px solid var(--lime-lo);
+  color: rgba(255, 255, 255, .78);
+  font-size: .8125rem;
+  line-height: 1.5;
+}
+
+/* --- mobile: stack, no overflow ------------------------------------------ */
+@media (max-width: 62.5rem) {
+  .v6geo__panel { grid-template-columns: 1fr; }
+  .v6geo__side { border-left: 0; border-top: 1px solid rgba(255, 255, 255, .08); }
+}
+@media (max-width: 30rem) {
+  .v6geo__map { padding: 1.25rem; padding-bottom: 3rem; }
+  .v6geo__legend, .v6geo__caption { position: static; margin-top: 1rem; }
+  .v6geo__legend { justify-content: flex-start; }
+  .v6geo__map { display: flex; flex-direction: column; align-items: stretch; }
+  .v6geo__mapbox { margin-top: 1rem; }
+  .v6geo__stats { grid-template-columns: 1fr; }
+  /* Вінниця/Гайсин sit close together in the include's own viewBox (see
+     point_pos in geo.html.j2) — at desktop widths the gap between their two
+     fixed % offsets is wide enough in real pixels to fit a full pill each,
+     but a narrow phone-width mapbox shrinks that same % gap (to well under
+     20px at 320-390px) until even an icon-only chip would touch its
+     neighbour. Rather than let that collision happen, every pill collapses
+     to a small icon-only dot below this width (name AND distance dropped —
+     both stay available in the accessible sidebar list right below), and
+     the Гайсин dot — the one point that still sits close enough to
+     Вінниця's to overlap even at dot size — gets a small fixed pixel nudge
+     down-right, off the exact point coordinate, purely so the two dots
+     clear each other; it is decorative-only (aria-hidden) so nudging it
+     slightly off its literal marker does not affect any accessible
+     position information. */
+  .v6geo__pill {
+    gap: 0;
+    padding: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    justify-content: center;
+  }
+  .v6geo__pill-ic { width: 18px; height: 18px; background: none; }
+  .v6geo__pill-ic svg { width: 10px; height: 10px; }
+  .v6geo__pill-name,
+  .v6geo__pill-km { display: none; }
+  .v6geo__pill--haisyn { transform: translate(calc(-50% + 9px), calc(-50% + 9px)); }
+}
+
+/* --- reduced motion -------------------------------------------------------
+   .ukraine-map__route / .ukraine-map__pulse already settle to their drawn
+   state under html.no-motion via 05-motion.css's global rule — nothing new
+   is introduced by this file's colour overrides. The only animated things
+   this file itself adds are ordinary hover/focus colour transitions, which
+   are not motion-sickness triggers and need no override. */
+
+/* ==========================================================================
+   V2 — BANDED: read as one of the page's own dark bands, not a second box.
+   ========================================================================== */
+.v2 .v6geo__panel {
+  background: var(--field);
+  border: 1px solid var(--line-dark);
+  box-shadow: none;
+}
+.v2 .v6geo__ring { border-color: var(--line-dark-2); }
+.v2 .v6geo__stat,
+.v2 .v6geo__filter { border-color: var(--line-dark); background: rgba(255,255,255,.03); }
+.v2 .v6geo__dist { border-bottom-color: var(--line-dark); }
+.v2 .v6geo__side { border-left-color: var(--line-dark); }
+.v2 .v6geo__hint { background: transparent; border: 1px solid var(--line-dark); }
+
+/* ==========================================================================
+   V3 — QUIET: no card containers. Panel goes light and borderless, map sits
+   on the page ground, list becomes plain typography on rules, lime spent
+   once, lighter type.
+   ========================================================================== */
+.v3 .v6geo__panel {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  color: var(--text);
+  grid-template-columns: 1.4fr 1fr;
+  gap: clamp(2rem, 4vw, 4rem);
+}
+.v3 .v6geo__map {
+  padding: clamp(3.25rem, 6vw, 4.25rem) 0 0;
+  --map-hi: #eef2e8;
+  --map-lo: #d8e0cd;
+}
+.v3 .v6geo__map .ukraine-map__oblast { stroke: var(--border); }
+.v3 .v6geo__map .ukraine-map__oblast.is-home { fill: var(--lime-lo); stroke: var(--text); }
+.v3 .v6geo__map .ukraine-map__route { stroke: var(--lime-on-light); }
+.v3 .v6geo__map .ukraine-map__route--north { stroke: var(--sky); }
+.v3 .v6geo__map .ukraine-map__route--regional,
+.v3 .v6geo__map .ukraine-map__route--local { stroke: var(--text-2); }
+.v3 .v6geo__map .ukraine-map__point circle:not(.ukraine-map__pulse) { fill: var(--white); stroke: var(--lime-on-light); }
+.v3 .v6geo__map .ukraine-map__pulse { fill: var(--lime-on-light); }
+.v3 .v6geo__map .ukraine-map__hub circle:not(.ukraine-map__pulse) { fill: var(--lime-lo); stroke: var(--text); }
+.v3 .v6geo__ring { border-color: rgba(90,119,20,.35); }
+/* Caption goes static (in normal flow, above the map) rather than an
+   absolutely-positioned corner overlay, so it can never overlap a pill here
+   — the mapbox no longer needs the caption-clearing top margin either. */
+.v3 .v6geo__caption, .v3 .v6geo__legend { position: static; margin-top: 1rem; color: var(--text-2); }
+.v3 .v6geo__caption { padding: 0; border-radius: 0; background: none; backdrop-filter: none; }
+.v3 .v6geo__caption b { color: var(--lime-on-light); }
+.v3 .v6geo__mapbox { margin-top: clamp(1.25rem, 2.4vw, 1.75rem); }
+.v3 .v6geo__legend { justify-content: flex-start; }
+.v3 .v6geo__lgi { color: var(--text-2); }
+.v3 .v6geo__map { display: flex; flex-direction: column; }
+
+.v3 .v6geo__side { border-left: 0; padding: 0; gap: var(--s-xl); }
+.v3 .v6geo__filter { background: none; border-top: 1px solid var(--border); border-radius: 0; padding: var(--s-md) 0 0; }
+.v3 .v6geo__filter label { color: var(--text-2); border-radius: 0; }
+.v3 .v6geo__filter label:hover { color: var(--text); }
+.v3 .v6geo__filter input:checked + label { background: none; color: var(--lime-on-light); font-weight: var(--fw-regular); }
+
+.v3 .v6geo__dist { border-bottom-color: var(--border); font-weight: var(--fw-light); }
+.v3 .v6geo__dist-ic { background: none; border: 1px solid var(--border); }
+.v3 .v6geo__dist-ic svg { color: var(--text); }
+.v3 .v6geo__dist--export .v6geo__dist-ic svg { color: var(--text); }
+.v3 .v6geo__dist-to { font-weight: var(--fw-light); color: var(--text); }
+.v3 .v6geo__dist-to small { color: var(--muted-on-light); }
+.v3 .v6geo__dist-km { color: var(--text-2); }
+@media (hover: hover) and (pointer: fine) {
+  .v3 .v6geo__dist:hover { background: none; padding-left: 0; border-bottom-color: var(--text); }
+}
+
+.v3 .v6geo__stats { border-top: 1px solid var(--border); padding-top: var(--s-lg); }
+.v3 .v6geo__stat { background: none; border: 0; padding: 0; }
+.v3 .v6geo__stat b { color: var(--text); font-weight: var(--fw-light); }
+.v3 .v6geo__stat b i { color: var(--muted-on-light); }
+.v3 .v6geo__stat span { color: var(--text-2); }
+
+.v3 .v6geo__hint { background: none; border-top: 1px solid var(--border); border-radius: 0; padding: var(--s-md) 0 0; color: var(--text-2); }
+
+@media (max-width: 62.5rem) {
+  /* .v3 .v6geo__panel's own grid-template-columns (above) has higher
+     specificity than the base stacking rule in the first max-width: 62.5rem
+     block, so it would otherwise keep V3 two-column past the breakpoint
+     where V1/V2 already stack — repeat the reset here at matching
+     specificity so all three finishes stack at the same width. */
+  .v3 .v6geo__panel { grid-template-columns: 1fr; }
+  .v3 .v6geo__side { border-top: 1px solid var(--border); padding-top: var(--s-xl); }
+}

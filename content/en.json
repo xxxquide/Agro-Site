@@ -69,11 +69,20 @@
     "trust": "7 crops in rotation · 46,000 t of storage · exports to 14 countries",
     "cards": [
       {
-        "kind": "stat",
-        "label": "Land bank",
-        "value": "14,200",
-        "unit": "ha",
-        "note": "owned and leased land"
+        "kind": "photo",
+        "img": "ops-elevator",
+        "label": "Storage · elevator",
+        "stats": [
+          {
+            "k": "Capacity",
+            "v": "46,000",
+            "u": "t"
+          },
+          {
+            "k": "Silos",
+            "v": "8"
+          }
+        ]
       },
       {
         "kind": "chart",
@@ -103,10 +112,70 @@
         ]
       },
       {
+        "kind": "lab",
+        "label": "Laboratory",
+        "note": "every consignment",
+        "rows": [
+          {
+            "name": "Protein",
+            "val": "13.1%",
+            "ok": true
+          },
+          {
+            "name": "Moisture",
+            "val": "13.4%"
+          },
+          {
+            "name": "Test weight",
+            "val": "782 g/l"
+          }
+        ]
+      },
+      {
+        "kind": "land",
+        "label": "Land bank",
+        "note": "owned and leased land",
+        "value": "14,200",
+        "unit": "ha",
+        "delta": "+820 ha this year",
+        "series": [
+          29,
+          27,
+          23.5,
+          24.5,
+          19,
+          16.5,
+          12,
+          8.5,
+          5
+        ]
+      },
+      {
+        "kind": "photo",
+        "img": "ops-combine",
+        "label": "2025 harvest",
+        "badge": "In the field",
+        "stats": [
+          {
+            "k": "Machines",
+            "v": "68"
+          },
+          {
+            "k": "Hectares",
+            "v": "14,200"
+          }
+        ]
+      },
+      {
+        "kind": "stat",
+        "label": "Drying",
+        "value": "1,200",
+        "unit": "t/day",
+        "note": "three drying complexes"
+      },
+      {
         "kind": "bars",
-        "label": "Grain elevator",
-        "value": "46,000 t",
-        "note": "fill level as of today",
+        "label": "Elevator fill level",
         "rows": [
           {
             "name": "Wheat",
@@ -123,38 +192,6 @@
         ]
       },
       {
-        "kind": "photo",
-        "img": "ops-combine",
-        "label": "2025 harvest",
-        "note": "68 machines in the fleet"
-      },
-      {
-        "kind": "lab",
-        "label": "Laboratory",
-        "note": "every consignment",
-        "rows": [
-          {
-            "name": "Protein",
-            "val": "13.1%"
-          },
-          {
-            "name": "Moisture",
-            "val": "13.4%"
-          },
-          {
-            "name": "Test weight",
-            "val": "782 g/l"
-          }
-        ]
-      },
-      {
-        "kind": "stat",
-        "label": "Drying",
-        "value": "1,200",
-        "unit": "t/day",
-        "note": "three drying complexes"
-      },
-      {
         "kind": "pills",
         "label": "Logistics",
         "note": "road + rail",
@@ -162,7 +199,24 @@
           "Truck fleet",
           "Rail",
           "Port",
-          "Elevator"
+          "Elevator",
+          "Scales",
+          "Warehouse"
+        ]
+      },
+      {
+        "kind": "photo",
+        "img": "crop-wheat",
+        "label": "Grain exports",
+        "stats": [
+          {
+            "k": "Countries",
+            "v": "14"
+          },
+          {
+            "k": "Crops",
+            "v": "7"
+          }
         ]
       }
     ],
@@ -1447,7 +1501,7 @@
     "title_rich": "Seven crops [[grain]] one quality standard"
   },
   "capacity": {
-    "eyebrow": "FACILITIES",
+    "eyebrow": "WHY US",
     "title": "Why the grain arrives in the condition we weighed it in",
     "lead": "Four things we keep in-house instead of handing to contractors.",
     "cards": [
@@ -1459,11 +1513,14 @@
         "series": [
           {
             "year": "2021",
-            "v": 5.4
+            "v": 5.4,
+            "show_val": true
           },
           {
             "year": "2022",
-            "v": 4.9
+            "v": 4.9,
+            "dry": true,
+            "show_val": true
           },
           {
             "year": "2023",
@@ -1475,16 +1532,28 @@
           },
           {
             "year": "2025",
-            "v": 6.4
+            "v": 6.4,
+            "show_val": true
           }
         ],
+        "dry_label": "drought",
         "head": "Wheat",
         "sub": "t/ha · 2021–2025",
         "delta": "+18.5% over 5 years",
         "fig": "6.4",
         "fig_unit": "t/ha",
         "cap_k": "Five-season trend",
-        "cap_v": "+18.5%"
+        "cap_v": "+18.5%",
+        "foot": [
+          {
+            "k": "Crop rotation",
+            "v": "5 fields"
+          },
+          {
+            "k": "Applied by field maps",
+            "v": "100% of area"
+          }
+        ]
       },
       {
         "widget": "bars",
@@ -1494,13 +1563,13 @@
           {
             "name": "Grain elevator",
             "val": "46,000 t",
-            "pct": 100,
+            "pct": 79,
             "detail": "79% of total capacity"
           },
           {
             "name": "Flat storage",
             "val": "12,000 t",
-            "pct": 26,
+            "pct": 21,
             "detail": "21% of total capacity"
           },
           {
@@ -1519,7 +1588,17 @@
         "fig": "58,000",
         "fig_unit": "t",
         "cap_k": "Used for segregated storage",
-        "cap_v": "79%"
+        "cap_v": "79%",
+        "foot": [
+          {
+            "k": "Segregated by grade",
+            "v": "7 crops"
+          },
+          {
+            "k": "Drying, three complexes",
+            "v": "1,200 t/day"
+          }
+        ]
       },
       {
         "widget": "orbit",
@@ -1536,8 +1615,40 @@
         "sub": "from the elevator",
         "fig": "4",
         "fig_unit": "channels",
+        "km_unit": "km",
         "cap_k": "Where the grain goes",
-        "cap_v": "no transfers"
+        "cap_v": "no transfers",
+        "stops": [
+          {
+            "mode": "auto",
+            "name": "Haisyn, dryer",
+            "km": 35,
+            "w": 30
+          },
+          {
+            "mode": "auto",
+            "name": "Vinnytsia",
+            "km": 85,
+            "w": 47
+          },
+          {
+            "mode": "rail",
+            "name": "Kyiv, mills",
+            "km": 230,
+            "w": 78
+          },
+          {
+            "mode": "port",
+            "name": "Port of Odesa",
+            "km": 380,
+            "w": 100
+          }
+        ],
+        "chips": [
+          "Fleet of 24",
+          "Rail siding",
+          "Daily consignments"
+        ]
       },
       {
         "widget": "lab",
@@ -1546,22 +1657,26 @@
         "rows": [
           {
             "name": "Protein",
-            "val": "13.1%",
+            "val": "13.1",
+            "unit": "%",
             "trend": "+0.4"
           },
           {
             "name": "Moisture",
-            "val": "13.4%",
+            "val": "13.4",
+            "unit": "%",
             "trend": "−0.6"
           },
           {
             "name": "Test weight",
-            "val": "782 g/l",
+            "val": "782",
+            "unit": "g/l",
             "trend": "+9"
           },
           {
             "name": "Falling number",
-            "val": "268 s",
+            "val": "268",
+            "unit": "s",
             "trend": "+12"
           }
         ],
@@ -1569,9 +1684,15 @@
         "sub": "every dispatch",
         "badge": "4/4",
         "fig": "4/4",
-        "fig_unit": "measures",
+        "fig_unit": "in spec",
         "cap_k": "Protocol before dispatch",
-        "cap_v": "every lot"
+        "cap_v": "every lot",
+        "foot": [
+          {
+            "k": "Green lane — buyer clearance",
+            "v": "4 of 4"
+          }
+        ]
       }
     ],
     "title_rich": "Why grain arrives [[shield]] at the quality we weighed it at"
@@ -1657,7 +1778,63 @@
         "km": "230 km"
       }
     ],
-    "note": "The furthest field is 38 km from the elevator. The average haul from field to dryer is 14 km."
+    "note": "The furthest field is 38 km from the elevator. The average haul from field to dryer is 14 km.",
+    "map_alt": "Map of Ukraine: logistics from the elevator",
+    "caption_region": "Vinnytsia Oblast",
+    "caption_place": "farm headquarters",
+    "hint": "Hover or tap a direction — the route lights up along with the region the grain travels to.",
+    "legend": {
+      "auto": "Road",
+      "rail": "Rail",
+      "ring": "40 km radius"
+    },
+    "filters": {
+      "all": "All",
+      "local": "Field → dryer",
+      "export": "Export"
+    },
+    "distance_meta": [
+      {
+        "place": "vinnytsia",
+        "sub": "Regional centre",
+        "mode": "auto",
+        "kind": "local"
+      },
+      {
+        "place": "haisyn",
+        "sub": "Dryer",
+        "mode": "auto",
+        "kind": "local"
+      },
+      {
+        "place": "odesa",
+        "sub": "Export",
+        "mode": "port",
+        "kind": "export"
+      },
+      {
+        "place": "kyiv",
+        "sub": "Mills",
+        "mode": "rail",
+        "kind": "export"
+      }
+    ],
+    "stats": [
+      {
+        "value": "38",
+        "unit": "km",
+        "label": "Furthest field"
+      },
+      {
+        "value": "14",
+        "unit": "km",
+        "label": "Average haul"
+      }
+    ],
+    "hub": {
+      "name": "Elevator",
+      "value": "46,000 t"
+    }
   },
   "terms": {
     "eyebrow": "PARTNERSHIP",
@@ -2044,6 +2221,23 @@
         "w": 500,
         "ls": ".03em"
       }
+    ],
+    "claims": [
+      {
+        "n": "01",
+        "lead": "One protocol per lot.",
+        "text": "Every partner gets the exact same figures we weighed at our own elevator."
+      },
+      {
+        "n": "02",
+        "lead": "No middleman trader.",
+        "text": "We have worked directly with mills and processors since 2019."
+      },
+      {
+        "n": "03",
+        "lead": "Seven crops, one standard.",
+        "text": "Wheat, corn, sunflower, soybean, rapeseed, barley, sugar beet."
+      }
     ]
   },
   "tagmarquee": {
@@ -2184,6 +2378,34 @@
         "year": "2026",
         "title": "14,200 hectares",
         "text": "Seven crops, a 46,000 t grain elevator, drying at 1,200 t/day, exports to 14 countries."
+      }
+    ],
+    "count_label": "hectares in the land bank",
+    "bank_label": "Land bank",
+    "milestone_ha": [
+      {
+        "year": "2008",
+        "ha": 800
+      },
+      {
+        "year": "2012",
+        "ha": 2400
+      },
+      {
+        "year": "2016",
+        "ha": 5100
+      },
+      {
+        "year": "2019",
+        "ha": 8300
+      },
+      {
+        "year": "2022",
+        "ha": 11200
+      },
+      {
+        "year": "2026",
+        "ha": 14200
       }
     ]
   },

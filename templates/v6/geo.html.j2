@@ -1,0 +1,128 @@
+{#- ============================================================================
+    v6 "geo" — ports the mockup's #geo section (src6/v6-geo.html) onto the
+    site's existing geography content (c.geo). Same H2/eyebrow/lead as the
+    #geo section it replaces (blocks.html.j2's sec_geo()). Imported with
+    context from blocks.html.j2, so `c`, `V`, `p`, `I`, `iconic` are already
+    in scope.
+
+    The mockup's map is a hand-tilted, JS-projected 3D scene (v6.js computes
+    every route length and chip position at runtime). The site already ships
+    a flat, static equivalent at templates/ukraine-map.svg.j2 — 27 oblast
+    paths, one flagged is-home, four fixed data-place routes/points with
+    labels already bound to c.geo.distances[0..3] in a fixed
+    vinnytsia/haisyn/odesa/kyiv order, pathLength="1" normalised for a
+    zero-JS dash-in. That include is reused as-is (not edited — this macro
+    only wraps and restyles its output) rather than porting the mockup's 74KB
+    inline SVG or its projection math, which would require new JS to
+    reproduce.
+
+    Pill layer: the mockup's floating chips over each point are JS-positioned
+    (v6.js's fly()/build()). Rather than reproduce that with JS, this macro
+    renders its own HTML pill for each place plus the 40km ring, both
+    absolutely positioned inside .v6geo__mapbox — a wrapper forced to the
+    include's own 760x512 aspect ratio via `aspect-ratio`, so percentage
+    offsets computed once here from each point's fixed <g transform="translate(x y)">
+    coordinate (see ukraine-map.svg.j2) line up with the rendered SVG at every
+    width with no JS and no per-breakpoint tuning. The include's own inline
+    <text> labels are hidden (08-v6-geo.css) to avoid a second, unstyled copy
+    underneath the pills; its circles remain as the literal map markers.
+
+    Content: c.geo (existing) supplies eyebrow/title/lead/note/distances[].
+    New copy — legend/filter labels, per-distance icon+subtitle+kind, the two
+    stat tiles, the hover hint and the corner caption — lives in
+    src6/content-geo.json under the same c.geo namespace and is assumed
+    merged into content/*.json by the build (not edited here).
+    ============================================================================ -#}
+
+{%- macro section() -%}
+{%- set places = ['vinnytsia', 'haisyn', 'odesa', 'kyiv'] -%}
+{%- set mode_icon = {'auto': 'truck', 'rail': 'route', 'port': 'ship'} -%}
+{#- Fixed centres lifted from ukraine-map.svg.j2's <g transform="translate(x y)">
+    on each point/hub, expressed as % of the shared partial's 760x512 viewBox.
+    .v6geo__mapbox is locked to that same aspect ratio, so these percentages
+    stay correct at every width without any JS measuring the rendered SVG. -#}
+{%- set point_pos = {
+  'vinnytsia': {'x': (284 / 760 * 100), 'y': (210 / 512 * 100)},
+  'haisyn':    {'x': (317 / 760 * 100), 'y': (232 / 512 * 100)},
+  'odesa':     {'x': (365 / 760 * 100), 'y': (358 / 512 * 100)},
+  'kyiv':      {'x': (358 / 760 * 100), 'y': (144 / 512 * 100)},
+} -%}
+{%- set hub_pos = {'x': (316 / 760 * 100), 'y': (218 / 512 * 100)} -%}
+<section class="section v6geo" id="geo" role="region" aria-labelledby="geo-t">
+  <div class="wrap">
+    <div class="head">
+      <span class="tag tag--lime" data-r>{{ c.geo.eyebrow }}</span>
+      <h2 id="geo-t" data-split>{{ c.geo.title }}</h2>
+      <p class="lead" data-r>{{ c.geo.lead }}</p>
+    </div>
+
+    <div class="v6geo__panel" data-card>
+      <div class="v6geo__map" data-r="left" data-route-map>
+        <div class="v6geo__caption">
+          <b>{{ c.geo.caption_region }}</b>
+          <span>{{ c.geo.caption_place }}</span>
+        </div>
+
+        <div class="v6geo__mapbox">
+          {% include "ukraine-map.svg.j2" %}
+
+          <span class="v6geo__ring" aria-hidden="true" style="left:{{ '%.3f'|format(hub_pos.x) }}%; top:{{ '%.3f'|format(hub_pos.y) }}%;"></span>
+
+          {%- for d in c.geo.distances %}
+          {%- set place = places[loop.index0] -%}
+          {%- set meta = c.geo.distance_meta[loop.index0] -%}
+          {%- set pos = point_pos[place] %}
+          <div class="v6geo__pill v6geo__pill--{{ place }}" data-place="{{ place }}" style="left:{{ '%.3f'|format(pos.x) }}%; top:{{ '%.3f'|format(pos.y) }}%;" aria-hidden="true">
+            <span class="v6geo__pill-ic">{{ I.icon(mode_icon[meta.mode]) }}</span>
+            <span class="v6geo__pill-name">{{ d.to }}</span>
+            <span class="v6geo__pill-km">{{ d.km }}</span>
+          </div>
+          {%- endfor %}
+        </div>
+
+        <ul class="v6geo__legend">
+          <li class="v6geo__lgi"><i></i>{{ c.geo.legend.auto }}</li>
+          <li class="v6geo__lgi v6geo__lgi--rail"><i></i>{{ c.geo.legend.rail }}</li>
+          <li class="v6geo__lgi v6geo__lgi--ring"><i></i>{{ c.geo.legend.ring }}</li>
+        </ul>
+      </div>
+
+      <div class="v6geo__side" data-r="right">
+        {#- Filter is decorative-functional: real radios, so a keyboard/AT user
+            gets a normal grouped control with visible checked state. Checking
+            a radio dims (not hides) the rows/routes that do not match its
+            kind, via :checked + a general sibling selector — no JS, nothing
+            ever removed from the accessibility tree. -#}
+        <fieldset class="v6geo__filter">
+          <legend class="sr">{{ c.geo.filters.all }} / {{ c.geo.filters.local }} / {{ c.geo.filters.export }}</legend>
+          <input type="radio" name="geo-filter-{{ V.id }}" id="geo-f-all-{{ V.id }}" value="all" checked>
+          <label for="geo-f-all-{{ V.id }}">{{ c.geo.filters.all }}</label>
+          <input type="radio" name="geo-filter-{{ V.id }}" id="geo-f-local-{{ V.id }}" value="local">
+          <label for="geo-f-local-{{ V.id }}">{{ c.geo.filters.local }}</label>
+          <input type="radio" name="geo-filter-{{ V.id }}" id="geo-f-export-{{ V.id }}" value="export">
+          <label for="geo-f-export-{{ V.id }}">{{ c.geo.filters.export }}</label>
+        </fieldset>
+
+        <div class="v6geo__dists">
+          {%- for d in c.geo.distances %}
+          {%- set meta = c.geo.distance_meta[loop.index0] %}
+          <div class="v6geo__dist v6geo__dist--{{ meta.kind }}" data-place="{{ places[loop.index0] }}">
+            <span class="v6geo__dist-ic" aria-hidden="true">{{ I.icon(mode_icon[meta.mode]) }}</span>
+            <span class="v6geo__dist-to">{{ d.to }}<small>{{ meta.sub }}</small></span>
+            <span class="v6geo__dist-km">{{ d.km }}</span>
+          </div>
+          {%- endfor %}
+        </div>
+
+        <div class="v6geo__stats">
+          {%- for s in c.geo.stats %}
+          <div class="v6geo__stat"><b>{{ s.value }}<i>{{ s.unit }}</i></b><span>{{ s.label }}</span></div>
+          {%- endfor %}
+        </div>
+
+        <p class="v6geo__hint">{{ c.geo.hint }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+{%- endmacro -%}

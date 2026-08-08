@@ -8,6 +8,13 @@
     ============================================================================ -#}
 {%- import "icons.html.j2" as I with context -%}
 {%- import "partners.html.j2" as P with context -%}
+{#- The v6 sections, ported from the client mockups. Each file owns one
+    section and its three variant finishes; the old macros they replace are
+    left in place but no longer dispatched. -#}
+{%- import "v6/why.html.j2" as V6WHY with context -%}
+{%- import "v6/geo.html.j2" as V6GEO with context -%}
+{%- import "v6/tl.html.j2"  as V6TL  with context -%}
+{%- import "v6/orb.html.j2" as V6ORB with context -%}
 
 {#- ---------------------------------------------------------------- images -#}
 {%- macro pic(name, alt, sizes, priority=False, cls='') -%}
@@ -123,18 +130,44 @@
 
 {#- ======================================================== HERO WIDGETS = -#}
 
+{#- Sparkline for the .land card, built server-side into a static path — no
+    canvas, no rAF, just a filled area + line drawn once at build time from
+    the card's series (percent-from-top points on a 0..34 viewBox, matching
+    the mockup's own coordinate scheme). -#}
+{%- macro spark_html(series) -%}
+{%- set pts = [] -%}
+{%- for v in series -%}{%- set _ = pts.append((loop.index0 * (120 / (series|length - 1)), v)) -%}{%- endfor -%}
+{%- set line = pts | map('join', ',') | join(' L') -%}
+<svg class="spark" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true">
+  <path class="spark__area" d="M{{ line }} L120,34 L0,34 Z"/>
+  <path class="spark__line" d="M{{ line }}"/>
+  <circle class="spark__tip" cx="{{ pts[-1][0] }}" cy="{{ pts[-1][1] }}" r="2.6"/>
+</svg>
+{%- endmacro -%}
+
 {%- macro fcard(card, idx) -%}
-<div class="fcard{{ ' fcard--dark' if card.kind in ('lab', 'pills') else '' }}{{ ' fcard--lime' if card.kind == 'stat' and idx == 5 else '' }}">
+<article class="fcard{{ ' fcard--dark' if card.kind in ('lab', 'pills') else '' }}{{ ' fcard--lime' if card.kind == 'stat' else '' }}{{ ' fcard--photo' if card.kind == 'photo' else '' }}">
   {%- if card.kind == 'photo' %}
   <div class="fcard__ph">{{ pic(card.img, '', '12rem') }}</div>
-  <span class="fcard__l">{{ card.label }}</span><span class="fcard__n">{{ card.note }}</span>
+  {%- if card.get('badge') %}<span class="fcard__live"><i></i>{{ card.badge }}</span>{% endif %}
+  <span class="fcard__l">{{ card.label }}</span>
+  <div class="glass">
+    {%- for st in card.stats %}
+    <div class="glass__cell"><span class="glass__k">{{ st.k }}</span><span class="glass__v">{{ st.v }}{% if st.get('u') %} <em>{{ st.u }}</em>{% endif %}</span></div>
+    {%- endfor %}
+  </div>
   {%- elif card.kind == 'stat' %}
   <span class="fcard__l">{{ card.label }}</span><span class="fcard__n">{{ card.note }}</span>
   <span class="fcard__big">{{ card.value }} <em>{{ card.unit }}</em></span>
+  {%- elif card.kind == 'land' %}
+  <span class="fcard__l">{{ card.label }}</span><span class="fcard__n">{{ card.note }}</span>
+  {{ spark_html(card.series) }}
+  <span class="fcard__big">{{ card.value }} <em>{{ card.unit }}</em></span>
+  <span class="fcard__delta"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 10V2M6 2 2.6 5.4M6 2l3.4 3.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>{{ card.delta }}</span>
   {%- elif card.kind == 'chart' %}
   <span class="fcard__l">{{ card.label }}, {{ card.unit }}</span>{{ chart_html(card.series) }}
   {%- elif card.kind == 'bars' %}
-  <span class="fcard__l">{{ card.label }} · {{ card.value }}</span>
+  <span class="fcard__l">{{ card.label }}</span>
   <div class="bars">
     {%- for r in card.rows %}
     <div class="bars__row"><div class="bars__top"><span class="bars__name">{{ r.name }}</span><span class="bars__val">{{ r.pct }}%</span></div>
@@ -142,15 +175,15 @@
     {%- endfor %}
   </div>
   {%- elif card.kind == 'lab' %}
-  <span class="fcard__l">{{ card.label }} · {{ card.note }}</span>
+  <span class="fcard__l"><i class="fcard__dot"></i>{{ card.label }} · {{ card.note }}</span>
   <div class="lab">
-    {%- for r in card.rows %}<div class="lab__row"><span class="lab__name">{{ r.name }}</span><span class="lab__val">{{ r.val }}</span></div>{% endfor %}
+    {%- for r in card.rows %}<div class="lab__row{{ ' lab__row--ok' if r.get('ok') }}"><span class="lab__name">{{ r.name }}</span><span class="lab__val">{{ r.val }}</span></div>{% endfor %}
   </div>
   {%- elif card.kind == 'pills' %}
   <span class="fcard__l">{{ card.label }}</span><span class="fcard__n">{{ card.note }}</span>
   <div class="fcard__pills">{% for i in card['items'] %}<span class="fcard__pill">{{ i }}</span>{% endfor %}</div>
   {%- endif %}
-</div>
+</article>
 {%- endmacro -%}
 
 {%- macro fan_cards() -%}
@@ -1025,14 +1058,14 @@
 
 {#- ================================================= section dispatcher = -#}
 {%- macro render(name) -%}
-{%- if   name == 'logos'        %}{{ logo_strip() }}
+{%- if   name == 'logos'        %}{{ V6ORB.section() }}
 {%- elif name == 'about'        %}{{ sec_about() }}
 {%- elif name == 'intro'        %}{{ sec_intro() }}
 {%- elif name == 'stats'        %}{{ sec_stats() }}
 {%- elif name == 'crops'        %}{{ sec_crops() }}
-{%- elif name == 'capacity'     %}{{ sec_capacity() }}
+{%- elif name == 'capacity'     %}{{ V6WHY.section() }}
 {%- elif name == 'process'      %}{{ sec_process() }}
-{%- elif name == 'geo'          %}{{ sec_geo() }}
+{%- elif name == 'geo'          %}{{ V6GEO.section() }}
 {%- elif name == 'terms'        %}{{ sec_terms() }}
 {%- elif name == 'testimonials' %}{{ sec_testimonials() }}
 {%- elif name == 'faq'          %}{{ sec_faq() }}
@@ -1040,7 +1073,7 @@
 {%- elif name == 'cta'          %}{{ sec_cta() }}
 {%- elif name == 'tagmarquee'   %}{{ tag_band() }}
 {%- elif name == 'team'         %}{{ sec_team(V.team_style) }}
-{%- elif name == 'journey'      %}{{ sec_journey() }}
+{%- elif name == 'journey'      %}{{ V6TL.section() }}
 {%- elif name == 'mission'      %}{{ sec_mission() }}
 {%- elif name == 'services'     %}{{ sec_services() }}
 {%- elif name == 'why'          %}{{ sec_why() }}

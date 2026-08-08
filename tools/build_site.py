@@ -46,6 +46,13 @@ CSS_PARTS = [
     "src/css/05-motion.css",
     "src/css/06-responsive.css",
     "src/css/07-variants.css",
+    # The v6 sections. Each file owns its own v2/v3 finishes, so it has to
+    # come after 07-variants.css rather than be split across it.
+    "src/css/08-v6-why.css",
+    "src/css/08-v6-geo.css",
+    "src/css/08-v6-tl.css",
+    "src/css/08-v6-orb.css",
+    "src/css/08-v6-hero.css",
 ]
 
 LOCALES = [("uk", ""), ("en", "en/")]

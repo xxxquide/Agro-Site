@@ -1,0 +1,89 @@
+{#- ============================================================================
+    v6 "tl" — ports the mockup's #tl section (src6/v6-tl.html + src6/v6.js's
+    MILES array) onto the site's existing journey content (c.journey), which
+    the about page renders today via blocks.html.j2's sec_journey(). Same
+    eyebrow/title/lead — the H2 in the mockup is word-for-word the existing
+    c.journey.title, so nothing there was rewritten.
+
+    The mockup builds this as a horizontal zigzag: a lime rail across the
+    middle, one circular node per milestone, cards alternating above/below the
+    rail on a CSS grid, each joined to the rail by a short vertical stem. All
+    of that was built by v6.js at runtime (MILES.forEach + DOM writes) — this
+    port renders the same grid statically in Jinja instead, alternating
+    above/below with :nth-child(odd/even) so no JS is needed to decide which
+    half a card belongs to.
+
+    Content: c.journey (existing) supplies eyebrow/title/lead/items[].year,
+    .title, .text — unchanged keys, since tools/build_site.py's JSON-LD
+    milestone list reads c.journey.items[i].year/.title directly and an
+    in-place edit to items[] risked breaking that. The new figures (the
+    mockup's `ha` — running land-bank hectares per milestone, plus two
+    labels) live in src6/content-tl.json under c.journey.count_label,
+    c.journey.bank_label and a sibling list c.journey.milestone_ha (keyed by
+    `year`, same key-based join v6/geo.html.j2 uses for its distance_meta),
+    assumed merged into content/*.json by the build. Figures are the
+    mockup's own MILES array, verbatim.
+
+    The counter — "14 200 / ГЕКТАРІВ У БАНКУ" in the mockup's top-right — is
+    driven there by an IntersectionObserver tweening 800 -> 14400 over 2.6s.
+    No new JS is permitted, so it renders as a plain data-count element: the
+    site's existing app.js already tweens any [data-count] into view (same
+    hook the stats section uses) and prints the final formatted figure
+    outright under reduced motion or without GSAP. The number is simply the
+    last milestone's own ha value rather than an invented duplicate — one
+    source for it, not two that could drift.
+
+    Imported with context from blocks.html.j2, so `c`, `V` are already in
+    scope, matching v6/geo.html.j2 and v6/why.html.j2.
+    ============================================================================ -#}
+
+{%- macro section() -%}
+{%- set items = c.journey['items'] -%}
+{#- year -> ha, joined by the shared `year` key rather than by position, so
+    the two lists (items[] from content/*.json, milestone_ha[] from
+    content-tl.json) cannot silently drift apart if either is reordered. -#}
+{%- set ha_by_year = {} -%}
+{%- for row in c.journey.milestone_ha %}{% set _ = ha_by_year.update({row.year: row.ha}) %}{% endfor -%}
+{%- set total_ha = ha_by_year[items[-1].year] -%}
+{#- Which milestones get the mockup's lime year-pill treatment (its MILES
+    array's `key:1` flag) rather than the plain grey pill — indices 0, 4, 5
+    of six (2008, 2022, 2026), not simply "first and last". -#}
+{%- set key_idx = [0, items|length - 2, items|length - 1] -%}
+<section class="section jtl" id="journey" role="region" aria-labelledby="jr-t">
+  <div class="wrap">
+    <div class="head-row jtl__head">
+      <div class="head">
+        <span class="tag tag--lime" data-r>{{ c.journey.eyebrow }}</span>
+        <h2 id="jr-t" data-split>{{ c.journey.title }}</h2>
+        <p class="lead" data-r>{{ c.journey.lead }}</p>
+      </div>
+      <div class="jtl__count" data-r="right">
+        {#- Bigger figures count for longer — same rule stat_card() uses. -#}
+        <b class="jtl__count-n" data-count="{{ total_ha }}" data-dur="2.4">0</b>
+        <span>{{ c.journey.count_label }}</span>
+      </div>
+    </div>
+
+    <div class="jtl__grid">
+      <div class="jtl__rail" aria-hidden="true"><i></i></div>
+
+      <ol class="jtl__list" data-stagger=".08">
+        {%- for m in items %}
+        <li class="jtl__item">
+          <span class="jtl__node" aria-hidden="true"></span>
+          <article class="jtl__card{{ ' jtl__card--key' if loop.index0 in key_idx }}">
+            <span class="jtl__yr">{{ m.year }}</span>
+            <h3 class="jtl__t">{{ m.title }}</h3>
+            <p class="jtl__d">{{ m.text }}</p>
+            <div class="jtl__ha">
+              <span>{{ c.journey.bank_label }}</span>
+              <b>{{ fmt_num(ha_by_year[m.year]) }}&nbsp;{{ ha }}</b>
+            </div>
+          </article>
+        </li>
+        {%- endfor %}
+      </ol>
+    </div>
+  </div>
+</section>
+{%- endmacro -%}
