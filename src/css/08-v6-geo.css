@@ -62,21 +62,24 @@
    at all below because the fallbacks already are v2's palette. */
 .v6geo__map {
   --map-top-hi: #36503d;      --map-top-lo: #1a2c20;      /* .ob face, non-home oblasts   */
-  --map-lit-hi: #6f8f3f;      --map-lit-lo: #3c5626;      /* .ob.is-lit (unused, static)  */
+  --map-lit-hi: #6f8f3f;      --map-lit-lo: #3c5626;      /* .ob on hover (:has(), no JS) */
   --map-home-hi: #e4ff9b;     --map-home-lo: #b9ed37;     /* .faceHome, the home oblast   */
-  --map-homelit-hi: #f2ffcc;  --map-homelit-lo: #d1ff5c;  /* .faceHome.is-lit (unused)    */
+  --map-homelit-hi: #f2ffcc;  --map-homelit-lo: #d1ff5c;  /* .faceHome on hover           */
   --map-side-hi: #16281c;     --map-side-lo: #050d08;     /* slab extrusion side, rest    */
   --map-sidehome-hi: #8ab52a; --map-sidehome-lo: #3f5a14; /* slab extrusion side, home    */
   --map-ambient: #d1ff5c;                                  /* radial glow behind the scene */
-  --map-shadow: #000;                                      /* ground-contact shadow        */
   --map-grid: rgba(255,255,255,.085);                      /* grid overlay on the terrain  */
   --map-rows: rgba(19,19,19,.115);                         /* crop-row overlay on home     */
+  --map-arm-rest: rgba(255,255,255,.45);                   /* dashed hub->dest connector, rest   */
+  --map-arm-hot: rgba(209,255,92,.75);                     /* ...hovered                          */
+  --map-spark: #fff;                                       /* travelling dash along the route     */
+  --map-impact: #fff;                                      /* landing-ring pulse at the destination */
 }
 
 /* Static-port styling of the client SVG's own class names (face/ob/slab/
-   ring/pin/route) — same names and visual language as src6/v6.css, minus the
-   hover/click-only bits (.is-lit, .is-hot, .spark, .impact) that had no
-   static resting-state equivalent once JS interactivity was dropped. */
+   ring/pin/route) — same names and visual language as src6/v6.css. The
+   hover-only bits (.is-lit/.is-hot equivalents, .spark, .impact) are wired
+   up further down via :has(), since no JS ships to toggle classes here. */
 .v6map .face { fill: url(#v6mapTop); stroke: rgba(255,255,255,.26); stroke-width: .55; stroke-linejoin: round; }
 .v6map .faceHome { fill: url(#v6mapHome); stroke: rgba(19,19,19,.5); stroke-width: .8; stroke-linejoin: round; }
 .v6map .slab use { pointer-events: none; }
@@ -99,10 +102,64 @@
 .v6map .landdot--hub { fill: #fff; }
 .v6map .cluster { fill: var(--lime); opacity: .9; }
 .v6map .clusterhalo { fill: rgba(209,255,92,.18); }
-/* Hover-only in the mockup (.halo opacity 0 -> 1 on .is-hot) — no JS ships,
-   so it stays permanently invisible rather than an inert always-off layer
-   with no way to ever reach its lit state. */
-.v6map .halo { fill: rgba(209,255,92,.55); opacity: 0; }
+
+/* --- hover effects (pure CSS, no JS) ---------------------------------------
+   The mockup drives .is-hot/.is-lit by toggling classes from a pointerenter
+   handler. Here the same end states are reached with :has(): hovering either
+   a sidebar row (.v6geo__dist[data-place]) or its map pill
+   (.v6geo__pill[data-place]) flips a rule scoped to .v6geo__panel, which then
+   targets every element paired to that place by the *same* data-place value
+   — dist row, pill, SVG pin/arm/halo, SVG route/spark/impact, and the lit
+   oblast(s). Nothing here is reachable only by hover: the distance list
+   already carries every name and figure in the accessible tree, so this
+   whole layer is decorative reinforcement, never the only carrier of
+   information. */
+.v6map .halo {
+  fill: rgba(209, 255, 92, .55);
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(.4);
+}
+.v6map .arm {
+  stroke: var(--map-arm-rest);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+  vector-effect: non-scaling-stroke;
+}
+.v6map .spark {
+  fill: none;
+  stroke: var(--map-spark);
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  stroke-dasharray: calc(var(--L) * .055) calc(var(--L) * .945);
+  stroke-dashoffset: var(--L);
+  opacity: 0;
+}
+.v6map .impact {
+  fill: none;
+  stroke: var(--map-impact);
+  stroke-width: 1.6;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@media (hover: hover) and (pointer: fine) {
+  .v6map .halo {
+    transition: opacity .4s var(--ease-out), transform .5s var(--ease-out);
+  }
+}
+@keyframes v6sparkRun {
+  0%   { stroke-dashoffset: var(--L); opacity: 0; }
+  8%   { opacity: .95; }
+  92%  { opacity: .95; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+@keyframes v6impactRing {
+  0%   { opacity: .9; transform: scale(.3); }
+  100% { opacity: 0; transform: scale(3.4); }
+}
 
 /* --- point pills -----------------------------------------------------------
    HTML layer over .v6geo__mapbox, one pill per place plus the hub and the
@@ -127,6 +184,13 @@
   white-space: nowrap;
   z-index: 2;
   pointer-events: none;
+}
+/* Place pills (hub/ring stay inert) accept hover so the :has() rules below
+   can fire from the map side too, matching the sidebar row's data-place. The
+   pill is aria-hidden already — this only ever adds a decorative, already-
+   available-in-text state, never new information a keyboard/AT user lacks. */
+@media (hover: hover) and (pointer: fine) {
+  .v6geo__pill[data-place] { pointer-events: auto; }
 }
 .v6geo__pill-ic {
   width: 18px;
@@ -315,12 +379,19 @@
 .v6geo__panel:has(#geo-f-export-v3:checked) .rt--local,
 .v6geo__panel:has(#geo-f-export-v3:checked) .pin--local { opacity: .15; }
 
-/* hover-sync between a distance row and its map pill/marker */
+/* hover-sync between a distance row and its map pill/marker
+   Hovering EITHER side of a data-place pair (sidebar row or map pill) fires
+   the whole set for that destination: pill highlight, SVG pin arm + halo,
+   route spark + landing ring, and the destination oblast lighting up. */
 @media (hover: hover) and (pointer: fine) {
   .v6geo__panel:has(.v6geo__dist[data-place="vinnytsia"]:hover) .v6geo__pill--vinnytsia,
   .v6geo__panel:has(.v6geo__dist[data-place="haisyn"]:hover) .v6geo__pill--haisyn,
   .v6geo__panel:has(.v6geo__dist[data-place="odesa"]:hover) .v6geo__pill--odesa,
-  .v6geo__panel:has(.v6geo__dist[data-place="kyiv"]:hover) .v6geo__pill--kyiv {
+  .v6geo__panel:has(.v6geo__dist[data-place="kyiv"]:hover) .v6geo__pill--kyiv,
+  .v6geo__panel:has(.v6geo__pill--vinnytsia:hover) .v6geo__pill--vinnytsia,
+  .v6geo__panel:has(.v6geo__pill--haisyn:hover) .v6geo__pill--haisyn,
+  .v6geo__panel:has(.v6geo__pill--odesa:hover) .v6geo__pill--odesa,
+  .v6geo__panel:has(.v6geo__pill--kyiv:hover) .v6geo__pill--kyiv {
     border-color: var(--lime);
     background: rgba(7, 21, 14, .92);
   }
@@ -328,6 +399,79 @@
     background: rgba(255, 255, 255, .055);
     padding-left: .75rem;
   }
+
+  /* dist row OR pill hovered, per place -> arm + halo hot state on the pin */
+  .v6geo__panel:has(.v6geo__dist[data-place="vinnytsia"]:hover) .pin--vinnytsia .arm,
+  .v6geo__panel:has(.v6geo__pill--vinnytsia:hover) .pin--vinnytsia .arm,
+  .v6geo__panel:has(.v6geo__dist[data-place="haisyn"]:hover) .pin--haisyn .arm,
+  .v6geo__panel:has(.v6geo__pill--haisyn:hover) .pin--haisyn .arm,
+  .v6geo__panel:has(.v6geo__dist[data-place="odesa"]:hover) .pin--odesa .arm,
+  .v6geo__panel:has(.v6geo__pill--odesa:hover) .pin--odesa .arm,
+  .v6geo__panel:has(.v6geo__dist[data-place="kyiv"]:hover) .pin--kyiv .arm,
+  .v6geo__panel:has(.v6geo__pill--kyiv:hover) .pin--kyiv .arm {
+    stroke: var(--map-arm-hot);
+  }
+  .v6geo__panel:has(.v6geo__dist[data-place="vinnytsia"]:hover) .pin--vinnytsia .halo,
+  .v6geo__panel:has(.v6geo__pill--vinnytsia:hover) .pin--vinnytsia .halo,
+  .v6geo__panel:has(.v6geo__dist[data-place="haisyn"]:hover) .pin--haisyn .halo,
+  .v6geo__panel:has(.v6geo__pill--haisyn:hover) .pin--haisyn .halo,
+  .v6geo__panel:has(.v6geo__dist[data-place="odesa"]:hover) .pin--odesa .halo,
+  .v6geo__panel:has(.v6geo__pill--odesa:hover) .pin--odesa .halo,
+  .v6geo__panel:has(.v6geo__dist[data-place="kyiv"]:hover) .pin--kyiv .halo,
+  .v6geo__panel:has(.v6geo__pill--kyiv:hover) .pin--kyiv .halo {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* ...and the spark run + landing pulse on that place's route */
+  .v6geo__panel:has(.v6geo__dist[data-place="vinnytsia"]:hover) .rt--vinnytsia .spark,
+  .v6geo__panel:has(.v6geo__pill--vinnytsia:hover) .rt--vinnytsia .spark,
+  .v6geo__panel:has(.v6geo__dist[data-place="haisyn"]:hover) .rt--haisyn .spark,
+  .v6geo__panel:has(.v6geo__pill--haisyn:hover) .rt--haisyn .spark,
+  .v6geo__panel:has(.v6geo__dist[data-place="odesa"]:hover) .rt--odesa .spark,
+  .v6geo__panel:has(.v6geo__pill--odesa:hover) .rt--odesa .spark,
+  .v6geo__panel:has(.v6geo__dist[data-place="kyiv"]:hover) .rt--kyiv .spark,
+  .v6geo__panel:has(.v6geo__pill--kyiv:hover) .rt--kyiv .spark {
+    animation: v6sparkRun 1.15s var(--ease-out) forwards;
+  }
+  .v6geo__panel:has(.v6geo__dist[data-place="vinnytsia"]:hover) .rt--vinnytsia .impact,
+  .v6geo__panel:has(.v6geo__pill--vinnytsia:hover) .rt--vinnytsia .impact,
+  .v6geo__panel:has(.v6geo__dist[data-place="haisyn"]:hover) .rt--haisyn .impact,
+  .v6geo__panel:has(.v6geo__pill--haisyn:hover) .rt--haisyn .impact,
+  .v6geo__panel:has(.v6geo__dist[data-place="odesa"]:hover) .rt--odesa .impact,
+  .v6geo__panel:has(.v6geo__pill--odesa:hover) .rt--odesa .impact,
+  .v6geo__panel:has(.v6geo__dist[data-place="kyiv"]:hover) .rt--kyiv .impact,
+  .v6geo__panel:has(.v6geo__pill--kyiv:hover) .rt--kyiv .impact {
+    animation: v6impactRing .8s var(--ease-out) 1.05s both;
+  }
+
+  /* ...and the destination oblast(s): haisyn/vinnytsia both light the home
+     oblast (.faceHome — Вінницька, matching the mockup's ob:['__home__']),
+     kyiv lights Київська + Київ, odesa lights Одеська. */
+  .v6geo__panel:has(.v6geo__dist[data-place="vinnytsia"]:hover) .faceHome,
+  .v6geo__panel:has(.v6geo__pill--vinnytsia:hover) .faceHome,
+  .v6geo__panel:has(.v6geo__dist[data-place="haisyn"]:hover) .faceHome,
+  .v6geo__panel:has(.v6geo__pill--haisyn:hover) .faceHome {
+    fill: url(#v6mapHomeLit);
+  }
+  .v6geo__panel:has(.v6geo__dist[data-place="kyiv"]:hover) .ob[data-ob="Київська"],
+  .v6geo__panel:has(.v6geo__pill--kyiv:hover) .ob[data-ob="Київська"],
+  .v6geo__panel:has(.v6geo__dist[data-place="kyiv"]:hover) .ob[data-ob="Київ"],
+  .v6geo__panel:has(.v6geo__pill--kyiv:hover) .ob[data-ob="Київ"],
+  .v6geo__panel:has(.v6geo__dist[data-place="odesa"]:hover) .ob[data-ob="Одеська"],
+  .v6geo__panel:has(.v6geo__pill--odesa:hover) .ob[data-ob="Одеська"] {
+    fill: url(#v6mapLit);
+    stroke: rgba(209, 255, 92, .8);
+    stroke-width: 1.1;
+  }
+}
+/* Oblast + home fill transitions are shared with the static-port rules below
+   (.ob / .faceHome already carry no transition of their own here, unlike the
+   mockup — add the hover-only fade so lighting eases in only on pointer
+   devices, not as an unconditional cost on every page). */
+@media (hover: hover) and (pointer: fine) {
+  .v6map .ob,
+  .v6map .faceHome { transition: fill .5s var(--ease-out), stroke .5s var(--ease-out); }
 }
 
 .v6geo__stats { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
@@ -351,16 +495,6 @@
   letter-spacing: .1em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, .5);
-}
-
-.v6geo__hint {
-  padding: 1rem 1.15rem;
-  border-radius: var(--r-md);
-  background: rgba(209, 255, 92, .09);
-  border-left: 2px solid var(--lime-lo);
-  color: rgba(255, 255, 255, .78);
-  font-size: .8125rem;
-  line-height: 1.5;
 }
 
 /* --- mobile: stack, no overflow ------------------------------------------ */
@@ -405,9 +539,18 @@
 }
 
 /* --- reduced motion -------------------------------------------------------
-   No animation is introduced by this partial: routes, rings and slabs render
-   directly in their final static state (no dash-in, no pulse) since no JS
-   ships to drive one — nothing to settle under prefers-reduced-motion. */
+   Routes, rings and slabs still render directly in their final static state
+   (no dash-in on load — nothing to settle there). The hover-triggered spark
+   run and landing pulse are real animations, though, so they're switched
+   off here; the arm/halo hot-state and oblast lighting stay reachable on
+   hover but change instantly (transition: none) rather than easing. */
+@media (prefers-reduced-motion: reduce) {
+  .v6map .spark,
+  .v6map .impact { animation: none !important; }
+  .v6map .halo { transition: none; }
+  .v6map .ob,
+  .v6map .faceHome { transition: none; }
+}
 
 /* ==========================================================================
    V1 — LIGHT: white canvas. The map takes the panel's own floating-card
@@ -422,15 +565,25 @@
 }
 .v1 .v6geo__map {
   --map-top-hi: #eef1ea;      --map-top-lo: #d7ddcd;
-  --map-lit-hi: #eef1ea;      --map-lit-lo: #d7ddcd;
+  /* Distinct from --map-top so the hover-lit oblast actually reads as lit
+     against this pale land, echoing the home oblast's lime without matching
+     it exactly (home stays the one *permanently* lime oblast). */
+  --map-lit-hi: #eef8c8;      --map-lit-lo: #cbe378;
   --map-home-hi: #e4ff9b;     --map-home-lo: #b9ed37;
-  --map-homelit-hi: #e4ff9b;  --map-homelit-lo: #b9ed37;
+  /* Paler tint of the same lime so the home oblast still visibly brightens
+     on hover instead of staying pinned at its resting color. */
+  --map-homelit-hi: #f4ffdc;  --map-homelit-lo: #d8f57a;
   --map-side-hi: #c7cdbc;     --map-side-lo: #a9b09a;
   --map-sidehome-hi: #b9ed37; --map-sidehome-lo: #93c920;
   --map-ambient: #b9ed37;
-  --map-shadow: #2a2f22;
   --map-grid: rgba(19,19,19,.06);
   --map-rows: rgba(19,19,19,.14);
+  /* White spark / translucent-white arm would vanish against this pale land
+     — swap the hover-effect hooks to ink/lime-on-light so they read here. */
+  --map-arm-rest: rgba(19,19,19,.4);
+  --map-arm-hot: var(--lime-on-light);
+  --map-spark: var(--ink);
+  --map-impact: var(--ink);
 }
 .v1 .v6map .face { stroke: rgba(19,19,19,.14); }
 .v1 .v6map .faceHome { stroke: rgba(19,19,19,.35); }
@@ -476,7 +629,6 @@
 .v1 .v6geo__stat b { color: var(--ink); }
 .v1 .v6geo__stat b i { color: var(--grey-400); }
 .v1 .v6geo__stat span { color: var(--grey-400); }
-.v1 .v6geo__hint { background: rgba(185,237,55,.14); color: var(--grey-500); }
 
 /* ==========================================================================
    V2 — BANDED: keep the mockup's own dark green treatment as-is — it is
@@ -495,7 +647,6 @@
 .v2 .v6geo__filter { border-color: var(--line-dark); background: rgba(255,255,255,.03); }
 .v2 .v6geo__dist { border-bottom-color: var(--line-dark); }
 .v2 .v6geo__side { border-left-color: var(--line-dark); }
-.v2 .v6geo__hint { background: transparent; border: 1px solid var(--line-dark); }
 
 /* ==========================================================================
    V3 — QUIET: no card containers. Panel goes light and borderless, the map
@@ -513,15 +664,25 @@
 .v3 .v6geo__map {
   padding: clamp(3.25rem, 6vw, 4.25rem) 0 0;
   --map-top-hi: #fbfcfa;      --map-top-lo: #eef1ea;
-  --map-lit-hi: #fbfcfa;      --map-lit-lo: #eef1ea;
+  /* Distinct from --map-top so the hover-lit oblast actually reads as lit
+     against this near-white land, echoing the home oblast's lime without
+     matching it exactly (home stays the one *permanently* lime oblast). */
+  --map-lit-hi: #eef8c8;      --map-lit-lo: #cbe378;
   --map-home-hi: #e4ff9b;     --map-home-lo: #b9ed37;
-  --map-homelit-hi: #e4ff9b;  --map-homelit-lo: #b9ed37;
+  /* Paler tint of the same lime so the home oblast still visibly brightens
+     on hover instead of staying pinned at its resting color. */
+  --map-homelit-hi: #f4ffdc;  --map-homelit-lo: #d8f57a;
   --map-side-hi: #e3e7dc;     --map-side-lo: #cfd5c4;
   --map-sidehome-hi: #b9ed37; --map-sidehome-lo: #93c920;
   --map-ambient: #b9ed37;
-  --map-shadow: #1c2016;
   --map-grid: rgba(19,19,19,.045);
   --map-rows: rgba(19,19,19,.1);
+  /* Same reasoning as v1: near-white land needs dark ink/lime hover hooks,
+     not the mockup's white spark / translucent-white arm. */
+  --map-arm-rest: rgba(19,19,19,.35);
+  --map-arm-hot: var(--lime-on-light);
+  --map-spark: var(--text);
+  --map-impact: var(--text);
 }
 .v3 .v6map .face { stroke: var(--border); }
 .v3 .v6map .faceHome { stroke: var(--text); }
@@ -577,8 +738,6 @@
 .v3 .v6geo__stat b { color: var(--text); font-weight: var(--fw-light); }
 .v3 .v6geo__stat b i { color: var(--muted-on-light); }
 .v3 .v6geo__stat span { color: var(--text-2); }
-
-.v3 .v6geo__hint { background: none; border-top: 1px solid var(--border); border-radius: 0; padding: var(--s-md) 0 0; color: var(--text-2); }
 
 @media (max-width: 62.5rem) {
   /* .v3 .v6geo__panel's own grid-template-columns (above) has higher

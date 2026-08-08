@@ -23,24 +23,24 @@
 .wcards {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--s-lg);
-  margin-top: clamp(2.25rem, 4vw, 3.5rem);
+  gap: var(--s-xs) var(--s-sm);
+  margin-top: clamp(.9rem, 1.6vw, 1.25rem);
 }
 
 .wcard {
   background: var(--white);
   border-radius: var(--r-lg);
-  padding: clamp(1.25rem, 2vw, 1.75rem);
+  padding: clamp(.65rem, 1vw, .85rem);
   box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
 
-.wcard__top { display: flex; align-items: center; gap: var(--s-xs); margin-bottom: var(--s-md); }
+.wcard__top { display: flex; align-items: center; gap: var(--s-xs); margin-bottom: var(--s-xs); }
 .wcard__badge {
-  width: 2.375rem;
-  height: 2.375rem;
+  width: 1.625rem;
+  height: 1.625rem;
   border-radius: 50%;
   background: var(--lime);
   display: grid;
@@ -48,32 +48,32 @@
   flex: none;
 }
 .wcard__badge svg {
-  width: 1.125rem;
-  height: 1.125rem;
+  width: .8125rem;
+  height: .8125rem;
   fill: none;
   stroke: var(--ink);
   stroke-width: 1.9;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.wcard__num { font-family: var(--mono); font-size: var(--fs-sm); color: var(--text-2); }
+.wcard__num { font-family: var(--mono); font-size: .6875rem; color: var(--text-2); }
 
 /* the stack: dark plate behind (tilted), white instrument in front (straight) */
-.wstage { position: relative; margin-bottom: var(--s-xl); flex: 1; display: flex; flex-direction: column; }
+.wstage { position: relative; margin-bottom: var(--s-xs); margin-top: 1.9rem; flex: 1; display: flex; flex-direction: column; }
 .wback {
   position: absolute;
   left: 0; right: 9%; top: 0;
   background: linear-gradient(150deg, var(--field-2), var(--ink) 60%);
   border-radius: var(--r-md);
-  padding: var(--s-sm) var(--s-lg) 2rem;
+  padding: .4rem var(--s-sm) .7rem;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: var(--s-md);
+  gap: var(--s-sm);
   transform: rotate(-2.6deg);
   transform-origin: 8% 100%;
   box-shadow: 0 16px 34px -16px #07150e8c;
-  transition: transform var(--dur-md) var(--ease-out);
+  transition: transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
   overflow: hidden;
 }
 /* faint crop-row texture + lime cast, pure gradients */
@@ -101,10 +101,10 @@
   display: block;
   font-family: var(--mono);
   font-size: .5625rem;
-  letter-spacing: .14em;
+  letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--on-dark-2);
-  margin-top: var(--s-xxs);
+  margin-top: .15rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -112,7 +112,7 @@
 .wback__r { text-align: right; flex: none; position: relative; }
 .wback__r b {
   display: block;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: var(--fw-medium);
   letter-spacing: -.05em;
   color: var(--lime);
@@ -124,28 +124,85 @@
   font-style: normal;
   font-family: var(--mono);
   font-size: .5625rem;
-  letter-spacing: .12em;
+  letter-spacing: .11em;
   text-transform: uppercase;
   color: var(--on-dark-2);
-  margin-top: var(--s-xxs);
+  margin-top: .15rem;
 }
 
 .wfront {
   position: relative;
-  margin-top: 4.25rem;
+  margin-top: 2rem;
   background: var(--white);
   border-radius: var(--r-md);
-  padding: var(--s-md) var(--s-md) var(--s-sm);
+  padding: var(--s-xs) var(--s-xs) .35rem;
   box-shadow: 0 1px 3px #13131308, 0 24px 46px -20px #13131342;
-  transition: transform var(--dur-md) var(--ease-out);
+  transition: transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
   flex: 1;
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
+
+/* --- unfold: hover-only, hover-capable pointers only ----------------------
+   The plate swings out further and lifts (its rotation already has headroom
+   reserved in .wstage's margin-top, tuned so the lifted corner never clears
+   the card's own top edge — see the bench sweep note below), the instrument
+   eases forward and its shadow deepens, and the widget's own marks (bars,
+   silo fills, ladder rows/dots, lab tiles) settle in with a short stagger so
+   the whole thing reads as unfolding rather than switching. Every value the
+   widgets show is already correct at rest — hover only adds a decorative
+   settle-in on top of the true, already-visible figures, so nothing becomes
+   readable for the first time on hover. Transform/opacity/box-shadow/
+   background only: the card's own box never changes size, so the grid can't
+   reflow under the cursor. */
 @media (hover: hover) and (pointer: fine) {
-  .wcard:hover .wback { transform: rotate(-4.6deg) translateY(-5px); }
-  .wcard:hover .wfront { transform: translateY(3px); }
+  .wcard:hover .wback {
+    transform: rotate(-4.9deg) translateY(-6px);
+    box-shadow: 0 26px 48px -18px #07150ea8;
+  }
+  .wcard:hover .wfront {
+    transform: translateY(4px);
+    box-shadow: 0 4px 10px #13131310, 0 30px 54px -18px #13131350;
+  }
+
+  /* widget contents settle in: grown from a slightly compressed rest state,
+     staggered per row/bar so it unfolds rather than snaps as one piece */
+  .wcard .bcol,
+  .wcard .silo,
+  .wcard .lrow,
+  .wcard .lchip,
+  .wcard .ltile {
+    transition: transform var(--dur) var(--ease-out);
+  }
+  .wcard:hover .bcol { transform: scaleY(1.035); transform-origin: bottom; }
+  .wcard:hover .silo { transform: scaleY(1.035); transform-origin: bottom; }
+  .wcard:hover .lrow { transform: translateX(2px); }
+  .wcard:hover .ltile { transform: translateY(-2px); }
+  .wcard:hover .lchip { transform: translateY(-1px); }
+
+  .wcard .bcol:nth-child(1) { transition-delay: 0ms; }
+  .wcard .bcol:nth-child(2) { transition-delay: 40ms; }
+  .wcard .bcol:nth-child(3) { transition-delay: 80ms; }
+  .wcard .bcol:nth-child(4) { transition-delay: 120ms; }
+  .wcard .bcol:nth-child(5) { transition-delay: 160ms; }
+  .wcard .silo:nth-child(1) { transition-delay: 0ms; }
+  .wcard .silo:nth-child(2) { transition-delay: 60ms; }
+  .wcard .lrow:nth-child(1) { transition-delay: 0ms; }
+  .wcard .lrow:nth-child(2) { transition-delay: 60ms; }
+  .wcard .lrow:nth-child(3) { transition-delay: 120ms; }
+  .wcard .lchip:nth-child(1) { transition-delay: 160ms; }
+  .wcard .lchip:nth-child(2) { transition-delay: 190ms; }
+  .wcard .lchip:nth-child(3) { transition-delay: 220ms; }
+  .wcard .ltile:nth-child(1) { transition-delay: 0ms; }
+  .wcard .ltile:nth-child(2) { transition-delay: 40ms; }
+  .wcard .ltile:nth-child(3) { transition-delay: 80ms; }
+  .wcard .ltile:nth-child(4) { transition-delay: 120ms; }
+
+  /* the fills themselves (already transitioning height/width per their base
+     rules) pick up the same easing so a re-hover reads as a soft re-settle
+     rather than a re-measure; values do not change, only the easing quality
+     already declared on .btrack i / .silo__f / .lrow__fill / .lrow__dot */
 }
 
 .wlabel {
@@ -155,26 +212,26 @@
   gap: var(--s-sm);
   font-family: var(--mono);
   font-size: .5625rem;
-  letter-spacing: .13em;
+  letter-spacing: .11em;
   text-transform: uppercase;
   color: var(--text-2);
-  padding-bottom: var(--s-sm);
+  padding-bottom: .4rem;
   border-bottom: 1px solid var(--border);
-  margin-bottom: var(--s-xxs);
+  margin-bottom: 0;
 }
 .wlabel span { min-width: 0; overflow-wrap: break-word; }
 .wlabel em {
   font-style: normal;
   color: var(--ink);
   background: var(--lime);
-  padding: .2rem .45rem;
+  padding: .14rem .38rem;
   border-radius: var(--r-pill);
   letter-spacing: .06em;
   flex: none;
 }
 
-.wcard__h3 { font-size: var(--fs-h5); font-weight: var(--fw-medium); letter-spacing: -.035em; margin: 0 0 var(--s-xs); }
-.wcard__p { font-size: var(--fs-sm); color: var(--text-2); line-height: 1.5; margin: 0; }
+.wcard__h3 { font-size: 1rem; font-weight: var(--fw-medium); letter-spacing: -.03em; margin: 0 0 .15rem; }
+.wcard__p { font-size: .75rem; color: var(--text-2); line-height: 1.4; margin: 0; }
 
 /* --- 01 — yield bars ------------------------------------------------------
    Value printed above the bar (only where the mockup calls one out: the two
@@ -183,53 +240,54 @@
 .cgbars {
   display: flex;
   align-items: flex-end;
-  gap: clamp(.35rem, 1vw, .7rem);
-  padding: var(--s-lg) 0 var(--s-md);
+  gap: clamp(.25rem, .9vw, .5rem);
+  padding: .7rem 0 .5rem;
   position: relative;
   flex: 1;
 }
 .cgbars::after {
   content: '';
   position: absolute;
-  left: 0; right: 0; bottom: 2.4rem;
+  left: 0; right: 0; bottom: 1.3rem;
   height: 1px;
   background: var(--border);
 }
-.bcol { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: var(--s-xs); position: relative; }
-.btrack { position: relative; width: 100%; height: 5.375rem; display: flex; align-items: flex-end; }
+.bcol { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: .25rem; position: relative; }
+.btrack { position: relative; width: 100%; height: 2.35rem; display: flex; align-items: flex-end; }
 .btrack i {
   display: block;
   width: 100%;
   border-radius: 8px 8px 3px 3px;
   background: var(--grey-200);
   height: var(--h);
+  transition: height var(--dur-lg) var(--ease-out);
 }
 .btrack b {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(var(--h) + .5rem);
-  font-size: var(--fs-sm);
+  bottom: calc(var(--h) + .3rem);
+  font-size: .6875rem;
   font-weight: var(--fw-semibold);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 .bcol--dry .btrack i { background: var(--yellow); opacity: .85; }
 .bcol--now .btrack i { background: linear-gradient(180deg, var(--lime), var(--lime-lo)); }
-.bcol span { font-family: var(--mono); font-size: .625rem; color: var(--text-2); }
+.bcol span { font-family: var(--mono); font-size: .5625rem; color: var(--text-2); }
 .bcol--now span { color: var(--ink); font-weight: var(--fw-semibold); }
 .btag {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: -1.05rem;
+  bottom: -.85rem;
   font-family: var(--mono);
-  font-size: .5rem;
-  letter-spacing: .08em;
+  font-size: .5625rem;
+  letter-spacing: .06em;
   text-transform: uppercase;
   color: #8a7a10;
   background: rgba(241, 238, 70, .38);
-  padding: .1rem .3rem;
+  padding: .06rem .26rem;
   border-radius: 3px;
   white-space: nowrap;
 }
@@ -237,13 +295,13 @@
 /* --- 02 — storage silos --------------------------------------------------
    Two columns, width apportioned by their own share so the split itself
    carries the 79/21 story, plus a fill height that repeats the same number. */
-.silos { display: flex; align-items: flex-end; gap: var(--s-sm); padding: var(--s-sm) 0 .15rem; }
-.silo { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: .55rem; }
+.silos { display: flex; align-items: flex-end; gap: var(--s-sm); padding: .3rem 0 .15rem; }
+.silo { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: .25rem; }
 .silo__v {
   width: 100%;
-  height: 5.875rem;
+  height: 2.6rem;
   position: relative;
-  border-radius: 14px 14px 5px 5px;
+  border-radius: 12px 12px 4px 4px;
   background: var(--grey-100);
   border: 1px solid var(--border);
   overflow: hidden;
@@ -253,6 +311,7 @@
   left: 0; right: 0; bottom: 0;
   height: var(--f);
   background: linear-gradient(180deg, var(--lime), var(--lime-lo));
+  transition: height var(--dur-lg) var(--ease-out);
 }
 .silo--dark .silo__f { background: linear-gradient(180deg, var(--grey-600), var(--ink)); }
 .silo__v::after {
@@ -267,15 +326,15 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  top: .4rem;
+  top: .3rem;
   font-family: var(--mono);
-  font-size: .625rem;
+  font-size: .5625rem;
   color: var(--ink);
   z-index: 2;
 }
 .silo--dark .silo__cap { color: var(--on-dark-2); }
-.silo__n { font-size: var(--fs-xs); color: var(--text-2); text-align: center; line-height: 1.3; }
-.silo__n b { display: block; color: var(--ink); font-weight: var(--fw-semibold); font-size: .8125rem; }
+.silo__n { font-size: .6875rem; color: var(--text-2); text-align: center; line-height: 1.2; }
+.silo__n b { display: block; color: var(--ink); font-weight: var(--fw-semibold); font-size: .75rem; }
 
 /* --- shared footer rows (chart / bars / lab widgets) --------------------- */
 .drow {
@@ -283,41 +342,41 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--s-sm);
-  padding: var(--s-xs) 0;
+  padding: .22rem 0;
   border-top: 1px solid var(--border);
-  font-size: .8125rem;
+  font-size: .75rem;
 }
 .drow__k { color: var(--text-2); }
-.drow__v { font-family: var(--mono); font-size: .8125rem; color: var(--ink); text-align: right; }
+.drow__v { font-family: var(--mono); font-size: .75rem; color: var(--ink); text-align: right; }
 
 /* --- 03 — shipping ladder -------------------------------------------------
    Icon, stop name, a progress bar sized to its share of the longest leg, and
    the distance. Chips repeat the card's headline facts as pills below. */
-.ladder { display: flex; flex-direction: column; gap: var(--s-xs); padding: var(--s-sm) 0 0; flex: 1; }
+.ladder { display: flex; flex-direction: column; gap: .22rem; padding: .22rem 0 0; flex: 1; }
 .lrow { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: var(--s-sm); }
 .lrow__ic {
-  width: 1.4375rem;
-  height: 1.4375rem;
-  border-radius: 8px;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 6px;
   background: var(--grey-100);
   display: grid;
   place-items: center;
   flex: none;
 }
 .lrow__ic svg {
-  width: .8125rem;
-  height: .8125rem;
+  width: .65625rem;
+  height: .65625rem;
   fill: none;
   stroke: var(--ink);
   stroke-width: 1.9;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.lrow__bar { position: relative; height: 1.875rem; min-width: 0; }
+.lrow__bar { position: relative; height: 1rem; min-width: 0; }
 .lrow__n {
   position: absolute;
   left: 0; top: 0;
-  font-size: .8125rem;
+  font-size: .6875rem;
   color: var(--text-2);
   white-space: nowrap;
   overflow: hidden;
@@ -332,57 +391,59 @@
   border-radius: 3px;
   width: var(--w);
   background: linear-gradient(90deg, var(--lime-lo), var(--lime));
+  transition: width var(--dur-lg) var(--ease-out);
 }
 .lrow__dot {
   position: absolute;
   bottom: 0;
-  width: 9px; height: 9px;
+  width: 8px; height: 8px;
   border-radius: 50%;
   background: var(--ink);
   border: 2px solid var(--lime);
   left: var(--w);
   transform: translateX(-50%);
+  transition: left var(--dur-lg) var(--ease-out);
 }
 .lrow__km {
   font-family: var(--mono);
-  font-size: .8125rem;
+  font-size: .6875rem;
   font-variant-numeric: tabular-nums;
   color: var(--ink);
   flex: none;
 }
-.lchips { display: flex; gap: var(--s-xxs); flex-wrap: wrap; margin-top: var(--s-sm); padding-top: var(--s-sm); border-top: 1px solid var(--border); }
-.lchip { font-size: .6875rem; padding: .32rem .6rem; border-radius: var(--r-pill); background: var(--grey-100); color: var(--ink); }
+.lchips { display: flex; gap: var(--s-xxs); flex-wrap: wrap; margin-top: .22rem; padding-top: .22rem; border-top: 1px solid var(--border); }
+.lchip { font-size: .5625rem; padding: .2rem .5rem; border-radius: var(--r-pill); background: var(--grey-100); color: var(--ink); }
 .lchip--hot { background: var(--ink); color: var(--lime); }
 
 /* --- 04 — lab protocol tiles ----------------------------------------------
    2x2 grid: value + unit, a delta chip, then a mini range bar with the
    healthy band (--s0/--s1) and this lot's reading marked (--p). */
-.cglab { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-xs); padding: var(--s-sm) 0 var(--s-sm); flex: 1; }
-.ltile { background: var(--grey-100); border-radius: var(--r-md); padding: .68rem var(--s-sm); min-width: 0; }
+.cglab { display: grid; grid-template-columns: 1fr 1fr; gap: .3rem; padding: .22rem 0 .22rem; flex: 1; }
+.ltile { background: var(--grey-100); border-radius: var(--r-sm); padding: .32rem .45rem; min-width: 0; }
 .ltile__k {
   font-family: var(--mono);
   font-size: .5625rem;
-  letter-spacing: .12em;
+  letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--text-2);
-  margin-bottom: var(--s-xs);
+  margin-bottom: .2rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .ltile__row { display: flex; align-items: baseline; gap: var(--s-xxs); flex-wrap: wrap; }
-.ltile__v { font-size: 1.0625rem; font-weight: var(--fw-medium); letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
-.ltile__v i { font-style: normal; font-size: var(--fs-xs); color: var(--text-2); margin-left: .1rem; }
+.ltile__v { font-size: .875rem; font-weight: var(--fw-medium); letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.ltile__v i { font-style: normal; font-size: .625rem; color: var(--text-2); margin-left: .1rem; }
 .ltile__d {
   font-family: var(--mono);
-  font-size: .625rem;
-  padding: .15rem .35rem;
+  font-size: .5625rem;
+  padding: .11rem .3rem;
   border-radius: 4px;
   background: rgba(185, 237, 55, .28);
   color: #4a6b10;
 }
 .ltile__d--neg { background: rgba(241, 238, 70, .35); color: #8a7a10; }
-.ltile__rng { position: relative; height: 4px; border-radius: 3px; background: var(--grey-200); margin-top: .55rem; }
+.ltile__rng { position: relative; height: 4px; border-radius: 3px; background: var(--grey-200); margin-top: .28rem; }
 .ltile__spec { position: absolute; top: 0; bottom: 0; border-radius: 3px; background: rgba(185, 237, 55, .45); left: var(--s0); right: var(--s1); }
 .ltile__mk { position: absolute; top: -3px; width: 2px; height: 10px; border-radius: 2px; background: var(--ink); left: var(--p); }
 
@@ -434,7 +495,7 @@
   border: 0;
   border-top: 1px solid var(--border);
   border-radius: 0;
-  padding: var(--s-huge) 0 0;
+  padding: var(--s-xl) 0 0;
 }
 .v3 .wcard__badge { background: transparent; border: 1px solid var(--border); }
 .v3 .wback {
@@ -443,7 +504,7 @@
   background: none;
   border-radius: 0;
   border-bottom: 1px solid var(--border);
-  padding: 0 0 var(--s-md);
+  padding: 0 0 var(--s-sm);
   transform: none;
   box-shadow: none;
   align-items: baseline;
@@ -451,13 +512,48 @@
 .v3 .wback::before { display: none; }
 .v3 .wback__l b { color: var(--text); font-weight: var(--fw-light); font-size: var(--fs-lg); }
 .v3 .wback__l span { color: var(--text-2); }
-.v3 .wback__r b { color: var(--text); font-weight: var(--fw-light); font-size: 1.75rem; }
+.v3 .wback__r b { color: var(--text); font-weight: var(--fw-light); font-size: 1.6rem; }
 .v3 .wback__r i { color: var(--text-2); }
-.v3 .wfront { margin-top: var(--s-lg); background: transparent; box-shadow: none; padding: 0; }
+.v3 .wfront { margin-top: var(--s-md); background: transparent; box-shadow: none; padding: 0; }
 .v3 .wlabel em { background: transparent; color: var(--lime-on-light); padding: .2rem 0; }
+
+/* v3's whole grammar is the *absence* of a plate/tilt, so forcing the v1/v2
+   swing on it would fight the variant rather than extend it. Its unfold is
+   restrained and typographic instead: the top rule and the figure sharpen
+   towards full contrast, the figure lifts a hair on its own baseline, and
+   the widget rows settle in with the same stagger as the other variants —
+   quiet emphasis standing in for a swing this variant doesn't have anything
+   to hang one on. Transform/opacity/background only, still no size change. */
 @media (hover: hover) and (pointer: fine) {
   .v3 .wcard:hover .wback,
   .v3 .wcard:hover .wfront { transform: none; }
+  .v3 .wcard {
+    transition: border-color var(--dur) var(--ease-out);
+  }
+  .v3 .wcard:hover {
+    border-top-color: var(--ink);
+  }
+  .v3 .wback {
+    transition: border-color var(--dur) var(--ease-out);
+  }
+  .v3 .wcard:hover .wback {
+    border-bottom-color: var(--ink);
+  }
+  .v3 .wback__r b {
+    transition: transform var(--dur) var(--ease-out), color var(--dur) var(--ease-out);
+    display: inline-block;
+  }
+  .v3 .wcard:hover .wback__r b {
+    color: var(--ink);
+    transform: translateY(-2px);
+  }
+  .v3 .wcard__badge {
+    transition: border-color var(--dur) var(--ease-out), background var(--dur) var(--ease-out);
+  }
+  .v3 .wcard:hover .wcard__badge {
+    background: var(--lime);
+    border-color: var(--lime);
+  }
 }
 
 /* ============================================================================
@@ -467,19 +563,50 @@
   .wcards { grid-template-columns: 1fr; }
 }
 @media (max-width: 24.375rem) {
-  .wcard { padding: 1rem; }
-  .wback { padding: .75rem .9rem 1.75rem; }
-  .wfront { margin-top: 3.75rem; padding: .85rem .85rem .75rem; }
-  .cgbars { gap: .3rem; }
-  .btrack { height: 4.5rem; }
-  .silo__v { height: 5rem; }
-  .cglab { grid-template-columns: 1fr 1fr; gap: .4rem; }
-  .ltile { padding: .55rem .6rem; }
+  .wcard { padding: .85rem; }
+  .wback { padding: .6rem .75rem 1.35rem; }
+  .wfront { margin-top: 3rem; padding: .7rem .7rem .6rem; }
+  .cgbars { gap: .28rem; }
+  .btrack { height: 3.5rem; }
+  .silo__v { height: 3.75rem; }
+  .cglab { grid-template-columns: 1fr 1fr; gap: .35rem; }
+  .ltile { padding: .45rem .5rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .wback,
-  .wfront {
+  .wfront,
+  .bcol,
+  .silo,
+  .lrow,
+  .lchip,
+  .ltile,
+  .btrack i,
+  .silo__f,
+  .lrow__fill,
+  .lrow__dot,
+  .v3 .wcard,
+  .v3 .wback,
+  .v3 .wback__r b,
+  .v3 .wcard__badge {
     transition-duration: .01ms !important;
+    transition-delay: 0ms !important;
   }
+  /* not just faster — no unfold at all: hovering must leave every card at
+     its resting transform/shadow/color, not just reach it instantly. */
+  .wcard:hover .wback,
+  .wcard:hover .wfront,
+  .wcard:hover .bcol,
+  .wcard:hover .silo,
+  .wcard:hover .lrow,
+  .wcard:hover .lchip,
+  .wcard:hover .ltile {
+    transform: none;
+  }
+  .wcard:hover .wback { box-shadow: 0 16px 34px -16px #07150e8c; }
+  .wcard:hover .wfront { box-shadow: 0 1px 3px #13131308, 0 24px 46px -20px #13131342; }
+  .v3 .wcard:hover { border-top-color: var(--border); }
+  .v3 .wcard:hover .wback { border-bottom-color: var(--border); }
+  .v3 .wcard:hover .wback__r b { color: var(--text); }
+  .v3 .wcard:hover .wcard__badge { background: transparent; border-color: var(--border); }
 }

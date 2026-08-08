@@ -513,7 +513,7 @@
     </div>
   </div>
 </section>
-<section class="section why-us" id="why" role="region" aria-labelledby="whyus-t">
+<section class="section section--tight why-us" id="why" role="region" aria-labelledby="whyus-t">
   <div class="wrap">
     <div class="head">
       <span class="tag tag--lime" data-r>ЧОМУ МИ</span>
@@ -804,11 +804,6 @@
       <stop offset="0" stop-color="var(--map-ambient, #d1ff5c)" stop-opacity=".12"/>
       <stop offset="1" stop-color="var(--map-ambient, #d1ff5c)" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="v6mapShadow">
-      <stop offset="0" stop-color="var(--map-shadow, #000)" stop-opacity=".55"/>
-      <stop offset=".55" stop-color="var(--map-shadow, #000)" stop-opacity=".28"/>
-      <stop offset="1" stop-color="var(--map-shadow, #000)" stop-opacity="0"/>
-    </radialGradient>
     <pattern id="v6pGrid" width="42" height="42" patternUnits="userSpaceOnUse">
       <path d="M42 0V42M0 42H42" fill="none" stroke="var(--map-grid, rgba(255,255,255,.085))" stroke-width=".6"/>
     </pattern>
@@ -821,7 +816,6 @@
 
   <g aria-hidden="true">
     <ellipse cx="380" cy="258" rx="345" ry="146" fill="url(#v6mapAmbient)"/>
-    <ellipse cx="386" cy="410" rx="300" ry="52" fill="url(#v6mapShadow)"/>
 
     <g class="slab" fill="url(#v6mapSide)" transform="translate(380 256) scale(1.2 0.72218) rotate(-12) translate(-380 -256)">
           <use href="#v6ukSil" y="22.8" opacity="0.42"/>
@@ -911,6 +905,7 @@
             <ellipse class="halo" cx="300.06" cy="234.51" rx="11" ry="6.62"/>
             <ellipse class="baseell" cx="300.06" cy="234.51" rx="4" ry="2.41"/>
             <line class="pole" x1="300.06" y1="234.51" x2="300.06" y2="216.51"/>
+            <line class="arm" x1="300.06" y1="216.51" x2="366.36" y2="216.51"/>
             <circle class="landdot" cx="300.06" cy="234.51" r="3.2"/>
             <circle class="poledot" cx="300.06" cy="216.51" r="2.6"/>
           </g>
@@ -918,6 +913,7 @@
             <ellipse class="halo" cx="255.84" cy="223.92" rx="11" ry="6.62"/>
             <ellipse class="baseell" cx="255.84" cy="223.92" rx="4" ry="2.41"/>
             <line class="pole" x1="255.84" y1="223.92" x2="255.84" y2="189.92"/>
+            <line class="arm" x1="255.84" y1="189.92" x2="177.64" y2="189.92"/>
             <circle class="landdot" cx="255.84" cy="223.92" r="3.2"/>
             <circle class="poledot" cx="255.84" cy="189.92" r="2.6"/>
           </g>
@@ -925,6 +921,7 @@
             <ellipse class="halo" cx="326.23" cy="180.19" rx="11" ry="6.62"/>
             <ellipse class="baseell" cx="326.23" cy="180.19" rx="4" ry="2.41"/>
             <line class="pole" x1="326.23" y1="180.19" x2="326.23" y2="128.19"/>
+            <line class="arm" x1="326.23" y1="128.19" x2="419.73" y2="128.19"/>
             <circle class="landdot" cx="326.23" cy="180.19" r="3.2"/>
             <circle class="poledot" cx="326.23" cy="128.19" r="2.6"/>
           </g>
@@ -932,27 +929,35 @@
             <ellipse class="halo" cx="387.84" cy="330.3" rx="11" ry="6.62"/>
             <ellipse class="baseell" cx="387.84" cy="330.3" rx="4" ry="2.41"/>
             <line class="pole" x1="387.84" y1="330.3" x2="387.84" y2="300.3"/>
+            <line class="arm" x1="387.84" y1="300.3" x2="421.84" y2="300.3"/>
             <circle class="landdot" cx="387.84" cy="330.3" r="3.2"/>
             <circle class="poledot" cx="387.84" cy="300.3" r="2.6"/>
           </g>
     </g>
 
-    <g class="routes">
-          <g class="rt rt--haisyn rt--auto rt--local">
+    <g class="routes"><g class="rt rt--haisyn rt--auto rt--local" style="--L:65.45">
             <path class="route route--halo" d="M295.4 222.8 C296.8 178.8 299.8 194.0 300.1 234.5"/>
             <path class="route route--core" d="M295.4 222.8 C296.8 178.8 299.8 194.0 300.1 234.5"/>
+            <path class="spark" d="M295.4 222.8 C296.8 178.8 299.8 194.0 300.1 234.5"/>
+            <circle class="impact" cx="300.06" cy="234.51" r="5"/>
           </g>
-          <g class="rt rt--vinnytsia rt--auto rt--local">
+          <g class="rt rt--vinnytsia rt--auto rt--local" style="--L:100.73">
             <path class="route route--halo" d="M295.4 222.8 C283.5 162.8 258.2 168.7 255.8 223.9"/>
             <path class="route route--core" d="M295.4 222.8 C283.5 162.8 258.2 168.7 255.8 223.9"/>
+            <path class="spark" d="M295.4 222.8 C283.5 162.8 258.2 168.7 255.8 223.9"/>
+            <circle class="impact" cx="255.84" cy="223.92" r="5"/>
           </g>
-          <g class="rt rt--kyiv rt--rail rt--export">
+          <g class="rt rt--kyiv rt--rail rt--export" style="--L:126.96">
             <path class="route route--halo" d="M295.4 222.8 C304.6 144.8 324.4 108.4 326.2 180.2"/>
             <path class="route route--core" d="M295.4 222.8 C304.6 144.8 324.4 108.4 326.2 180.2"/>
+            <path class="spark" d="M295.4 222.8 C304.6 144.8 324.4 108.4 326.2 180.2"/>
+            <circle class="impact" cx="326.23" cy="180.19" r="5"/>
           </g>
-          <g class="rt rt--odesa rt--port rt--export">
+          <g class="rt rt--odesa rt--port rt--export" style="--L:231.09">
             <path class="route route--halo" d="M295.4 222.8 C323.1 110.8 382.3 227.3 387.8 330.3"/>
             <path class="route route--core" d="M295.4 222.8 C323.1 110.8 382.3 227.3 387.8 330.3"/>
+            <path class="spark" d="M295.4 222.8 C323.1 110.8 382.3 227.3 387.8 330.3"/>
+            <circle class="impact" cx="387.84" cy="330.3" r="5"/>
           </g>
     </g>
   </g>
@@ -1051,8 +1056,6 @@
           <div class="v6geo__stat"><b>38<i>км</i></b><span>Найдальше поле</span></div>
           <div class="v6geo__stat"><b>14<i>км</i></b><span>Середнє плече</span></div>
         </div>
-
-        <p class="v6geo__hint">Наведіть або клікніть на напрямок — підсвітиться маршрут і область, куди їде зерно.</p>
       </div>
     </div>
   </div>
