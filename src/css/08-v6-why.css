@@ -30,7 +30,7 @@
 .wcard {
   background: var(--white);
   border-radius: var(--r-lg);
-  padding: clamp(.65rem, 1vw, .85rem);
+  padding: clamp(.6rem, .9vw, .8rem);
   box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
@@ -58,23 +58,35 @@
 }
 .wcard__num { font-family: var(--mono); font-size: .6875rem; color: var(--text-2); }
 
-/* the stack: dark plate behind (tilted), white instrument in front (straight) */
-.wstage { position: relative; margin-bottom: var(--s-xs); margin-top: 1.9rem; flex: 1; display: flex; flex-direction: column; }
+/* the stack: dark plate behind (tilted), white instrument in front (also
+   tilted, a few degrees off the plate, offset diagonally) — reference-style
+   pair rather than the old full-width horizontal strip. The plate is sized
+   as its own small card peeking out at the top-right corner only (comparable
+   to the front card's own size, per the reference, but not spanning the
+   stage) — the front card's own left and bottom edges stay clean, nothing
+   pokes out past them. The front card carries a shallow opposite rotation of
+   its own so the two read as two tilted objects, not one tilted header
+   sitting over one square one. Both layers' transform-origin sits low and
+   inboard so a rotation lifts a corner *inward*, never past the card's own
+   edge — see the responsive sweep note below. */
+.wstage { position: relative; margin-bottom: var(--s-xs); margin-top: 1.7rem; flex: 1; display: flex; flex-direction: column; }
 .wback {
   position: absolute;
-  left: 0; right: 9%; top: 0;
+  left: 38%; right: 3%; top: -.6rem;
+  height: 2.9rem;
   background: linear-gradient(150deg, var(--field-2), var(--ink) 60%);
   border-radius: var(--r-md);
-  padding: .4rem var(--s-sm) .7rem;
+  padding: .45rem var(--s-sm) .7rem;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--s-sm);
-  transform: rotate(-2.6deg);
-  transform-origin: 8% 100%;
-  box-shadow: 0 16px 34px -16px #07150e8c;
+  transform: rotate(-4.5deg);
+  transform-origin: 12% 100%;
+  box-shadow: 0 20px 40px -14px #07150ea3, 0 6px 14px -6px #07150e70;
   transition: transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
   overflow: hidden;
+  z-index: 1;
 }
 /* faint crop-row texture + lime cast, pure gradients */
 .wback::before {
@@ -132,16 +144,20 @@
 
 .wfront {
   position: relative;
-  margin-top: 2rem;
+  margin-top: 2.5rem;
+  margin-right: 6%;
   background: var(--white);
   border-radius: var(--r-md);
   padding: var(--s-xs) var(--s-xs) .35rem;
-  box-shadow: 0 1px 3px #13131308, 0 24px 46px -20px #13131342;
+  box-shadow: 0 2px 5px #1313130a, 0 30px 54px -20px #1313134a, 0 10px 22px -12px #1313132e;
+  transform: rotate(1.1deg);
+  transform-origin: 85% 0%;
   transition: transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
   flex: 1;
   display: flex;
   flex-direction: column;
   min-width: 0;
+  z-index: 2;
 }
 
 /* --- unfold: hover-only, hover-capable pointers only ----------------------
@@ -158,12 +174,12 @@
    reflow under the cursor. */
 @media (hover: hover) and (pointer: fine) {
   .wcard:hover .wback {
-    transform: rotate(-4.9deg) translateY(-6px);
-    box-shadow: 0 26px 48px -18px #07150ea8;
+    transform: rotate(-6.8deg) translateY(-7px);
+    box-shadow: 0 30px 54px -16px #07150eb0, 0 8px 18px -6px #07150e80;
   }
   .wcard:hover .wfront {
-    transform: translateY(4px);
-    box-shadow: 0 4px 10px #13131310, 0 30px 54px -18px #13131350;
+    transform: rotate(1.1deg) translateY(4px);
+    box-shadow: 0 4px 10px #13131312, 0 36px 60px -18px #13131358, 0 12px 26px -12px #13131338;
   }
 
   /* widget contents settle in: grown from a slightly compressed rest state,
@@ -514,7 +530,7 @@
 .v3 .wback__l span { color: var(--text-2); }
 .v3 .wback__r b { color: var(--text); font-weight: var(--fw-light); font-size: 1.6rem; }
 .v3 .wback__r i { color: var(--text-2); }
-.v3 .wfront { margin-top: var(--s-md); background: transparent; box-shadow: none; padding: 0; }
+.v3 .wfront { margin-top: var(--s-md); margin-right: 0; background: transparent; box-shadow: none; padding: 0; transform: none; }
 .v3 .wlabel em { background: transparent; color: var(--lime-on-light); padding: .2rem 0; }
 
 /* v3's whole grammar is the *absence* of a plate/tilt, so forcing the v1/v2
@@ -561,6 +577,13 @@
    ============================================================================ */
 @media (max-width: 62.5rem) {
   .wcards { grid-template-columns: 1fr; }
+  /* One-column cards are much wider than the 2-up grid's, and a rotation
+     lifts the plate's far corner by tan(angle) x width — the same width
+     growth that has pushed this plate out of its card before. Shallower
+     angle plus a bit more top headroom keeps the lifted corner inside the
+     card at every width down to 300px (swept in 25px steps, rest + hover). */
+  .wback { top: -1.15rem; transform: rotate(-3.2deg); }
+  .wcard:hover .wback { transform: rotate(-4.6deg) translateY(-6px); }
 }
 @media (max-width: 24.375rem) {
   .wcard { padding: .85rem; }
