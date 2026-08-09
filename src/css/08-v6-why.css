@@ -1,21 +1,54 @@
 /* ==========================================================================
-   #why — "why us" cards, ported from src6/v6-why.html (mockup's WHY US block).
-   Structural twin of .cap__* (04-sections.css): a tilted dark plate carrying
-   the card's name + one headline figure, with a white instrument set on top
-   of it holding a mono caption strip, a widget, and key/value footer rows.
+   #why — "why us" cards, built to the client's card reference (cards.html).
 
-   Class names keep the mockup's own short BEM-ish scheme (.wcard, .wback,
-   .wfront, ...) rather than borrowing .cap__* verbatim — the two sections
-   render side by side in the page (this one replaces #capacity in the
-   section order) and reusing .cap__* would make the two indistinguishable in
-   devtools and couple their futures together for no reason.
+   The reference arrived as a Figma export: each card a fixed 218.96px wide
+   with every element pinned at literal pixel offsets. None of that geometry
+   is reproduced here — it cannot survive a fluid grid. What is ported is the
+   anatomy and the proportions:
+
+     - a dark plate across the top of the card carrying the name, a small
+       uppercase qualifier, and one lime headline figure
+     - a white instrument overlapping it from below, leaving a band of plate
+       showing: a two-line heading with a lime badge beside it, then a widget
+     - cards 1-2 square, cards 3-4 tilted in opposite directions
+
+   Colours come from the site's own tokens, not the export's raw hexes: the
+   export's lime is #c5ff2d/#bdfc11 against the site's --lime #d1ff5c, and
+   letting the export win would put this one section a few degrees off every
+   other lime on the page. Same for its greys and its #000.
+
+   TILT SAFETY — the constraint this file is built around
+   ------------------------------------------------------
+   A rotated plate of width W drops its downhill corner by W*sin(t) and lifts
+   its uphill corner by (W/2)*sin(t). Both scale with W, and the card's width
+   ranges from ~300px (narrow phone) to ~940px (one-column tablet). A fixed
+   angle with fixed headroom is exactly how a plate ends up poking out of its
+   card, which has happened here before.
+
+   Two rules keep it inside at every width, with no per-breakpoint patching:
+
+     1. Headroom above the plate is a PERCENTAGE (--lift). Percentage padding
+        and margin resolve against the containing block's WIDTH, so the
+        reserved space tracks W automatically. --lift is set to 50*sin(t) for
+        whatever angle the breakpoint uses, which is exactly the uphill lift.
+
+     2. The band of plate left visible below the card's top (--band) is held
+        greater than the downhill drop W*sin(t), via max() of a rem floor and
+        a percentage. If the band ever fell below the drop, the plate's
+        downhill end would slide behind the instrument and the headline
+        figure would disappear.
+
+   The angle itself shrinks as cards widen so the drop stays around 20-25px
+   at every size — the reference's 6.11 degrees on a 219px card is the same
+   apparent tilt as ~2.6 degrees on a 540px one. Change an angle below and
+   its --lift must change with it; the pairs are noted at each site.
 
    No entrance animation is applied to the widgets' own fills (bar heights,
-   silo levels, ladder progress, lab markers): the mockup drives those off an
+   silo levels, ladder progress): the reference drives those off an
    IntersectionObserver toggling .is-in, which this port cannot add (no new
-   JS). Values are rendered at their final state and the whole card still
-   gets the site's existing [data-card] scroll-reveal (lift + fade), so the
-   section is not static-feeling, it just does not re-animate its numbers.
+   JS). Values render at their final state and the whole card still gets the
+   site's existing [data-card] scroll-reveal, so the section is not
+   static-feeling, it just does not re-animate its numbers.
    ========================================================================== */
 
 #why { background: linear-gradient(180deg, var(--white), var(--mist)); }
@@ -23,14 +56,14 @@
 .wcards {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--s-xs) var(--s-sm);
+  gap: var(--s-md) var(--s-sm);
   margin-top: clamp(.9rem, 1.6vw, 1.25rem);
 }
 
 .wcard {
   background: var(--white);
   border-radius: var(--r-lg);
-  padding: clamp(.6rem, .9vw, .8rem);
+  padding: clamp(.7rem, 1vw, .95rem);
   box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
@@ -58,32 +91,54 @@
 }
 .wcard__num { font-family: var(--mono); font-size: .6875rem; color: var(--text-2); }
 
-/* the stack: dark plate behind (tilted), white instrument in front (also
-   tilted, a few degrees off the plate, offset diagonally) — reference-style
-   pair rather than the old full-width horizontal strip. The plate is sized
-   as its own small card peeking out at the top-right corner only (comparable
-   to the front card's own size, per the reference, but not spanning the
-   stage) — the front card's own left and bottom edges stay clean, nothing
-   pokes out past them. The front card carries a shallow opposite rotation of
-   its own so the two read as two tilted objects, not one tilted header
-   sitting over one square one. Both layers' transform-origin sits low and
-   inboard so a rotation lifts a corner *inward*, never past the card's own
-   edge — see the responsive sweep note below. */
-.wstage { position: relative; margin-bottom: var(--s-xs); margin-top: 1.7rem; flex: 1; display: flex; flex-direction: column; }
+/* --- the stack ------------------------------------------------------------
+   Dark plate pinned across the top of the stage, white instrument in flow
+   below it overlapping all but --band of it. Defaults are the untilted case
+   (cards 1-2): no angle, no headroom. */
+.wstage {
+  --tilt: 0deg;
+  --lift: 0%;
+  /* rem floor is set by the plate's own contents, not by the tilt: the
+     headline figure's unit wraps under it on a narrow card, and the band has
+     to clear the taller of the two cases or the figure slides behind the
+     instrument. Swept in tools/why_audit.py, which fails under 8px of band
+     or any overlap of the figure. */
+  --band: max(3.4rem, 6.2%);
+  position: relative;
+  padding-top: var(--lift);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cards 3-4. Angles are the reference's, scaled down for the site's wider
+   cards; --lift is 50*sin(tilt) in each pair and must be recomputed if an
+   angle changes.  2.6deg -> 2.4% | 2.9deg -> 2.6% */
+.wcard--tilt-r .wstage { --tilt: 2.6deg;  --lift: 2.4%; }
+.wcard--tilt-l .wstage { --tilt: -2.9deg; --lift: 2.6%; }
+
 .wback {
   position: absolute;
-  left: 38%; right: 3%; top: -.6rem;
-  height: 2.9rem;
-  background: linear-gradient(150deg, var(--field-2), var(--ink) 60%);
+  top: 0;
+  /* margin-top rather than `top`, deliberately: percentage margins resolve
+     against the containing block's width, percentage `top` against its
+     height. Only the former tracks the card's width, which is what --lift
+     is measured in. */
+  margin-top: var(--lift);
+  left: .5rem;
+  right: .5rem;
+  /* clears the widest horizontal excursion a rotation adds, H*sin(t)/2 */
+  height: 4.7rem;
+  background: var(--ink);
   border-radius: var(--r-md);
-  padding: .45rem var(--s-sm) .7rem;
+  padding: .6rem var(--s-sm);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--s-sm);
-  transform: rotate(-4.5deg);
-  transform-origin: 12% 100%;
-  box-shadow: 0 20px 40px -14px #07150ea3, 0 6px 14px -6px #07150e70;
+  transform: rotate(var(--tilt));
+  transform-origin: 50% 50%;
+  box-shadow: 0 18px 38px -16px #07150e94, 0 5px 13px -6px #07150e66;
   transition: transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
   overflow: hidden;
   z-index: 1;
@@ -102,9 +157,10 @@
 .wback__l b {
   display: block;
   color: var(--white);
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-medium);
-  letter-spacing: -.02em;
+  font-size: clamp(.9375rem, 1.15vw, 1.125rem);
+  font-weight: 400;
+  letter-spacing: -.025em;
+  line-height: 1.15;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -116,42 +172,49 @@
   letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--on-dark-2);
-  margin-top: .15rem;
+  margin-top: .2rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.wback__r { text-align: right; flex: none; position: relative; }
+/* Figure and its unit sit side by side, as in the reference, and wrap to two
+   lines rather than colliding with the name when a card is narrow. */
+.wback__r {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0 .25rem;
+  max-width: 46%;
+}
 .wback__r b {
-  display: block;
-  font-size: 1.25rem;
+  font-size: clamp(1.05rem, 1.5vw, 1.375rem);
   font-weight: var(--fw-medium);
-  letter-spacing: -.05em;
+  letter-spacing: -.045em;
   color: var(--lime);
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
 .wback__r i {
-  display: block;
   font-style: normal;
   font-family: var(--mono);
   font-size: .5625rem;
-  letter-spacing: .11em;
+  letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--on-dark-2);
-  margin-top: .15rem;
+  color: var(--lime);
+  opacity: .82;
+  text-align: right;
 }
 
 .wfront {
   position: relative;
-  margin-top: 2.5rem;
-  margin-right: 6%;
+  margin-top: var(--band);
   background: var(--white);
+  border: 1px solid var(--grey-100);
   border-radius: var(--r-md);
-  padding: var(--s-xs) var(--s-xs) .35rem;
-  box-shadow: 0 2px 5px #1313130a, 0 30px 54px -20px #1313134a, 0 10px 22px -12px #1313132e;
-  transform: rotate(1.1deg);
-  transform-origin: 85% 0%;
+  padding: var(--s-sm) var(--s-sm) .6rem;
+  box-shadow: 0 2px 5px #1313130a, 0 26px 48px -20px #13131342, 0 9px 20px -12px #1313132b;
   transition: transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
   flex: 1;
   display: flex;
@@ -160,42 +223,69 @@
   z-index: 2;
 }
 
+/* the instrument's own heading + lime badge (the reference's `sub` + badge) */
+.wlabel {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .3rem var(--s-xs);
+  margin-bottom: .3rem;
+}
+.wlabel span {
+  min-width: 0;
+  font-size: clamp(.875rem, 1.05vw, 1rem);
+  font-weight: var(--fw-medium);
+  letter-spacing: -.03em;
+  line-height: 1.1;
+  color: var(--ink);
+  overflow-wrap: break-word;
+}
+.wlabel em {
+  font-style: normal;
+  flex: none;
+  color: var(--ink);
+  background: var(--lime);
+  font-size: .75rem;
+  font-weight: var(--fw-medium);
+  line-height: 1.15;
+  padding: .16rem .4rem;
+  border-radius: .35rem;
+  white-space: nowrap;
+}
+
+.wcard__h3 { font-size: 1.0625rem; font-weight: var(--fw-medium); letter-spacing: -.03em; margin: .7rem 0 .15rem; }
+.wcard__p { font-size: .75rem; color: var(--text-2); line-height: 1.45; margin: 0; }
+
 /* --- unfold: hover-only, hover-capable pointers only ----------------------
-   The plate swings out further and lifts (its rotation already has headroom
-   reserved in .wstage's margin-top, tuned so the lifted corner never clears
-   the card's own top edge — see the bench sweep note below), the instrument
-   eases forward and its shadow deepens, and the widget's own marks (bars,
-   silo fills, ladder rows/dots, lab tiles) settle in with a short stagger so
-   the whole thing reads as unfolding rather than switching. Every value the
-   widgets show is already correct at rest — hover only adds a decorative
-   settle-in on top of the true, already-visible figures, so nothing becomes
-   readable for the first time on hover. Transform/opacity/box-shadow/
-   background only: the card's own box never changes size, so the grid can't
-   reflow under the cursor. */
+   The plate swings a little further and lifts, the instrument eases forward
+   and its shadow deepens, and the widget's own marks settle in with a short
+   stagger so the whole thing reads as unfolding rather than switching. Every
+   value is already correct at rest — hover only adds a settle-in on top of
+   figures that are already visible. Transform/opacity/box-shadow only: the
+   card's own box never changes size, so the grid cannot reflow under the
+   cursor. The hover angles keep the same 50*sin(t) headroom relationship as
+   the resting ones, and stay under them where the plate has no more room. */
 @media (hover: hover) and (pointer: fine) {
   .wcard:hover .wback {
-    transform: rotate(-6.8deg) translateY(-7px);
-    box-shadow: 0 30px 54px -16px #07150eb0, 0 8px 18px -6px #07150e80;
+    transform: rotate(var(--tilt)) translateY(-5px);
+    box-shadow: 0 28px 52px -16px #07150ea8, 0 8px 18px -6px #07150e78;
   }
   .wcard:hover .wfront {
-    transform: rotate(1.1deg) translateY(4px);
-    box-shadow: 0 4px 10px #13131312, 0 36px 60px -18px #13131358, 0 12px 26px -12px #13131338;
+    transform: translateY(3px);
+    box-shadow: 0 4px 10px #13131312, 0 34px 58px -18px #13131352, 0 11px 24px -12px #13131334;
   }
 
-  /* widget contents settle in: grown from a slightly compressed rest state,
-     staggered per row/bar so it unfolds rather than snaps as one piece */
   .wcard .bcol,
   .wcard .silo,
   .wcard .lrow,
-  .wcard .lchip,
-  .wcard .ltile {
+  .wcard .lspec {
     transition: transform var(--dur) var(--ease-out);
   }
   .wcard:hover .bcol { transform: scaleY(1.035); transform-origin: bottom; }
   .wcard:hover .silo { transform: scaleY(1.035); transform-origin: bottom; }
   .wcard:hover .lrow { transform: translateX(2px); }
-  .wcard:hover .ltile { transform: translateY(-2px); }
-  .wcard:hover .lchip { transform: translateY(-1px); }
+  .wcard:hover .lspec { transform: translateX(2px); }
 
   .wcard .bcol:nth-child(1) { transition-delay: 0ms; }
   .wcard .bcol:nth-child(2) { transition-delay: 40ms; }
@@ -204,76 +294,63 @@
   .wcard .bcol:nth-child(5) { transition-delay: 160ms; }
   .wcard .silo:nth-child(1) { transition-delay: 0ms; }
   .wcard .silo:nth-child(2) { transition-delay: 60ms; }
-  .wcard .lrow:nth-child(1) { transition-delay: 0ms; }
-  .wcard .lrow:nth-child(2) { transition-delay: 60ms; }
-  .wcard .lrow:nth-child(3) { transition-delay: 120ms; }
-  .wcard .lchip:nth-child(1) { transition-delay: 160ms; }
-  .wcard .lchip:nth-child(2) { transition-delay: 190ms; }
-  .wcard .lchip:nth-child(3) { transition-delay: 220ms; }
-  .wcard .ltile:nth-child(1) { transition-delay: 0ms; }
-  .wcard .ltile:nth-child(2) { transition-delay: 40ms; }
-  .wcard .ltile:nth-child(3) { transition-delay: 80ms; }
-  .wcard .ltile:nth-child(4) { transition-delay: 120ms; }
-
-  /* the fills themselves (already transitioning height/width per their base
-     rules) pick up the same easing so a re-hover reads as a soft re-settle
-     rather than a re-measure; values do not change, only the easing quality
-     already declared on .btrack i / .silo__f / .lrow__fill / .lrow__dot */
+  .wcard .lrow:nth-child(1),
+  .wcard .lspec:nth-child(1) { transition-delay: 0ms; }
+  .wcard .lrow:nth-child(2),
+  .wcard .lspec:nth-child(2) { transition-delay: 50ms; }
+  .wcard .lrow:nth-child(3),
+  .wcard .lspec:nth-child(3) { transition-delay: 100ms; }
+  .wcard .lrow:nth-child(4),
+  .wcard .lspec:nth-child(4) { transition-delay: 150ms; }
 }
-
-.wlabel {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--s-sm);
-  font-family: var(--mono);
-  font-size: .5625rem;
-  letter-spacing: .11em;
-  text-transform: uppercase;
-  color: var(--text-2);
-  padding-bottom: .4rem;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 0;
-}
-.wlabel span { min-width: 0; overflow-wrap: break-word; }
-.wlabel em {
-  font-style: normal;
-  color: var(--ink);
-  background: var(--lime);
-  padding: .14rem .38rem;
-  border-radius: var(--r-pill);
-  letter-spacing: .06em;
-  flex: none;
-}
-
-.wcard__h3 { font-size: 1rem; font-weight: var(--fw-medium); letter-spacing: -.03em; margin: 0 0 .15rem; }
-.wcard__p { font-size: .75rem; color: var(--text-2); line-height: 1.4; margin: 0; }
 
 /* --- 01 — yield bars ------------------------------------------------------
-   Value printed above the bar (only where the mockup calls one out: the two
-   ends of the run and the drought year), drought year in yellow, current
-   season in lime. Heights render at their final size — see file header. */
+   Value printed above the bar where the reference calls one out (the two ends
+   of the run and the drought year), drought year in yellow, current season in
+   lime. Bar occupies 60% of its column, as in the reference, so the gaps read
+   wider than the bars rather than the other way round. */
 .cgbars {
   display: flex;
   align-items: flex-end;
-  gap: clamp(.25rem, .9vw, .5rem);
-  padding: .7rem 0 .5rem;
+  gap: clamp(.25rem, .9vw, .55rem);
+  /* bottom padding carries the drought tag, which hangs below the year row */
+  padding: 1.1rem 0 .9rem;
   position: relative;
   flex: 1;
 }
+/* The baseline sits at the bars' feet. The columns are bottom-aligned in a
+   box that flex-grows, so the only stable way to place it is from the bottom
+   edge, counting back the three things below the bars: the chart's own bottom
+   padding, the year row (given a fixed line-height right here so this sum
+   stays true), and the gap between them. Anchoring it from the top instead
+   drifts the moment the box grows; anchoring it to a hardcoded offset drifts
+   the moment the padding changes — which is exactly how it once landed on
+   top of the year labels. */
 .cgbars::after {
   content: '';
   position: absolute;
-  left: 0; right: 0; bottom: 1.3rem;
+  left: 0; right: 0;
+  bottom: calc(.9rem + 1rem + .3rem);
   height: 1px;
   background: var(--border);
 }
-.bcol { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: .25rem; position: relative; }
-.btrack { position: relative; width: 100%; height: 2.35rem; display: flex; align-items: flex-end; }
+.bcol { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: .3rem; position: relative; }
+.btrack {
+  position: relative;
+  width: 100%;
+  height: clamp(3.25rem, 8vw, 5.5rem);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+/* A bar is 60% of its column, as in the reference — but on a one-column card
+   the columns get wide enough that 60% turns the bars into slabs wider than
+   they are tall, so the share is capped. */
 .btrack i {
   display: block;
-  width: 100%;
-  border-radius: 8px 8px 3px 3px;
+  width: 60%;
+  max-width: 3rem;
+  border-radius: 3px;
   background: var(--grey-200);
   height: var(--h);
   transition: height var(--dur-lg) var(--ease-out);
@@ -282,21 +359,22 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(var(--h) + .3rem);
+  bottom: calc(var(--h) + .25rem);
   font-size: .6875rem;
-  font-weight: var(--fw-semibold);
   font-variant-numeric: tabular-nums;
+  color: var(--text);
   white-space: nowrap;
 }
-.bcol--dry .btrack i { background: var(--yellow); opacity: .85; }
+.bcol--dry .btrack i { background: var(--yellow); }
 .bcol--now .btrack i { background: linear-gradient(180deg, var(--lime), var(--lime-lo)); }
-.bcol span { font-family: var(--mono); font-size: .5625rem; color: var(--text-2); }
+/* fixed line-height: the baseline rule's offset above counts on it */
+.bcol span { font-family: var(--mono); font-size: .625rem; line-height: 1rem; color: var(--text-2); }
 .bcol--now span { color: var(--ink); font-weight: var(--fw-semibold); }
 .btag {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: -.85rem;
+  bottom: -.9rem;
   font-family: var(--mono);
   font-size: .5625rem;
   letter-spacing: .06em;
@@ -308,16 +386,30 @@
   white-space: nowrap;
 }
 
-/* --- 02 — storage silos --------------------------------------------------
-   Two columns, width apportioned by their own share so the split itself
-   carries the 79/21 story, plus a fill height that repeats the same number. */
-.silos { display: flex; align-items: flex-end; gap: var(--s-sm); padding: .3rem 0 .15rem; }
-.silo { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: .25rem; }
+/* --- 02 — storage silos ---------------------------------------------------
+   Two dome-topped columns of equal width, per the reference: the fill height
+   carries the 79/21 split, the column width does not. The dome is expressed
+   as an elliptical radius in percentages so it stays a dome at every card
+   width instead of flattening the way a fixed px radius would. */
+/* capped and centred so the pair stays a pair on a wide one-column card
+   instead of drifting to opposite ends of the instrument */
+.silos { display: flex; align-items: flex-end; gap: var(--s-sm); padding: .5rem 0 .15rem; flex: 1; max-width: 24rem; margin-inline: auto; width: 100%; }
+.silo { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: .35rem; }
+/* The reference's silos are portrait (89x138). The card here is far wider
+   than the reference's 219px, so an unconstrained track would stretch into a
+   shallow landscape arch that reads as a bridge, not a silo — the dome has
+   to stay taller than it is wide. Width is capped and centred over the
+   label, which keeps its own full column width. */
 .silo__v {
   width: 100%;
-  height: 2.6rem;
+  max-width: 7rem;
+  margin-inline: auto;
+  /* floor is set by the fullest silo: the 79% reading has to fit *above* its
+     own fill, so the remaining 21% of the track must clear the label plus
+     its gap. Below ~6.5rem it cannot, and the label sits on the fill. */
+  height: clamp(6.5rem, 10vw, 7.5rem);
   position: relative;
-  border-radius: 12px 12px 4px 4px;
+  border-radius: 50% 50% .3rem .3rem / 28% 28% .3rem .3rem;
   background: var(--grey-100);
   border: 1px solid var(--border);
   overflow: hidden;
@@ -338,136 +430,146 @@
   pointer-events: none;
   background: repeating-linear-gradient(180deg, transparent 0 15px, rgba(19, 19, 19, .055) 15px 16px);
 }
+/* the reading sits just above its own fill line, as in the reference; min()
+   stops a tall fill from pushing it up into the dome's curve */
 .silo__cap {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  top: .3rem;
+  bottom: min(calc(var(--f) + .25rem), calc(100% - 1.15rem));
   font-family: var(--mono);
-  font-size: .5625rem;
+  font-size: .625rem;
   color: var(--ink);
   z-index: 2;
 }
-.silo--dark .silo__cap { color: var(--on-dark-2); }
-.silo__n { font-size: .6875rem; color: var(--text-2); text-align: center; line-height: 1.2; }
+.silo__n { font-size: .6875rem; color: var(--text-2); text-align: center; line-height: 1.25; }
 .silo__n b { display: block; color: var(--ink); font-weight: var(--fw-semibold); font-size: .75rem; }
 
-/* --- shared footer rows (chart / bars / lab widgets) --------------------- */
-.drow {
+/* --- 03 — protocol rows ---------------------------------------------------
+   Name, reading, signed delta chip, on a grey row. A delta that reads as a
+   drop is tinted differently from one that reads as a gain; both are in
+   spec, which is what the card's figure (4/4) says. */
+.lspecs { display: flex; flex-direction: column; gap: .3rem; padding: .35rem 0 0; flex: 1; justify-content: center; }
+.lspec {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--s-sm);
-  padding: .22rem 0;
-  border-top: 1px solid var(--border);
-  font-size: .75rem;
+  gap: var(--s-xs);
+  background: var(--grey-200);
+  border-radius: .625rem;
+  padding: .42rem .6rem;
+  min-width: 0;
 }
-.drow__k { color: var(--text-2); }
-.drow__v { font-family: var(--mono); font-size: .75rem; color: var(--ink); text-align: right; }
+.lspec__k {
+  flex: 1;
+  min-width: 0;
+  font-size: .8125rem;
+  color: var(--ink);
+  letter-spacing: -.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lspec__v {
+  flex: none;
+  font-size: .8125rem;
+  font-weight: var(--fw-medium);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.lspec__v i { font-style: normal; font-size: .6875rem; color: var(--text-2); margin-left: .05rem; }
+.lspec__d {
+  flex: none;
+  font-family: var(--mono);
+  font-size: .625rem;
+  font-variant-numeric: tabular-nums;
+  padding: .1rem .32rem;
+  border-radius: .3rem;
+  background: rgba(185, 237, 55, .5);
+  color: var(--lime-on-light);
+  min-width: 2.6rem;
+  text-align: center;
+}
+.lspec__d--neg { background: rgba(241, 238, 70, .55); color: #7d6c0a; }
 
-/* --- 03 — shipping ladder -------------------------------------------------
-   Icon, stop name, a progress bar sized to its share of the longest leg, and
-   the distance. Chips repeat the card's headline facts as pills below. */
-.ladder { display: flex; flex-direction: column; gap: .22rem; padding: .22rem 0 0; flex: 1; }
-.lrow { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: var(--s-sm); }
+/* --- 04 — shipping ladder -------------------------------------------------
+   Icon and stop on one line, the track below it with the distance printed on
+   the lime fill and a marker standing at the fill's end. */
+/* the end marker stands a little proud of its track top and bottom, so the
+   ladder carries its own vertical padding to contain it rather than relying
+   on the instrument's — v3 strips that padding to zero. */
+.ladder { display: flex; flex-direction: column; gap: .5rem; padding: .35rem 0 .25rem; flex: 1; justify-content: center; }
+.lrow { display: flex; flex-direction: column; gap: .28rem; min-width: 0; }
+.lrow__hd { display: flex; align-items: center; gap: .35rem; min-width: 0; }
 .lrow__ic {
-  width: 1.125rem;
-  height: 1.125rem;
-  border-radius: 6px;
-  background: var(--grey-100);
+  width: 1.0625rem;
+  height: 1.0625rem;
   display: grid;
   place-items: center;
   flex: none;
 }
 .lrow__ic svg {
-  width: .65625rem;
-  height: .65625rem;
+  width: 100%;
+  height: 100%;
   fill: none;
   stroke: var(--ink);
-  stroke-width: 1.9;
+  stroke-width: 1.7;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.lrow__bar { position: relative; height: 1rem; min-width: 0; }
 .lrow__n {
-  position: absolute;
-  left: 0; top: 0;
-  font-size: .6875rem;
-  color: var(--text-2);
+  font-size: .75rem;
+  color: var(--ink);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100%;
+  min-width: 0;
 }
-.lrow__track { position: absolute; left: 0; right: 0; bottom: 3px; height: 3px; border-radius: 3px; background: var(--grey-200); }
+/* The reference's marker stands taller than the track it ends. Rather than
+   letting it overhang the row (which puts it outside the instrument wherever
+   the instrument has no padding, as in v3), the row slot is the marker's
+   height and the track is inset within it — same look, self-contained. */
+.lrow__bar { position: relative; height: 1.0625rem; min-width: 0; }
+.lrow__track { position: absolute; left: 0; right: 0; top: .085rem; bottom: .085rem; border-radius: 3px; background: var(--grey-200); }
 .lrow__fill {
   position: absolute;
-  left: 0; bottom: 3px;
-  height: 3px;
-  border-radius: 3px;
+  left: 0; top: .085rem; bottom: .085rem;
   width: var(--w);
+  border-radius: 3px;
   background: linear-gradient(90deg, var(--lime-lo), var(--lime));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   transition: width var(--dur-lg) var(--ease-out);
 }
-.lrow__dot {
+.lrow__fill em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: .5625rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.lrow__mk {
   position: absolute;
+  /* centred on the fill's end, but held inside the track: the longest leg is
+     at 100%, where half the marker's width would otherwise hang past the
+     right edge (visible wherever the instrument has no padding, as in v3) */
+  left: clamp(1px, var(--w), calc(100% - 1px));
+  top: 0;
   bottom: 0;
-  width: 8px; height: 8px;
-  border-radius: 50%;
+  width: 2px;
+  border-radius: 2px;
   background: var(--ink);
-  border: 2px solid var(--lime);
-  left: var(--w);
   transform: translateX(-50%);
   transition: left var(--dur-lg) var(--ease-out);
 }
-.lrow__km {
-  font-family: var(--mono);
-  font-size: .6875rem;
-  font-variant-numeric: tabular-nums;
-  color: var(--ink);
-  flex: none;
-}
-.lchips { display: flex; gap: var(--s-xxs); flex-wrap: wrap; margin-top: .22rem; padding-top: .22rem; border-top: 1px solid var(--border); }
-.lchip { font-size: .5625rem; padding: .2rem .5rem; border-radius: var(--r-pill); background: var(--grey-100); color: var(--ink); }
-.lchip--hot { background: var(--ink); color: var(--lime); }
-
-/* --- 04 — lab protocol tiles ----------------------------------------------
-   2x2 grid: value + unit, a delta chip, then a mini range bar with the
-   healthy band (--s0/--s1) and this lot's reading marked (--p). */
-.cglab { display: grid; grid-template-columns: 1fr 1fr; gap: .3rem; padding: .22rem 0 .22rem; flex: 1; }
-.ltile { background: var(--grey-100); border-radius: var(--r-sm); padding: .32rem .45rem; min-width: 0; }
-.ltile__k {
-  font-family: var(--mono);
-  font-size: .5625rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--text-2);
-  margin-bottom: .2rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.ltile__row { display: flex; align-items: baseline; gap: var(--s-xxs); flex-wrap: wrap; }
-.ltile__v { font-size: .875rem; font-weight: var(--fw-medium); letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
-.ltile__v i { font-style: normal; font-size: .625rem; color: var(--text-2); margin-left: .1rem; }
-.ltile__d {
-  font-family: var(--mono);
-  font-size: .5625rem;
-  padding: .11rem .3rem;
-  border-radius: 4px;
-  background: rgba(185, 237, 55, .28);
-  color: #4a6b10;
-}
-.ltile__d--neg { background: rgba(241, 238, 70, .35); color: #8a7a10; }
-.ltile__rng { position: relative; height: 4px; border-radius: 3px; background: var(--grey-200); margin-top: .28rem; }
-.ltile__spec { position: absolute; top: 0; bottom: 0; border-radius: 3px; background: rgba(185, 237, 55, .45); left: var(--s0); right: var(--s1); }
-.ltile__mk { position: absolute; top: -3px; width: 2px; height: 10px; border-radius: 2px; background: var(--ink); left: var(--p); }
 
 /* ============================================================================
    V2 — Banded: section sits on a dark full-bleed band. Cards flatten to
    hairline borders; the near-black plate goes invisible against the band so
    it becomes an outline instead, its figure staying lime. The white
-   instrument keeps its own colors (it is meant to read as an object sitting
+   instrument keeps its own colours (it is meant to read as an object sitting
    on the dark band, same as .cap__* does).
    ============================================================================ */
 .v2 #why { background: var(--ink); color: var(--on-dark); }
@@ -489,13 +591,15 @@
 .v2 #why .wback__r b { color: var(--lime); }
 /* The instrument is a self-contained white panel that sets its own colours
    (same reasoning as .cap__viz in 07-variants.css) — reset the inherited
-   on-dark color here or every widget label/value inside it repaints white
+   on-dark colour here or every widget label/value inside it repaints white
    on this near-white surface. */
 .v2 #why .wfront {
   background: rgba(255, 255, 255, .96);
+  border-color: transparent;
   box-shadow: none;
   color: var(--ink);
 }
+.v2 #why .wlabel span { color: var(--ink); }
 .v2 #why .wcard__h3 { color: var(--on-dark); }
 .v2 #why .wcard__p { color: var(--on-dark-2); }
 
@@ -503,7 +607,7 @@
    V3 — Quiet: no card containers anywhere. Plate loses its fill/tilt/shadow
    and becomes a plain typographic header on a rule, same two tiers (name +
    figure) as the light version's plate but flattened. Lighter type; lime
-   spent exactly once (the mono caption pill), everywhere else neutral ink.
+   spent exactly once (the badge), everywhere else neutral ink.
    ============================================================================ */
 .v3 .wcard {
   background: transparent;
@@ -514,9 +618,13 @@
   padding: var(--s-xl) 0 0;
 }
 .v3 .wcard__badge { background: transparent; border: 1px solid var(--border); }
+/* the tilt is the light variant's grammar, not this one's */
+.v3 .wstage { --tilt: 0deg; --lift: 0%; padding-top: 0; }
 .v3 .wback {
   position: static;
   inset: auto;
+  margin-top: 0;
+  height: auto;
   background: none;
   border-radius: 0;
   border-bottom: 1px solid var(--border);
@@ -529,9 +637,17 @@
 .v3 .wback__l b { color: var(--text); font-weight: var(--fw-light); font-size: var(--fs-lg); }
 .v3 .wback__l span { color: var(--text-2); }
 .v3 .wback__r b { color: var(--text); font-weight: var(--fw-light); font-size: 1.6rem; }
-.v3 .wback__r i { color: var(--text-2); }
-.v3 .wfront { margin-top: var(--s-md); margin-right: 0; background: transparent; box-shadow: none; padding: 0; transform: none; }
+.v3 .wback__r i { color: var(--text-2); opacity: 1; }
+.v3 .wfront {
+  margin-top: var(--s-md);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  transform: none;
+}
 .v3 .wlabel em { background: transparent; color: var(--lime-on-light); padding: .2rem 0; }
+.v3 .lspec { background: transparent; border-bottom: 1px solid var(--border); border-radius: 0; padding-inline: 0; }
 
 /* v3's whole grammar is the *absence* of a plate/tilt, so forcing the v1/v2
    swing on it would fight the variant rather than extend it. Its unfold is
@@ -576,24 +692,29 @@
    Responsive
    ============================================================================ */
 @media (max-width: 62.5rem) {
-  .wcards { grid-template-columns: 1fr; }
-  /* One-column cards are much wider than the 2-up grid's, and a rotation
-     lifts the plate's far corner by tan(angle) x width — the same width
-     growth that has pushed this plate out of its card before. Shallower
-     angle plus a bit more top headroom keeps the lifted corner inside the
-     card at every width down to 300px (swept in 25px steps, rest + hover). */
-  .wback { top: -1.15rem; transform: rotate(-3.2deg); }
-  .wcard:hover .wback { transform: rotate(-4.6deg) translateY(-6px); }
+  /* One column: cards get much wider, so the angle comes down to hold the
+     drop near 20px. --lift stays 50*sin(tilt) for the new angles.
+     1.7deg -> 1.5% | 1.9deg -> 1.7% */
+  .wcards { grid-template-columns: 1fr; gap: var(--s-md); }
+  .wcard--tilt-r .wstage { --tilt: 1.7deg;  --lift: 1.5%; }
+  .wcard--tilt-l .wstage { --tilt: -1.9deg; --lift: 1.7%; }
 }
+
+@media (max-width: 40rem) {
+  /* Narrow again: cards are back near the reference's own width, so the
+     angle can come back up toward it.  4deg -> 3.5% | 4.4deg -> 3.9% */
+  .wcard--tilt-r .wstage { --tilt: 4deg;    --lift: 3.5%; }
+  .wcard--tilt-l .wstage { --tilt: -4.4deg; --lift: 3.9%; }
+}
+
 @media (max-width: 24.375rem) {
   .wcard { padding: .85rem; }
-  .wback { padding: .6rem .75rem 1.35rem; }
-  .wfront { margin-top: 3rem; padding: .7rem .7rem .6rem; }
+  .wback { height: 4.5rem; padding: .55rem .7rem; }
+  .wfront { padding: .7rem .7rem .6rem; }
   .cgbars { gap: .28rem; }
-  .btrack { height: 3.5rem; }
-  .silo__v { height: 3.75rem; }
-  .cglab { grid-template-columns: 1fr 1fr; gap: .35rem; }
-  .ltile { padding: .45rem .5rem; }
+  .lspec { padding: .4rem .5rem; }
+  .lspec__k { font-size: .75rem; }
+  .lspec__d { min-width: 2.3rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -602,12 +723,11 @@
   .bcol,
   .silo,
   .lrow,
-  .lchip,
-  .ltile,
+  .lspec,
   .btrack i,
   .silo__f,
   .lrow__fill,
-  .lrow__dot,
+  .lrow__mk,
   .v3 .wcard,
   .v3 .wback,
   .v3 .wback__r b,
@@ -616,18 +736,17 @@
     transition-delay: 0ms !important;
   }
   /* not just faster — no unfold at all: hovering must leave every card at
-     its resting transform/shadow/color, not just reach it instantly. */
-  .wcard:hover .wback,
+     its resting transform/shadow/colour, not just reach it instantly. The
+     plate keeps its resting rotation, which is layout, not motion. */
+  .wcard:hover .wback { transform: rotate(var(--tilt)); box-shadow: 0 18px 38px -16px #07150e94, 0 5px 13px -6px #07150e66; }
   .wcard:hover .wfront,
   .wcard:hover .bcol,
   .wcard:hover .silo,
   .wcard:hover .lrow,
-  .wcard:hover .lchip,
-  .wcard:hover .ltile {
+  .wcard:hover .lspec {
     transform: none;
   }
-  .wcard:hover .wback { box-shadow: 0 16px 34px -16px #07150e8c; }
-  .wcard:hover .wfront { box-shadow: 0 1px 3px #13131308, 0 24px 46px -20px #13131342; }
+  .wcard:hover .wfront { box-shadow: 0 2px 5px #1313130a, 0 26px 48px -20px #13131342, 0 9px 20px -12px #1313132b; }
   .v3 .wcard:hover { border-top-color: var(--border); }
   .v3 .wcard:hover .wback { border-bottom-color: var(--border); }
   .v3 .wcard:hover .wback__r b { color: var(--text); }

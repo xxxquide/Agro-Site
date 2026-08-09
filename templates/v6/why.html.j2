@@ -1,9 +1,37 @@
 {#- ============================================================================
-    v6 "why" — ports the mockup's #why section (src6/v6-why.html) onto the
-    site's existing capacity content (c.capacity). Same H2/eyebrow/lead as the
-    #capacity section it replaces; four cards, each a tilted dark plate (name +
-    headline figure) behind a white instrument (mono caption, widget, key/value
-    rows).
+    v6 "why" — the client's card reference (cards.html, a Figma export) built
+    onto the site's existing capacity content (c.capacity).
+
+    The reference arrived as an absolutely-positioned Figma export: every card
+    a fixed 218.96px wide with each element pinned at literal pixel offsets
+    (left: 155.54px; top: 62.79px). That geometry cannot survive a fluid grid,
+    so what is ported here is the *design* — anatomy, proportion, colour roles,
+    the tilt on the last two cards — re-authored as flow layout. Nothing in
+    this file or 08-v6-why.css positions a card's contents by absolute pixel.
+
+    Card anatomy, per the reference:
+      - a dark plate across the top of the stage: name + small uppercase
+        qualifier on the left, one lime headline figure on the right
+      - a white instrument overlapping it from below, leaving a band of the
+        plate showing: a two-line heading with a lime badge beside it, then
+        the widget
+      - the section's own argument (h3 + paragraph) below the card, which the
+        reference does not show because it is a component sheet, not a section
+
+    Widgets, one per card, in reference order:
+      1. chart  — yield bars, value called out above the two ends of the run
+                  and the drought year, latest season picked out in lime
+      2. bars   — two storage silos, dome-topped, filled to their own share
+      3. lab    — protocol rows: name, reading, and a signed delta chip
+      4. orbit  — distance rows: icon + stop, then a track with the km printed
+                  on the fill and a marker at its end
+
+    Card order is the reference's (chart, bars, lab, orbit), which swaps the
+    last two against the order they sit in content/*.json. The swap is done
+    here, by widget name, rather than by reordering the JSON: `capacity.cards`
+    is also indexed positionally by the dispatch-radar geometry in
+    tools/build_site.py and by the legacy #capacity macro in blocks.html.j2,
+    and reordering the data would silently reach both.
 
     Self-contained: imports its own icon macro rather than assuming a caller
     has already bound `I`, since this file lives outside blocks.html.j2 and
@@ -11,36 +39,23 @@
     (content) and `iconic` (the [[icon]]-in-heading renderer registered as a
     Jinja global in tools/build_site.py) are expected from the render context,
     same as every other section macro.
-
-    Widgets, one per card, in mockup order:
-      1. chart  — yield bars, value printed above each bar, drought tag, the
-                  latest season picked out in lime
-      2. bars   — two storage silos (elevator/floor stores) with a % fill
-      3. orbit  — a distance ladder (icon + name + progress + km) then chips
-      4. lab    — a 2x2 grid of spec tiles (value, delta chip, mini range bar)
-
-    Widget names above are the existing `card.widget` discriminator from
-    content/*.json (chart/bars/orbit/lab) — kept as-is so no content key was
-    invented twice.
     ============================================================================ -#}
 
 {%- import "icons.html.j2" as I with context -%}
 
 {%- macro section() -%}
-{#- Fixed calibration for the lab tiles' mini spec-range bars: where the
-    healthy band sits (s0..100-s1) and where this lot's reading falls (p) on
-    it. This is chart geometry, not translatable copy, so it is kept local to
-    the macro rather than pushed into content/*.json — the same reasoning the
-    build script uses for the geo radar's node coordinates. Indexed to
-    c.capacity.cards[3].rows (protein, moisture, test weight, falling number). -#}
-{%- set lab_spec = [
-  {'p': 52, 's0': 25, 's1': 25},
-  {'p': 48, 's0': 0,  's1': 40},
-  {'p': 62, 's0': 40, 's1': 0},
-  {'p': 63, 's0': 29, 's1': 0}
-] -%}
-{%- set stop_icons = {'auto': 'truck', 'rail': 'route', 'port': 'ship'} -%}
+{#- The reference draws the Kyiv leg with a mill rather than a generic route
+    glyph — the stop is a mill, and 'route' is already spent on this card's
+    own top badge, so reusing it would put the same mark twice in one card. -#}
+{%- set stop_icons = {'auto': 'truck', 'rail': 'mill', 'port': 'ship'} -%}
 {%- set badge_icons = {'chart': 'chart', 'bars': 'silo', 'orbit': 'route', 'lab': 'flask'} -%}
+{#- Reference order, resolved by widget name so the JSON keeps its own. -#}
+{%- set by_widget = {} -%}
+{%- for card in c.capacity.cards %}{% set _ = by_widget.update({card.widget: card}) %}{% endfor -%}
+{%- set ordered = [] -%}
+{%- for w in ['chart', 'bars', 'lab', 'orbit'] %}{% if w in by_widget %}{% set _ = ordered.append(by_widget[w]) %}{% endif %}{% endfor -%}
+{#- anything the reference order does not name still renders, at the end. -#}
+{%- for card in c.capacity.cards %}{% if card not in ordered %}{% set _ = ordered.append(card) %}{% endif %}{% endfor -%}
 <section class="section section--tight why-us" id="why" role="region" aria-labelledby="whyus-t">
   <div class="wrap">
     <div class="head">
@@ -50,15 +65,18 @@
     </div>
 
     <div class="wcards">
-      {%- for card in c.capacity.cards %}
-      <article class="wcard" data-card>
+      {%- for card in ordered %}
+      {#- The reference leaves cards 1-2 square and tilts 3-4 in opposite
+          directions. The tilt is a modifier rather than an :nth-child rule so
+          it stays attached to the card that earned it if the order changes. -#}
+      <article class="wcard{{ ' wcard--tilt-r' if loop.index == 3 }}{{ ' wcard--tilt-l' if loop.index == 4 }}" data-card>
         <div class="wcard__top">
           <span class="wcard__badge" aria-hidden="true">{{ I.icon(badge_icons[card.widget]) }}</span>
           <span class="wcard__num">{{ '%02d' % loop.index }}</span>
         </div>
 
         <div class="wstage">
-          {#- Tilted plate: the card's name and its one headline figure. Not
+          {#- Dark plate: the card's name and its one headline figure. Not
               aria-hidden — the figure lives nowhere else in the card. -#}
           <div class="wback">
             <div class="wback__l"><b>{{ card.head }}</b><span>{{ card.sub }}</span></div>
@@ -69,8 +87,9 @@
             <div class="wlabel"><span>{{ card.cap_k }}</span><em>{{ card.cap_v }}</em></div>
 
             {%- if card.widget == 'chart' %}
-            {#- 01 — yield bars: value printed above each bar, drought year
-                tagged, the current season picked out in lime. -#}
+            {#- 01 — yield bars: value printed above the bar where the
+                reference calls one out, drought year tagged, current season
+                in lime. -#}
             {%- set peak = card.series | map(attribute='v') | max %}
             <figure class="cgbars">
               <figcaption class="sr">{{ c.a11y.chart_caption }}</figcaption>
@@ -78,64 +97,65 @@
               {%- set is_dry = s.dry is defined and s.dry %}
               {%- set show_val = s.show_val is defined and s.show_val %}
               <div class="bcol{{ ' bcol--dry' if is_dry }}{{ ' bcol--now' if loop.last }}" style="--h:{{ (100 * s.v / peak) | round(1) }}%">
-                <div class="btrack">{% if show_val %}<b>{{ s.v | string | replace('.', ',') }}</b>{% endif %}<i></i></div>
+                {#- `decimal` is the locale's separator, from build_site.py.
+                    Hardcoding a comma here printed "5,4" on the bars while
+                    the plate above them printed "6.4" on the English page. -#}
+                <div class="btrack">{% if show_val %}<b>{{ s.v | string | replace('.', decimal) }}</b>{% endif %}<i></i></div>
                 <span>{{ s.year }}</span>
                 {%- if is_dry %}<em class="btag">{{ card.dry_label }}</em>{% endif %}
               </div>
               {%- endfor %}
             </figure>
-            {%- for f in card.foot %}
-            <div class="drow"><span class="drow__k">{{ f.k }}</span><span class="drow__v">{{ f.v }}</span></div>
-            {%- endfor %}
 
             {%- elif card.widget == 'bars' %}
-            {#- 02 — two storage silos, elevator + floor stores, % filled. -#}
+            {#- 02 — two dome-topped silos, elevator + floor stores, each
+                filled to its own share. Equal widths, per the reference: the
+                fill height carries the split, the column width does not. -#}
             <div class="silos">
               {%- for r in card.rows[:2] %}
-              <div class="silo{{ ' silo--dark' if loop.index0 == 1 }}" style="flex:{{ r.pct / 25 }}">
-                <div class="silo__v"><span class="silo__cap">{{ r.pct }}%</span><div class="silo__f" style="--f:{{ r.pct }}%"></div></div>
+              {#- --f is set on the silo, not on the fill: the reading label
+                  is a sibling of the fill and has to position itself off the
+                  same number, so it must be able to inherit it. -#}
+              <div class="silo{{ ' silo--dark' if loop.index0 == 1 }}" style="--f:{{ r.pct }}%">
+                <div class="silo__v"><span class="silo__cap">{{ r.pct }}%</span><div class="silo__f"></div></div>
                 <div class="silo__n"><b>{{ r.val }}</b>{{ r.name }}</div>
               </div>
               {%- endfor %}
             </div>
-            {%- for f in card.foot %}
-            <div class="drow"><span class="drow__k">{{ f.k }}</span><span class="drow__v">{{ f.v }}</span></div>
-            {%- endfor %}
+
+            {%- elif card.widget == 'lab' %}
+            {#- 03 — protocol rows: name, reading, signed delta chip. A delta
+                that reads as a drop is tinted differently from one that reads
+                as a gain; both are in-spec, which is what the card says. -#}
+            <div class="lspecs">
+              {%- for r in card.rows %}
+              <div class="lspec">
+                <span class="lspec__k">{{ r.name }}</span>
+                <span class="lspec__v">{{ r.val }}<i>{{ r.unit }}</i></span>
+                <span class="lspec__d{{ ' lspec__d--neg' if '−' in r.trend or '-' in r.trend }}">{{ r.trend }}</span>
+              </div>
+              {%- endfor %}
+            </div>
 
             {%- elif card.widget == 'orbit' %}
-            {#- 03 — distance ladder: icon, name, progress bar, km; then chips. -#}
+            {#- 04 — distance rows: icon and stop on one line, the track below
+                it with the distance printed on the lime fill and a marker at
+                the fill's end. -#}
             <div class="ladder">
               {%- for s in card.stops %}
               <div class="lrow">
-                <span class="lrow__ic" aria-hidden="true">{{ I.icon(stop_icons[s.mode]) }}</span>
-                <span class="lrow__bar" style="--w:{{ s.w }}%"><span class="lrow__n">{{ s.name }}</span><span class="lrow__track"></span><span class="lrow__fill"></span><span class="lrow__dot"></span></span>
-                <span class="lrow__km">{{ s.km }}&nbsp;{{ card.km_unit }}</span>
+                <span class="lrow__hd">
+                  <span class="lrow__ic" aria-hidden="true">{{ I.icon(stop_icons[s.mode]) }}</span>
+                  <span class="lrow__n">{{ s.name }}</span>
+                </span>
+                <span class="lrow__bar" style="--w:{{ s.w }}%">
+                  <span class="lrow__track"></span>
+                  <span class="lrow__fill"><em>{{ s.km }}&nbsp;{{ card.km_unit }}</em></span>
+                  <span class="lrow__mk"></span>
+                </span>
               </div>
               {%- endfor %}
             </div>
-            <div class="lchips">
-              {%- for chip in card.chips %}
-              <span class="lchip{{ ' lchip--hot' if loop.first }}">{{ chip }}</span>
-              {%- endfor %}
-            </div>
-
-            {%- elif card.widget == 'lab' %}
-            {#- 04 — 2x2 spec tiles: value, delta chip, mini range bar. -#}
-            <div class="cglab">
-              {%- for r in card.rows %}{% set g = lab_spec[loop.index0] %}
-              <div class="ltile" style="--p:{{ g.p }}%;--s0:{{ g.s0 }}%;--s1:{{ g.s1 }}%">
-                <div class="ltile__k">{{ r.name }}</div>
-                <div class="ltile__row">
-                  <span class="ltile__v">{{ r.val }}<i>{{ r.unit }}</i></span>
-                  <span class="ltile__d{{ ' ltile__d--neg' if '−' in r.trend or '-' in r.trend }}">{{ r.trend }}</span>
-                </div>
-                <div class="ltile__rng" aria-hidden="true"><span class="ltile__spec"></span><span class="ltile__mk"></span></div>
-              </div>
-              {%- endfor %}
-            </div>
-            {%- for f in card.foot %}
-            <div class="drow"><span class="drow__k">{{ f.k }}</span><span class="drow__v">{{ f.v }}</span></div>
-            {%- endfor %}
             {%- endif %}
           </div>
         </div>
