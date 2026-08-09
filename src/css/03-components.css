@@ -129,7 +129,6 @@
   backdrop-filter: blur(16px) saturate(1.5);
   box-shadow: 0 1px 0 var(--border), 0 8px 28px -22px rgba(0, 0, 0, .5);
   color: var(--black);
-  height: calc(var(--header-h) - .75rem);
 }
 /* pages whose hero is light start with dark header type */
 .hdr--onlight { color: var(--black); }
@@ -157,17 +156,20 @@
   margin-top: .2rem;
 }
 .hdr:not(.is-stuck):not(.hdr--onlight) .brand__t2 { color: var(--lime); }
+.hdr--onlight .brand__t2,
+.hdr.is-stuck .brand__t2 { color: var(--ink); }
 
 .nav { display: flex; align-items: center; gap: .2rem; margin-inline: auto; }
 .nav__link {
   position: relative;
   padding: .55rem .85rem;
   border-radius: var(--r-pill);
-  font-family: var(--mono);
-  font-size: var(--fs-xs);
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  opacity: .85;
+  font-family: var(--font);
+  font-size: .82rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: -.015em;
+  text-transform: none;
+  opacity: .88;
   transition: opacity var(--dur-xs) var(--ease), background var(--dur-xs) var(--ease);
 }
 .nav__link:hover { opacity: 1; background: rgba(255, 255, 255, .14); }
@@ -313,9 +315,15 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 
 /* --- stats --------------------------------------------------------------- */
 
+/* Six equal tiles read as a spreadsheet. A four-column field where the two
+   headline figures take a double cell gives the block a reading order —
+   land bank and tonnage first, the supporting numbers around them — and, as a
+   side effect, cures the wrapping: the cramped 9.5rem columns were what forced
+   "46 000" and "т" apart in the first place. */
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
   gap: var(--s-md);
 }
 .stat {
@@ -327,12 +335,27 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   flex-direction: column;
   gap: .35rem;
 }
+/* Value and unit: one nowrap row, baseline-aligned, unit at 40 percent of the
+   figure so it qualifies the number instead of competing with it. */
 .stat__v {
+  display: flex;
+  align-items: baseline;
+  gap: .22em;
+  white-space: nowrap;
   font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.4rem);
   font-weight: var(--fw-medium);
   letter-spacing: -.06em;
   line-height: 1.1;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
+  margin-top: var(--s-sm);
+}
+.stat__num { font-weight: inherit; letter-spacing: inherit; }
+.stat__u {
+  font-style: normal;
+  font-size: .4em;
+  font-weight: var(--fw-medium);
+  letter-spacing: .01em;
+  color: var(--text-2);
 }
 .stat__l {
   font-family: var(--mono);
@@ -343,6 +366,50 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 }
 .on-dark .stat { background: rgba(255, 255, 255, .06); box-shadow: none; color: var(--white); }
 .on-dark .stat__l { color: var(--on-dark-2); }
+
+/* --- stats: surfaces and the two headline tiles -------------------------- */
+
+.stats-card--wide { grid-column: span 2; }
+.stats-card--wide .stat__v { font-size: clamp(2.1rem, 1.3rem + 2.6vw, 3.6rem); }
+.stats-card--lime {
+  background: var(--lime);
+  box-shadow: none;
+}
+.stats-card--lime .stat__l,
+.stats-card--lime .stat__u { color: #46600d; }
+.stats-card--lime .stats-card__index { color: #46600d; opacity: .6; }
+.stats-card--ink {
+  background: var(--ink);
+  color: var(--white);
+  box-shadow: none;
+}
+.stats-card--ink .stat__l,
+.stats-card--ink .stat__u { color: var(--on-dark-2); }
+.stats-card--ink .stats-card__index { color: rgba(255, 255, 255, .38); }
+.stats-card--ink .stats-card__plot { border-top-color: rgba(255, 255, 255, .16); }
+.stats-card--ink .stats-card__plot i { background: rgba(255, 255, 255, .18); }
+.stats-card--ink .stats-card__plot i:nth-child(n+9) { background: var(--lime); }
+
+/* The wide tiles carry a twelve-step climb rather than the five-bar spark:
+   more resolution, and it reads as a trend instead of decoration. */
+.stats-card__plot {
+  height: 3.4rem;
+  margin-top: auto;
+  display: flex;
+  align-items: flex-end;
+  gap: .2rem;
+  padding-top: .55rem;
+  border-top: 1px solid var(--border);
+}
+.stats-card__plot i {
+  flex: 1;
+  height: var(--h);
+  min-height: .22rem;
+  border-radius: .18rem .18rem 0 0;
+  background: var(--grey-200);
+  transform-origin: bottom center;
+}
+.stats-card__plot i:nth-child(n+9) { background: var(--lime); }
 
 /* --- widget: bar chart --------------------------------------------------- */
 
@@ -378,7 +445,7 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 }
 .chart__years span {
   flex: 1 1 0; text-align: center;
-  font-family: var(--mono); font-size: .62rem; color: var(--grey-300);
+  font-family: var(--mono); font-size: .62rem; color: var(--muted-on-light);
 }
 
 /* --- widget: progress rows ---------------------------------------------- */
@@ -392,27 +459,397 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 .bars__fill { display: block; height: 100%; width: var(--w); border-radius: inherit; background: var(--ink); }
 .bars__row:first-child .bars__fill { background: var(--lime-lo); }
 
-/* --- widget: orbit ------------------------------------------------------- */
+/* ==========================================================================
+   INSTRUMENT PRIMITIVES
 
-.orbit {
+   Lifted from the reference template's card system, which builds every widget
+   the same way: a white card on a 5px module carrying the three-layer shadow,
+   a dark rounded strip across the top holding a title, a muted caption and an
+   icon, and the readout beneath it. Radii nest as they go inwards — 1rem for
+   the card, .7rem for the dark strip and the lists, .5rem for the rows and
+   badges — which is what stops the corners looking accidental.
+
+   The capacity block used to drop its charts straight onto a flat grey panel
+   with no heading at all. These give each of the four an instrument to sit in.
+   ========================================================================== */
+
+.gauge {
+  --gauge-pad: .4rem;
   position: relative;
-  aspect-ratio: 1;
-  width: min(100%, 19rem);
-  margin-inline: auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gauge-pad);
+  padding: var(--gauge-pad);
+  border-radius: var(--r-md);
+  background: var(--white);
+  /* The instrument owns its colour context. It is dropped onto a dark band in
+     v2 and onto bare canvas in v3, and without this it inherited whatever the
+     band was using — which turned the readouts white on a white panel. */
+  color: var(--black);
+  box-shadow: var(--shadow);
+  isolation: isolate;
+}
+.gauge__head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-md);
+  padding: .5rem .75rem;
+  border-radius: .7rem;
+  background: var(--ink);
+  color: var(--white);
+}
+.gauge__title {
+  display: block;
+  font-size: .82rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: -.03em;
+  line-height: 1.25;
+}
+.gauge__sub {
+  display: block;
+  margin-top: .1rem;
+  font-family: var(--mono);
+  font-size: .55rem;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  /* the reference's muted caption is white at 40 percent, not a grey token.
+     47 rather than 42: at 42 it measures 4.09:1 on the ink strip and this is
+     the smallest step that clears 4.5:1, at 4.83:1. */
+  color: rgba(255, 255, 255, .47);
+}
+.gauge__icon {
+  flex: none;
   display: grid;
   place-items: center;
+  width: 1.7rem; height: 1.7rem;
+  border-radius: .5rem;
+  background: rgba(255, 255, 255, .1);
+  color: var(--lime);
 }
-.orbit__ring {
-  position: absolute;
-  inset: var(--inset);
-  border-radius: 50%;
-  border: 1px solid var(--border);
+.gauge__icon svg { width: .95rem; height: .95rem; }
+.gauge__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: .5rem;
+  padding: .3rem .7rem .55rem;
 }
-.orbit__hub {
+/* A chart has to fill the instrument, not float in the middle of it: the
+   figure wrapper had no height of its own, so the chart's height:100% resolved
+   against auto and collapsed to its content. */
+.gauge__body > figure { flex: 1 1 auto; min-height: 0; display: flex; }
+.gauge__body > figure > .chart { flex: 1 1 auto; min-height: 0; }
+
+/* --- delta badge --------------------------------------------------------- */
+/* The reference pairs a pale ground with a saturated text of the same hue. Its
+   green is foreign here, so the same recipe is mixed from the brand lime. */
+.delta {
+  display: inline-flex;
+  align-items: center;
+  padding: .14rem .38rem;
+  border-radius: .5rem;
+  background: #e8f7c8;
+  color: #4c6a10;
+  font-family: var(--mono);
+  font-size: .6rem;
+  letter-spacing: -.01em;
+  white-space: nowrap;
+}
+.delta--down { background: #fbf0c8; color: #6f5406; }
+.delta--dark { background: rgba(214, 253, 112, .14); color: var(--lime); }
+
+/* --- readout rows -------------------------------------------------------- */
+.grows { display: flex; flex-direction: column; gap: .3rem; flex: 1 1 auto; min-height: 0; justify-content: center; }
+.grow {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  padding: .4rem .55rem .4rem .45rem;
+  border-radius: .5rem;
+  background: var(--grey-100);
+}
+.grow__chip {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.65rem; height: 1.65rem;
+  border-radius: .42rem;
+  background: var(--white);
+  color: var(--ink);
+}
+.grow__chip svg { width: .85rem; height: .85rem; }
+.grow__info { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.grow__name {
+  font-size: .74rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: -.02em;
+  line-height: 1.3;
+}
+.grow__detail {
+  font-family: var(--mono);
+  font-size: .55rem;
+  letter-spacing: .06em;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+.grow__val {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  font-size: .76rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: -.02em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* --- fraction + track ---------------------------------------------------- */
+/* "46 000 / 58 000 т": the achieved figure at full weight, the total greyed
+   back so the ratio is legible before either number is read. */
+.frac { display: flex; flex-direction: column; gap: .45rem; }
+.frac__nums { display: flex; align-items: baseline; gap: .3rem; white-space: nowrap; }
+.frac__big {
+  font-size: clamp(1.45rem, .9rem + 1.5vw, 2.05rem);
+  font-weight: var(--fw-medium);
+  letter-spacing: -.055em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.frac__rest {
+  font-size: clamp(.9rem, .7rem + .5vw, 1.1rem);
+  letter-spacing: -.03em;
+  color: var(--muted-on-light);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.frac__track {
+  display: flex;
+  height: .55rem;
+  border-radius: .55rem;
+  background: var(--grey-200);
+  overflow: hidden;
+}
+.frac__seg {
+  width: var(--w);
+  height: 100%;
+  transform-origin: left center;
+  background: var(--lime);
+}
+.frac__seg--alt { background: var(--ink); }
+.frac__key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .2rem .8rem;
+  font-family: var(--mono);
+  font-size: .55rem;
+  letter-spacing: .06em;
+  color: var(--text-2);
+}
+.frac__key i {
+  display: inline-block;
+  width: .45rem; height: .45rem;
+  margin-right: .3rem;
+  border-radius: .12rem;
+  background: var(--lime);
+  font-style: normal;
+}
+.frac__key span:nth-child(2) i { background: var(--ink); }
+
+/* --- large chart: the reference's axis, not a wall of numbers ------------ */
+/* Narrow rounded columns on a single hairline baseline, years underneath, one
+   accent bar. The template's own chart is exactly this and nothing more. */
+.chart--big { gap: .5rem; height: 100%; }
+.chart--big .chart__plot {
+  height: auto;
+  flex: 1 1 auto;
+  min-height: 4.5rem;
+  gap: clamp(.35rem, 1.4vw, .8rem);
+  /* Room above the tallest column for its value, which otherwise renders
+     outside the plot and is clipped by the instrument. */
+  padding-top: 1.15rem;
+  padding-bottom: .45rem;
+  border-bottom: 1px solid var(--border);
+}
+.chart--big .chart__grid { display: none; }
+.chart--big .chart__col { justify-content: center; }
+.chart--big .chart__fill {
+  width: clamp(1.05rem, 3.2vw, 1.55rem);
+  margin-inline: auto;
+  border-radius: .3rem;
+  background: var(--grey-200);
+}
+.chart--big .chart__col--peak .chart__fill { background: var(--lime); }
+.chart--big .chart__col--dip  .chart__fill { background: var(--yellow); }
+.chart--big .chart__val {
+  font-size: .66rem;
+  font-weight: var(--fw-medium);
+  bottom: calc(var(--h) + .35rem);
+}
+/* The three ordinary years stay quiet until asked for. */
+.chart--big .chart__val--quiet { opacity: 0; transition: opacity var(--dur-xs) var(--ease); }
+.chart--big .chart__col:hover .chart__val--quiet,
+.chart--big .chart__col:focus-within .chart__val--quiet { opacity: .55; }
+.chart--big .chart__years { border-top: 0; padding-top: .2rem; }
+.chart--big .chart__years span { font-size: .58rem; }
+
+/* --- 2x2 measured values ------------------------------------------------- */
+/* The laboratory card gets a grid rather than a fourth list: the block already
+   has one, and four figures compare faster side by side than stacked. */
+.gmetrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  gap: .3rem;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.gmetric {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: .12rem;
+  padding: .42rem .55rem .48rem;
+  border-radius: .5rem;
+  background: var(--grey-100);
+}
+.gmetric__n {
+  font-family: var(--mono);
+  font-size: .53rem;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gmetric__v {
+  display: flex;
+  align-items: baseline;
+  gap: .35rem;
+  font-size: .92rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: -.03em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* --- widget: dispatch radar --------------------------------------------- */
+
+/* Replaces the orbiting-pill widget. Two things were wrong with that: text that
+   revolves cannot be read, and the hub was the only in-flow child of a grid
+   whose siblings were all absolutely positioned, so auto-placement dropped it
+   into an implicit second row — it rendered 59px below the rings it was meant
+   to sit inside. Here the hub is centred by absolute positioning, which has no
+   second row to fall into, and every label holds still. */
+
+.radar {
   position: relative;
+  /* Authored at 400x220 and locked to it, so the ellipses in the SVG stay true
+     circles-in-perspective and the label percentages line up with the nodes.
+     max-height lets the field letterbox itself when the instrument is shorter
+     than the ratio wants — without it the radar simply overflowed the card,
+     which is what it did at 390px. */
+  aspect-ratio: 400 / 220;
+  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  height: auto;
+  margin: auto;
+  flex: 0 1 auto;
+  min-height: 0;
+  isolation: isolate;
+}
+.radar__field {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+/* SVG elements take their transform-origin from the user-space origin unless
+   told otherwise, so a scale tween aimed at "center" gets compensated with a
+   translation that does not fully unwind — the rings came to rest 29px off the
+   hub. fill-box makes "center" mean the element's own centre, which is what
+   both the CSS and the tween assume. */
+.radar__ring, .radar__node {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.radar__ring {
+  fill: none;
+  /* On the instrument's white ground the old --border hairline all but vanished. */
+  stroke: var(--grey-200);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+}
+.radar__cross {
+  stroke: var(--grey-200);
+  stroke-width: 1;
+  stroke-dasharray: 3 5;
+  vector-effect: non-scaling-stroke;
+  opacity: .7;
+}
+.radar__route {
+  fill: none;
+  stroke: var(--grey-300);
+  /* the node is drawn after the route, so the line can run under the pill */
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  opacity: .75;
+}
+/* A short lit segment chasing along an otherwise invisible copy of the route:
+   one dash, one very long gap, offset animated the length of the path. Cheaper
+   and better supported than a motion path, and it pauses with the card. */
+.radar__beam {
+  fill: none;
+  stroke: var(--lime-lo);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 12 100;
+  stroke-dashoffset: 112;
+  animation: radar-beam var(--d, 7s) linear infinite;
+  animation-play-state: paused;
+}
+.radar__node {
+  fill: var(--white);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+/* The sweep is a conic wedge clipped to the outer ellipse. */
+.radar__sweep {
+  position: absolute;
+  left: 9.5%; top: 9%;
+  width: 81%; height: 82%;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg,
+    rgba(209, 255, 92, 0) 0deg,
+    rgba(209, 255, 92, .04) 24deg,
+    rgba(209, 255, 92, .2) 47deg,
+    rgba(209, 255, 92, 0) 54deg);
+  animation: radar-sweep 11s linear infinite;
+  animation-play-state: paused;
+  pointer-events: none;
+  z-index: -1;
+}
+/* Centred with inset + auto margins, not a translate. GSAP takes ownership of
+   `transform` the moment it tweens the hub's scale, and a centring translate
+   living in that same property is simply overwritten — which is how the hub
+   ended up 29px off-centre again after the rebuild. Auto margins are immune. */
+.radar__hub {
+  position: absolute;
+  inset: 0;
+  margin: auto;
   z-index: 2;
   display: grid; place-items: center;
-  width: 4.25rem; height: 4.25rem;
+  width: 4.5rem; height: 4.5rem;
   border-radius: var(--r-md);
   background: var(--ink);
   color: var(--white);
@@ -424,27 +861,30 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   padding: .3rem;
   box-shadow: var(--shadow);
 }
-.orbit__arm {
+/* Positioned without a transform of any kind. GSAP writes `translate: none`
+   onto every element it animates — it nulls the independent transform
+   properties so they cannot fight its own matrix — so a pill centred with
+   `translate: -100% -50%` silently lost its offset the moment it animated in,
+   and every label sat on top of its node.
+
+   Instead the pin is a zero-sized flex box pinned at the node. `align-items:
+   center` on a zero-height box centres the label on the node's line, and
+   `direction: rtl` makes a left-hand label overflow leftwards out of a
+   zero-width box. No transform involved, nothing for GSAP to overwrite. */
+.radar__pin {
   position: absolute;
-  inset: 0;
-  pointer-events: none;
-  transform: rotate(var(--a));
-}
-.orbit__hold {
-  position: absolute;
-  left: calc(50% + var(--r)); top: 50%;
+  left: var(--l); top: var(--t);
+  z-index: 3;
   width: 0; height: 0;
-  /* cancels the arm's static --a as well as its animated spin, otherwise every
-     pill renders permanently tilted by its own start angle */
-  transform: rotate(calc(-1 * var(--a)));
-}
-.orbit__pill {
-  position: absolute;
-  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
-  gap: .4rem;
-  padding: .4rem .7rem;
+}
+.radar__pin--l { direction: rtl; padding-right: .6rem; }
+.radar__pin--r { direction: ltr; padding-left: .6rem; }
+.radar__pin b {
+  direction: ltr;
+  flex: none;
+  padding: .34rem .66rem;
   border-radius: var(--r-pill);
   background: var(--white);
   box-shadow: var(--shadow-sm);
@@ -452,13 +892,12 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   font-weight: var(--fw-medium);
   white-space: nowrap;
 }
-.orbit__pill::before {
-  content: "";
-  width: .4rem; height: .4rem;
-  border-radius: 50%;
-  background: var(--lime-lo);
-  flex: none;
-}
+/* No dot on the pill: the SVG node at the route's end already marks the point,
+   and two markers a few pixels apart read as a mistake. */
+.radar__node { fill: var(--lime); stroke: var(--ink); stroke-width: 1.4; }
+
+@keyframes radar-beam { to { stroke-dashoffset: 0; } }
+@keyframes radar-sweep { to { transform: rotate(360deg); } }
 
 /* --- widget: lab readout ------------------------------------------------- */
 
@@ -550,17 +989,41 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 
 .rail {
   display: flex;
+  /* `stretch` is what makes every card in the rail the same height, so the
+     author block always lands on one line across the row instead of floating
+     wherever a shorter quote happens to end. */
+  align-items: stretch;
   gap: var(--s-lg);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-padding-inline: var(--gutter);
   padding-inline: var(--gutter);
   margin-inline: calc(var(--gutter) * -1);
-  padding-bottom: var(--s-xs);
+  /* A scroll container clips on BOTH axes, so the cards' drop shadow was being
+     sliced off flush against the rail's edge and read as a hard dark line. The
+     block padding is the room the shadow needs; the negative margin gives it
+     back to the layout so the section spacing is unchanged. */
+  /* Sized against the largest card shadow any variation uses — v3's is a 32px
+     blur, so 16px of clearance still cut it into a line. The bottom padding is
+     NOT pulled back by a negative margin: that reserved the room inside the
+     scroller but handed it straight back to the layout, so the next section
+     still began on the cards' bottom edge and clipped the shadow there. */
+  padding-block: 1.75rem 3.25rem;
+  margin-block: -1.75rem 0;
   scrollbar-width: none;
+  overscroll-behavior-inline: contain;
+  touch-action: pan-x pan-y;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
 .rail::-webkit-scrollbar { display: none; }
 .rail > * { scroll-snap-align: start; flex: 0 0 auto; }
+/* Fade the rail into the page at both ends rather than letting cards be
+   guillotined by the viewport edge. */
+.rail--faded {
+  -webkit-mask-image: linear-gradient(90deg, #0000 0, #000 3%, #000 97%, #0000 100%);
+  mask-image: linear-gradient(90deg, #0000 0, #000 3%, #000 97%, #0000 100%);
+}
 
 .rail-btns { display: inline-flex; gap: .5rem; }
 .rail-btn {
@@ -581,15 +1044,27 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 .quote {
   width: min(23.5rem, 84vw);
   border-radius: var(--r);
-  overflow: hidden;
+  overflow: clip;
   background: var(--white);
   box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
+  /* Height comes from the rail's `align-items: stretch`, so every card in the
+     row matches the tallest quote and the author block lands on one line.
+     A `min-height: 100%` here would resolve against the rail's *padded* height
+     and push the card back out through the bottom edge — the same clipping,
+     reintroduced by the fix. */
+  height: auto;
 }
-.quote__ph { position: relative; aspect-ratio: 4 / 3; }
-.quote__ph img { width: 100%; height: 100%; object-fit: cover; }
-.quote__body { padding: var(--s-xl); display: flex; flex-direction: column; gap: var(--s-lg); flex: 1; }
+.quote__ph { position: relative; aspect-ratio: 4 / 3; flex: none; overflow: clip; }
+.quote__ph img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 28%; }
+.quote__body {
+  padding: var(--s-xl);
+  display: flex; flex-direction: column;
+  gap: var(--s-lg);
+  flex: 1 1 auto;
+  min-height: 0;
+}
 .quote__mark { color: var(--lime-lo); font-size: 2.2rem; line-height: .55; }
 .quote__txt { font-size: var(--fs-sm); line-height: 1.6; }
 .quote__who { margin-top: auto; display: flex; flex-direction: column; gap: .1rem; }
@@ -705,7 +1180,7 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   color: var(--text-2);
   max-width: 66ch;
 }
-.faq__i[open] .faq__a { animation: faq-in var(--dur-sm) var(--ease-out) both; }
+.faq__i[open] .faq__a { animation: none; }
 @keyframes faq-in { from { opacity: 0; transform: translateY(-.4rem); } }
 
 /* --- form --------------------------------------------------------------- */
@@ -746,7 +1221,17 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   border-color: var(--black);
   box-shadow: 0 0 0 3px rgba(214, 253, 112, .55);
 }
-.form__note { font-size: var(--fs-xs); color: var(--grey-300); max-width: 46ch; }
+.field :is(input, select, textarea):user-invalid {
+  border-color: #b42318;
+  box-shadow: 0 0 0 3px rgba(180, 35, 24, .12);
+}
+.form__note { font-size: var(--fs-xs); color: var(--muted-on-light); max-width: 46ch; }
+/* Underline on hover and on focus only, the way .cinfo__v a does it. At rest
+   the link is indistinguishable from the sentence around it, which is what
+   keeps the consent line pixel-identical; a permanent underline would be the
+   better link and a visual change nobody asked this pass to make. */
+.form__note-link:hover,
+.form__note-link:focus-visible { border-bottom: 1px solid currentColor; }
 .form__ok {
   display: none;
   gap: .6rem;
@@ -788,7 +1273,9 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
   font-size: var(--fs-sm);
 }
 .subscribe input::placeholder { color: rgba(255, 255, 255, .45); }
-.subscribe input:focus { outline: 0; border-color: var(--lime); }
+.subscribe input:focus { outline: 0; border-color: var(--lime); box-shadow: 0 0 0 3px rgba(214, 253, 112, .18); }
+.subscribe input:user-invalid { border-color: #ff8b82; }
+.form button:disabled, .footer__nl button:disabled { cursor: not-allowed; opacity: .72; }
 .subscribe .btn { position: absolute; right: .3rem; top: 50%; transform: translateY(-50%); }
 .subscribe .btn:hover { transform: translateY(-50%) translateY(-2px); }
 
@@ -837,3 +1324,303 @@ body.nav-open .drawer { opacity: 1; visibility: visible; transform: none; }
 .logo-bar .pm__tile svg { color: var(--ink); }
 .logo-bar:hover .pm { opacity: .62; }
 .logo-bar .pm:hover { opacity: 1; color: var(--white); }
+
+/* --- reference-grade hero glyphs ---------------------------------------- */
+.hero-glyph {
+  display: inline-grid;
+  place-items: center;
+  width: .78em;
+  height: .78em;
+  margin-inline: .08em;
+  vertical-align: .02em;
+  border-radius: 50%;
+  background: var(--lime);
+  color: var(--field);
+  box-shadow: 0 0 0 .08em rgba(255, 255, 255, .2);
+}
+.hero-glyph svg { width: .45em; height: .45em; }
+.hero-glyph--sky { background: var(--sky); color: var(--white); }
+.hero-glyph--glass {
+  background: rgba(255, 255, 255, .18);
+  color: var(--lime);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .4);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+/* --- richer chart surface ------------------------------------------------ */
+.chart__plot { position: relative; }
+.chart__grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+  pointer-events: none;
+}
+.chart__grid i { border-top: 1px solid rgba(19, 19, 19, .055); }
+.chart__col { z-index: 1; }
+.chart__fill {
+  background: linear-gradient(180deg, #f1f2ee 0%, var(--grey-200) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .65);
+}
+.chart__col--peak .chart__fill { background: linear-gradient(180deg, var(--lime-hi), var(--lime)); }
+.chart__col--dip .chart__fill { background: linear-gradient(180deg, #fff86b, var(--yellow)); }
+.on-dark .chart__grid i { border-color: rgba(255, 255, 255, .055); }
+
+/* --- partner orbit: a real circular system, not another flat logo row ---- */
+.partner-stage {
+  display: grid;
+  grid-template-columns: minmax(14rem, .72fr) minmax(24rem, 1.28fr);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 6rem);
+  padding-block: clamp(3rem, 6vw, 5.5rem);
+}
+.partner-stage__copy { display: flex; flex-direction: column; gap: var(--s-lg); }
+.partner-stage__copy p {
+  max-width: 30ch;
+  font-size: var(--fs-xl);
+  line-height: 1.4;
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+.partner-orbit {
+  position: relative;
+  width: min(100%, 31rem);
+  aspect-ratio: 1;
+  margin-inline: auto;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+.partner-orbit::before {
+  content: "";
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(209, 255, 92, .16), transparent 64%);
+  filter: blur(12px);
+  z-index: -1;
+}
+.partner-orbit__ring {
+  position: absolute;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+}
+.partner-orbit__ring--outer { inset: 8%; }
+/* A third ring between the two: the orbit reads as a system of shells rather
+   than as a target with a bullseye, and the marks sit on a track instead of
+   floating in the gap. */
+.partner-orbit__ring--mid { inset: 18%; border-color: color-mix(in srgb, var(--border) 62%, transparent); }
+.partner-orbit__ring--inner { inset: 28%; border-style: dashed; }
+.partner-orbit__hub {
+  width: 7rem;
+  height: 7rem;
+  border-radius: 50%;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  background: var(--field);
+  color: var(--white);
+  box-shadow: var(--shadow);
+}
+.partner-orbit__hub span { font-weight: var(--fw-semibold); letter-spacing: -.04em; }
+.partner-orbit__hub small {
+  margin-top: .2rem;
+  color: var(--lime);
+  font-family: var(--mono);
+  font-size: .58rem;
+  letter-spacing: .24em;
+}
+.partner-orbit__node {
+  --start: calc(var(--i) * (360deg / var(--count)));
+  --radius: clamp(8.4rem, 18vw, 12.7rem);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  animation: partner-circuit 38s linear infinite;
+  animation-play-state: paused;
+}
+.partner-orbit.is-spinning .partner-orbit__node { animation-play-state: running; }
+/* Stop the carousel while someone is reading it. Rotating text that will not
+   hold still is the single most common complaint about orbits like this one,
+   and a pointer resting on a mark is the clearest possible signal to stop. */
+.partner-orbit:hover .partner-orbit__node,
+.partner-orbit:focus-within .partner-orbit__node { animation-play-state: paused; }
+.partner-orbit__node .pm {
+  padding: .62rem .88rem;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, .96);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  opacity: 1;
+}
+.partner-orbit__node .pm__t { font-size: .78rem; }
+.partner-orbit__node .pm__g { width: 1.15rem; height: 1.15rem; }
+.partner-orbit__node .pm__tile { width: 1.45rem; height: 1.45rem; border-radius: var(--r-xs); }
+.partner-orbit__node .pm__tile svg { width: .9rem; height: .9rem; }
+@keyframes partner-circuit {
+  from { transform: rotate(var(--start)) translateX(var(--radius)) rotate(calc(-1 * var(--start))); }
+  to { transform: rotate(calc(var(--start) + 360deg)) translateX(var(--radius)) rotate(calc(-1 * (var(--start) + 360deg))); }
+}
+
+/* keyboard gets the same visual affordances as pointer hover */
+:is(.btn, .rail-btn, .post, .member, .plan, .ccard, .social__i, .chips a):focus-visible,
+:is(.post, .member, .plan, .ccard):focus-within {
+  outline: 2px solid var(--lime-lo);
+  outline-offset: 4px;
+}
+.marq[data-marquee-hover]:focus-visible { outline: 2px solid var(--lime-lo); outline-offset: 3px; }
+
+/* ==========================================================================
+   SHARED PASS-2 PRIMITIVES
+   ========================================================================== */
+
+.media-frame {
+  --media-radius: var(--r);
+  position: relative;
+  /* `clip` beats `hidden` here: it clips to the padding box without turning the
+     frame into a scroll container, so a photograph that overhangs for parallax
+     cannot make the page scrollable sideways. */
+  overflow: clip;
+  border-radius: var(--media-radius);
+  isolation: isolate;
+  background: transparent;
+  min-width: 0;
+}
+/* Every layer between the frame and the pixels has to be full-bleed AND carry
+   the same radius. When one link in the chain stayed square, its corner showed
+   through the rounded frame as a dark triangle — that was the grey wedge on the
+   corners of the about, services and team photographs. */
+.media-frame > picture,
+.media-frame > picture > img,
+.media-frame > img,
+.media-frame > [data-parallax],
+.media-frame > [data-parallax] > picture,
+.media-frame > [data-parallax] > picture > img {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: none;
+}
+.media-frame > picture,
+.media-frame > [data-parallax],
+.media-frame > [data-parallax] > picture {
+  display: block;
+  overflow: clip;
+}
+.media-frame img {
+  display: block;
+  object-fit: cover;
+  object-position: var(--media-position, 50% 50%);
+  border-radius: inherit;
+  /* Promote to its own layer: without it WebKit composites the rounded edge a
+     half-pixel short and leaves a grey hairline along the curve. */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.icon-badge {
+  --badge-bg: var(--lime);
+  --badge-fg: var(--ink);
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  background: var(--badge-bg);
+  color: var(--badge-fg);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.28), 0 8px 24px -18px rgba(0,0,0,.8);
+}
+.icon-badge svg { width: 1.35rem; height: 1.35rem; }
+.icon-badge--sm { width: 2.35rem; height: 2.35rem; }
+.icon-badge--sm svg { width: 1rem; height: 1rem; }
+.icon-badge--inline { display: inline-grid; width: .82em; height: .82em; vertical-align: -.08em; }
+.icon-badge--inline svg { width: .48em; height: .48em; }
+
+.stats-card {
+  position: relative;
+  min-height: 11rem;
+  overflow: hidden;
+  isolation: isolate;
+}
+.stats-card::after {
+  content: "";
+  position: absolute;
+  inset: auto -12% -45% 25%;
+  height: 75%;
+  z-index: -1;
+  background: radial-gradient(circle, rgba(209,255,92,.2), transparent 66%);
+}
+.stats-card__top { display: flex; align-items: center; justify-content: space-between; gap: var(--s-md); }
+.stats-card__index { font-family: var(--mono); font-size: .62rem; letter-spacing: .12em; color: var(--muted-on-light); }
+.stats-card__spark {
+  height: 2.4rem;
+  margin-top: auto;
+  display: flex;
+  align-items: flex-end;
+  gap: .26rem;
+  padding-top: .45rem;
+  border-top: 1px solid var(--border);
+}
+.stats-card__spark i {
+  flex: 1;
+  height: var(--h);
+  min-height: .24rem;
+  border-radius: .2rem .2rem 0 0;
+  background: var(--grey-200);
+}
+.stats-card__spark i:nth-child(4), .stats-card__spark i:nth-child(5) { background: var(--lime); }
+
+.card-lift {
+  --lift-shadow: 0 14px 30px rgba(11,22,15,.12), 0 34px 70px -42px rgba(11,22,15,.55);
+  transition: transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out), filter var(--dur-sm) var(--ease);
+  transform-origin: center;
+}
+@media (hover:hover) and (pointer:fine) {
+  .card-lift:hover { transform: translateY(-7px) scale(1.018); box-shadow: var(--lift-shadow); filter: saturate(1.035); z-index: 2; }
+}
+.card-lift:focus-visible { transform: translateY(-4px); box-shadow: var(--lift-shadow); }
+
+.storage-viz {
+  position: relative;
+  min-height: 8rem;
+  display: grid;
+  align-items: end;
+  padding: .9rem 1rem .75rem;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(57,191,238,.12), transparent 72%);
+}
+.storage-viz__grid {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(19,19,19,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(19,19,19,.055) 1px, transparent 1px);
+  background-size: 100% 25%, 16.666% 100%;
+}
+.storage-viz__silos { position: relative; display: flex; align-items: end; justify-content: center; gap: .55rem; height: 6rem; }
+.storage-viz__silo {
+  position: relative;
+  width: clamp(2.3rem, 7vw, 3.8rem);
+  height: 6rem;
+  border: 1px solid rgba(19,19,19,.18);
+  border-radius: 1.2rem 1.2rem .35rem .35rem;
+  overflow: hidden;
+  background: rgba(255,255,255,.72);
+}
+.storage-viz__silo i { position: absolute; inset: auto 0 0; height: var(--fill); background: linear-gradient(180deg, var(--lime-hi), var(--lime)); }
+.storage-viz__silo b { position: absolute; left: 50%; bottom: .35rem; transform: translateX(-50%); font: 500 .52rem/1 var(--mono); }
+.storage-viz__flow { position: absolute; left: 9%; right: 9%; bottom: .6rem; height: 2px; background: var(--ink); }
+.storage-viz__flow i { display: block; width: 26%; height: 100%; background: var(--sky); animation: storage-flow 3.2s linear infinite; }
+@keyframes storage-flow { to { transform: translateX(285%); } }
+
+
+.lab__summary { display:flex; align-items:center; gap:.65rem; padding:.65rem .75rem; border-radius:var(--r-sm); background:var(--ink); color:var(--white); }
+.lab__summary span { font: 500 1.05rem/1 var(--mono); }
+.lab__summary i { height:.35rem; flex:1; border-radius:var(--r-pill); background:linear-gradient(90deg,var(--lime) 78%,rgba(255,255,255,.14) 78%); }
+.lab__summary small { font: .58rem/1 var(--mono); color:var(--lime); letter-spacing:.12em; }
+
+.on-dark .stats-card__spark, .v2 #capacity .stats-card__spark { border-color: var(--line-dark); }
+.on-dark .stats-card__spark i, .v2 #capacity .stats-card__spark i { background: rgba(255,255,255,.18); }
+.on-dark .storage-viz__grid { opacity:.55; }
+.on-dark .storage-viz__silo { background:rgba(255,255,255,.08); border-color:var(--line-dark-2); }
+.on-dark .storage-viz__flow { background:rgba(255,255,255,.55); }

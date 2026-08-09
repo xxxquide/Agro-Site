@@ -1,0 +1,162 @@
+{#- ============================================================================
+    v6 "geo" — the client's own extruded/shaded 3D Ukraine scene (ported 1:1
+    from src6/v6-map.svg + src6/v6.js), wrapped in the same panel/filter/
+    distance-list/stat/hint chrome as before.
+
+    The map itself now lives in templates/v6/ukraine-3d.svg.j2 (included
+    below) instead of the flat, restyled templates/ukraine-map.svg.j2 this
+    section used previously — the client asked for their own map, 1:1 in
+    form, only recoloured per variant. That partial carries the terrain
+    (27 oblasts + home cut-out), the slab extrusion, the 40/100km rings, the
+    ballistic-arc routes and the pin markers, all pre-computed to the same
+    static numbers v6.js produced at runtime (see that partial's own header
+    comment for the maths). No JS ships with any of it.
+
+    Pill layer: the client SVG has no on-canvas text labels of its own (the
+    mockup drew those in JS, positioned per frame). This macro renders one
+    HTML pill per place plus the hub ("Елеватор") and the 40km ring caption,
+    absolutely positioned inside .v6geo__mapbox from the *same* projected
+    coordinates baked into the SVG partial (project(x,y) applied by hand to
+    v6.js's PLACES table, then expressed as % of the partial's own
+    `viewBox="0 86 760 330"`) — so every pill sits exactly on its marker's
+    pole-top at every width with no JS measuring the rendered SVG.
+
+    Content: c.geo (existing, already ships hub.name/hub.value, map_alt,
+    distance_meta[].mode/kind/sub, distances[].to/.km) — nothing new needed.
+    ============================================================================ -#}
+
+{%- macro section() -%}
+{%- set places = ['vinnytsia', 'haisyn', 'odesa', 'kyiv'] -%}
+{%- set mode_icon = {'auto': 'truck', 'rail': 'route', 'port': 'ship'} -%}
+{#- Chip anchor points, in % of the SVG partial's own viewBox (0 86 760 330).
+    Each is the projected pole-top (project(x,y) from v6.js's PLACES table,
+    minus that place's own pole height) that the corresponding marker in
+    ukraine-3d.svg.j2 is drawn at — ported by hand from v6.js, not eyeballed.
+    .v6geo__mapbox is locked to this same 760x330 aspect ratio so these
+    percentages line up with the rendered SVG at every width. -#}
+{%- set chip_pos = {
+  'hub':        {'x': 38.868, 'y': 20.838},
+  'vinnytsia':  {'x': 21.558, 'y': 31.491},
+  'haisyn':     {'x': 49.745, 'y': 39.547},
+  'kyiv':       {'x': 57.399, 'y': 12.784},
+  'odesa':      {'x': 56.295, 'y': 64.941},
+} -%}
+{%- set ring_pos = {'x': 32.815, 'y': 52.353} -%}
+{#- English transliterations for the SVG partial's 27 decorative <title>
+    elements (one per oblast path), so the EN locale never renders bare
+    Cyrillic text — verify.py's Cyrillic-leak check scans every page's text
+    content, <title> included. Same transliteration set already used by
+    templates/ukraine-map.svg.j2 for its own oblast titles. -#}
+{%- set oblast_en = {
+  'Чернігівська': "Chernihivs'ka Oblast'",
+  'Волинська': "Volyns'ka Oblast'",
+  'Рівненська': "Rivnens'ka Oblast'",
+  'Житомирська': "Zhytomyrs'ka Oblast'",
+  'Київська': "Kyyivs'ka Oblast'",
+  'Закарпатська': "Zakarpattia Oblast",
+  'Чернівецька': "Chernivets'ka Oblast'",
+  'Івано-Франківська': "Ivano-Frankivs'ka Oblast'",
+  'Одеська': "Odes'ka Oblast'",
+  'Львівська': "L'vivs'ka Oblast'",
+  'Сумська': "Sums'ka Oblast'",
+  'Харківська': "Kharkivs'ka Oblast'",
+  'Луганська': "Luhans'ka Oblast'",
+  'Донецька': "Donets'ka Oblast'",
+  'Херсонська': "Khersons'ka Oblast'",
+  'Запорізька': "Zaporiz'ka Oblast'",
+  'Миколаївська': "Mykolayivs'ka Oblast'",
+  'Полтавська': "Poltavs'ka Oblast'",
+  'Хмельницька': "Khmel'nyts'ka Oblast'",
+  'Тернопільська': "Ternopil's'ka Oblast'",
+  'Дніпропетровська': "Dnipropetrovska Oblast'",
+  'Черкаська': "Cherkas'ka Oblast'",
+  'Кіровоградська': "Kirovohrads'ka Oblast'",
+  'Київ': "Misto Kyyiv",
+  'Крим': "Avtonomna Respublika Krym",
+  'Севастополь': "Misto Sevastopol'",
+  'Вінницька': "Vinnyts'ka Oblast'",
+} -%}
+<section class="section v6geo" id="geo" role="region" aria-labelledby="geo-t">
+  <div class="wrap">
+    <div class="head">
+      <span class="tag tag--lime" data-r>{{ c.geo.eyebrow }}</span>
+      <h2 id="geo-t" data-split>{{ c.geo.title }}</h2>
+      <p class="lead" data-r>{{ c.geo.lead }}</p>
+    </div>
+
+    <div class="v6geo__panel" data-card>
+      <div class="v6geo__map" data-r="left" data-route-map>
+        <div class="v6geo__caption">
+          <b>{{ c.geo.caption_region }}</b>
+          <span>{{ c.geo.caption_place }}</span>
+        </div>
+
+        <div class="v6geo__mapbox">
+          {% include "v6/ukraine-3d.svg.j2" %}
+
+          <div class="v6geo__pill v6geo__pill--hub" style="left:{{ '%.3f'|format(chip_pos.hub.x) }}%; top:{{ '%.3f'|format(chip_pos.hub.y) }}%;" aria-hidden="true">
+            <span class="v6geo__pill-ic">{{ I.icon('silo') }}</span>
+            <span class="v6geo__pill-name">{{ c.geo.hub.name }}</span>
+            <span class="v6geo__pill-km">{{ c.geo.hub.value }}</span>
+          </div>
+
+          <div class="v6geo__pill v6geo__pill--ring" style="left:{{ '%.3f'|format(ring_pos.x) }}%; top:{{ '%.3f'|format(ring_pos.y) }}%;" aria-hidden="true">
+            <span class="v6geo__pill-name">{{ c.geo.legend.ring }}</span>
+          </div>
+
+          {%- for d in c.geo.distances %}
+          {%- set place = places[loop.index0] -%}
+          {%- set meta = c.geo.distance_meta[loop.index0] -%}
+          {%- set pos = chip_pos[place] %}
+          <div class="v6geo__pill v6geo__pill--{{ place }}" data-place="{{ place }}" style="left:{{ '%.3f'|format(pos.x) }}%; top:{{ '%.3f'|format(pos.y) }}%;" aria-hidden="true">
+            <span class="v6geo__pill-ic">{{ I.icon(mode_icon[meta.mode]) }}</span>
+            <span class="v6geo__pill-name">{{ d.to }}</span>
+            <span class="v6geo__pill-km">{{ d.km }}</span>
+          </div>
+          {%- endfor %}
+        </div>
+
+        <ul class="v6geo__legend">
+          <li class="v6geo__lgi"><i></i>{{ c.geo.legend.auto }}</li>
+          <li class="v6geo__lgi v6geo__lgi--rail"><i></i>{{ c.geo.legend.rail }}</li>
+          <li class="v6geo__lgi v6geo__lgi--ring"><i></i>{{ c.geo.legend.ring }}</li>
+        </ul>
+      </div>
+
+      <div class="v6geo__side" data-r="right">
+        {#- Filter is decorative-functional: real radios, so a keyboard/AT user
+            gets a normal grouped control with visible checked state. Checking
+            a radio dims (not hides) the rows/routes that do not match its
+            kind, via :checked + a general sibling selector — no JS, nothing
+            ever removed from the accessibility tree. -#}
+        <fieldset class="v6geo__filter">
+          <legend class="sr">{{ c.geo.filters.all }} / {{ c.geo.filters.local }} / {{ c.geo.filters.export }}</legend>
+          <input type="radio" name="geo-filter-{{ V.id }}" id="geo-f-all-{{ V.id }}" value="all" checked>
+          <label for="geo-f-all-{{ V.id }}">{{ c.geo.filters.all }}</label>
+          <input type="radio" name="geo-filter-{{ V.id }}" id="geo-f-local-{{ V.id }}" value="local">
+          <label for="geo-f-local-{{ V.id }}">{{ c.geo.filters.local }}</label>
+          <input type="radio" name="geo-filter-{{ V.id }}" id="geo-f-export-{{ V.id }}" value="export">
+          <label for="geo-f-export-{{ V.id }}">{{ c.geo.filters.export }}</label>
+        </fieldset>
+
+        <div class="v6geo__dists">
+          {%- for d in c.geo.distances %}
+          {%- set meta = c.geo.distance_meta[loop.index0] %}
+          <div class="v6geo__dist v6geo__dist--{{ meta.kind }}" data-place="{{ places[loop.index0] }}">
+            <span class="v6geo__dist-ic" aria-hidden="true">{{ I.icon(mode_icon[meta.mode]) }}</span>
+            <span class="v6geo__dist-to">{{ d.to }}<small>{{ meta.sub }}</small></span>
+            <span class="v6geo__dist-km">{{ d.km }}</span>
+          </div>
+          {%- endfor %}
+        </div>
+
+        <div class="v6geo__stats">
+          {%- for s in c.geo.stats %}
+          <div class="v6geo__stat"><b>{{ s.value }}<i>{{ s.unit }}</i></b><span>{{ s.label }}</span></div>
+          {%- endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{%- endmacro -%}

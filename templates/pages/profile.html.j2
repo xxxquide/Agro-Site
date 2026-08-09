@@ -1,0 +1,47 @@
+{% extends "base.html.j2" %}
+{%- import "blocks.html.j2" as B with context -%}
+{% block body %}
+<section class="profile-hero wrap" data-page-hero>
+  <div class="profile-hero__copy">
+    <a class="detail-back" href="{{ url_for('about') }}#team">{{ I.chevron('left') }}<span>{{ c.detail_labels.back_about }}</span></a>
+    <span class="tag tag--lime" data-page-item>{{ c.detail_labels.profile_eyebrow }}</span>
+    <h1 id="profile-t" data-page-title>{{ item.name }}</h1>
+    <p class="profile-role" data-page-item>{{ item.role }}</p>
+    <p class="lead" data-page-item>{{ item.intro }}</p>
+  </div>
+  <div class="profile-hero__media media-frame" data-page-media>
+    {{ B.pic(item.img, item.alt, '(max-width: 64rem) 100vw, 46vw', priority=True) }}
+  </div>
+</section>
+
+<section class="section profile-body">
+  <div class="wrap profile-body__grid">
+    <div>
+      <span class="tag tag--lime">{{ c.detail_labels.responsibilities }}</span>
+      <ul class="profile-list" data-stagger=".08">
+        {%- for responsibility in item.responsibilities %}
+        <li><span class="icon-badge icon-badge--sm">{{ I.tick() }}</span><span>{{ responsibility }}</span></li>
+        {%- endfor %}
+      </ul>
+    </div>
+    <blockquote class="profile-quote" data-r="right">
+      <span aria-hidden="true">&bdquo;</span>
+      <p>{{ item.quote }}</p>
+      <footer>{{ item.name }} · {{ item.role }}</footer>
+    </blockquote>
+  </div>
+</section>
+
+<section class="section detail-related" role="region" aria-labelledby="profile-related-t">
+  <div class="wrap">
+    <div class="head-row">
+      <div class="head"><span class="tag tag--lime">{{ c.detail_labels.article_eyebrow }}</span><h2 id="profile-related-t">{{ c.detail_labels.profile_related }}</h2></div>
+      <a class="btn btn--outline" href="{{ url_for('blog') }}">{{ c.detail_labels.back_blog }}<span class="btn__badge">{{ I.arrow() }}</span></a>
+    </div>
+    <div class="news detail-related__grid">
+      {%- for post in related %}{{ B.story_card(post, loop.index) }}{% endfor %}
+    </div>
+  </div>
+</section>
+{{ B.sec_cta() }}
+{% endblock %}

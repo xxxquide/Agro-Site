@@ -1,0 +1,104 @@
+{#- ============================================================================
+    v6 "orb" — ports the mockup's #orb section (src6/v6-orb.html) onto the
+    site's existing partner content (c.partners). Replaces logo_strip() in
+    blocks.html.j2, whose lead paragraph (c.partners.note) is word-for-word
+    the same copy as this section's <h2> in the mockup — both describe the
+    same idea ("everything revolves around one lot standard"), so this port
+    keeps that copy rather than inventing new heading text.
+
+    Left column: eyebrow, big heading, a numbered 01/02/03 list of short
+    claims (bold lead-in + plain sentence, rule-separated). Right column: the
+    orbit — three dashed/solid concentric rings, a soft-hubbed brand mark at
+    the centre, and six partner nodes on arms that rotate the position while
+    the node itself counter-rotates so its label stays upright.
+
+    Content: c.partners.label / c.partners.note (existing) supply the eyebrow
+    and heading; c.partners.items[:6] (existing, already in mockup order —
+    ear/stone/drop/pellet/crystal/sack — matching Zerno Treid / Podillia Mill
+    / Olia Plus / Agrofeed / Vinn Sugar / Groats House 1:1) supply the six
+    orbit partners; c.brand.word_1/word_2 supply the hub's wordmark fallback
+    text (sr-only — the visible hub is the four-square logomark, same as the
+    mockup). The numbered claims list is new copy, added under
+    c.partners.claims[] in src6/content-orb.json (uk + en, not merged here).
+
+    No new JavaScript: rotation is pure CSS, gated by the existing
+    [data-partner-orbit] → .is-spinning contract that src/js/app.js's
+    initPartnerOrbit() already drives (paused off-screen / tab hidden), plus
+    a hover/focus-within pause defined in this section's own stylesheet
+    (08-v6-orb.css) — the single most common failure mode of a
+    rotating-label pattern like this one. prefers-reduced-motion pauses the
+    rotation entirely, leaving every node at whatever point on the ring it
+    was laid out at (never mid-orbit, never hidden) — see 08-v6-orb.css's own
+    reduced-motion block, which sits alongside 05-motion.css's global
+    animation-duration override rather than replacing it.
+
+    The centre mark reuses this repo's own tokens for the mockup's two
+    hardcoded hex values: #C6F24E (lime quadrant) -> var(--lime), and
+    #F7F6F1 (the near-white diagonal hatching) -> var(--grey-100), the
+    palette's own closest near-white (#f4f5f1).
+
+    Below ~560px an orbit stops being legible as an orbit at all, so the
+    stage collapses to a plain 2-column grid of the six partners — the exact
+    pattern the existing .partner-orbit already uses at that width (see
+    06-responsive.css): place-items: stretch and min-width: 0 throughout, so
+    a long partner name cannot widen its own grid cell and push the page
+    sideways.
+    ============================================================================ -#}
+
+{%- import "partners.html.j2" as P with context -%}
+
+{%- macro section() -%}
+<section class="section v6orb" id="orb" role="region" aria-labelledby="orb-t">
+  <div class="wrap">
+    <div class="v6orb__grid">
+      <div class="v6orb__head">
+        <span class="tag tag--lime" data-r>{{ c.partners.label }}</span>
+        <h2 id="orb-t" data-split>{{ c.partners.note }}</h2>
+
+        <div class="v6orb__claims" data-stagger=".08">
+          {%- for cl in c.partners.claims %}
+          <div class="v6orb__claim">
+            <b>{{ cl.n }}</b>
+            <p><strong>{{ cl.lead }}</strong> {{ cl.text }}</p>
+          </div>
+          {%- endfor %}
+        </div>
+      </div>
+
+      <div class="v6orb__stage" data-partner-orbit data-r="right">
+        <span class="v6orb__ring" style="--r:26%" aria-hidden="true"></span>
+        <span class="v6orb__ring v6orb__ring--d" style="--r:35%" aria-hidden="true"></span>
+        <span class="v6orb__ring" style="--r:44%" aria-hidden="true"></span>
+
+        {%- set arms = [
+          {'r': 26, 'dur': 48, 'dl': 0},
+          {'r': 26, 'dur': 48, 'dl': -24},
+          {'r': 35, 'dur': 62, 'dl': -15},
+          {'r': 35, 'dur': 62, 'dl': -46},
+          {'r': 44, 'dur': 78, 'dl': -8},
+          {'r': 44, 'dur': 78, 'dl': -47}
+        ] -%}
+        {%- for ptn in c.partners['items'][:6] %}
+        {%- set arm = arms[loop.index0] %}
+        <div class="v6orb__arm" style="--r:{{ arm.r }}%;--dur:{{ arm.dur }}s;--dl:{{ arm.dl }}s">
+          <div class="v6orb__node" style="--dur:{{ arm.dur }}s;--dl:{{ arm.dl }}s">
+            <span class="v6orb__b" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none">{{ P.glyph(ptn.kind) }}</svg></span>
+            <span class="v6orb__n">{{ ptn.name }}{% if ptn.suffix %}<br>{{ ptn.suffix|trim }}{% endif %}</span>
+          </div>
+        </div>
+        {%- endfor %}
+
+        <div class="v6orb__core">
+          <svg class="v6orb__mark" viewBox="0 0 48 48" role="img" aria-label="{{ c.brand.word_1 }} {{ c.brand.word_2 }}">
+            <path d="M11.00 0.00H18.42A0.80 0.80 0 0 1 19.22 0.80V25.42A0.80 0.80 0 0 1 18.42 26.22H0.80A0.80 0.80 0 0 1 0.00 25.42V11.00A11.00 11.00 0 0 1 11.00 0.00Z" fill="currentColor"/>
+            <path d="M0.00 16.00 L16.00 0.00 M0.00 24.00 L19.22 4.78 M5.78 26.22 L19.22 12.78" stroke="var(--grey-100)" stroke-width="1.5" stroke-linecap="round" opacity=".5" fill="none"/>
+            <path d="M22.38 0.00H37.00A11.00 11.00 0 0 1 48.00 11.00V25.42A0.80 0.80 0 0 1 47.20 26.22H22.38A0.80 0.80 0 0 1 21.57 25.42V0.80A0.80 0.80 0 0 1 22.38 0.00Z" fill="var(--lime)"/>
+            <path d="M0.80 28.57H18.42A0.80 0.80 0 0 1 19.22 29.38V47.20A0.80 0.80 0 0 1 18.42 48.00H11.00A11.00 11.00 0 0 1 0.00 37.00V29.38A0.80 0.80 0 0 1 0.80 28.57Z" fill="currentColor" opacity=".55"/>
+            <path d="M22.38 28.57H47.20A0.80 0.80 0 0 1 48.00 29.38V37.00A11.00 11.00 0 0 1 37.00 48.00H22.38A0.80 0.80 0 0 1 21.57 47.20V29.38A0.80 0.80 0 0 1 22.38 28.57Z" fill="currentColor"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{%- endmacro -%}

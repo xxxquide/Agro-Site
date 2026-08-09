@@ -9,7 +9,7 @@
 
 <p>
 <img alt="stack" src="https://img.shields.io/badge/stack-HTML%20%2B%20CSS%20%2B%20GSAP-131313?style=flat-square">
-<img alt="pages" src="https://img.shields.io/badge/pages-31-d6fd70?style=flat-square&labelColor=131313">
+<img alt="pages" src="https://img.shields.io/badge/pages-92-d6fd70?style=flat-square&labelColor=131313">
 <img alt="variations" src="https://img.shields.io/badge/variations-3-d6fd70?style=flat-square&labelColor=131313">
 <img alt="locales" src="https://img.shields.io/badge/locales-uk%20%C2%B7%20en-131313?style=flat-square">
 <img alt="third-party" src="https://img.shields.io/badge/third--party%20requests-0-d6fd70?style=flat-square&labelColor=131313">
@@ -38,8 +38,11 @@
 с одинаковой обработкой поверхностей три вариации читались как один сайт,
 переставленный местами.
 
-У каждой вариации 5 страниц (главная, про нас, услуги, новости, контакты) в двух
-локалях — **30 страниц** плюс `variants.html` для выбора и `404.html`.
+У каждой вариации есть 7 основных страниц (включая юридические), 6 полноценных
+статей, 4 профиля команды и 7 страниц культур в двух локалях: **144
+локализованные страницы**, `variants.html` для выбора и `404.html`. Всего в clean
+build — **146 HTML-файлов**, в `sitemap.xml` — **48 URL** (индексируется только
+V1 в двух локалях).
 
 **Живая версия:** https://xxxquide.github.io/Agro-Site/ ·
 [выбор вариаций](https://xxxquide.github.io/Agro-Site/variants.html) ·
@@ -108,7 +111,83 @@ x-height), кириллица полная. Итого из двух шрифт�
 
 Добавлено то, чего не было, а в шаблоне есть: автолента карточек под hero (V2),
 стеклянная лента логотипов (V3), две ленты тегов навстречу друг другу, параллакс
-на фото, непрерывная орбита. Есть полная ветка `prefers-reduced-motion: reduce`.
+на фото, непрерывная орбита и отдельная композиция motion для внутренних hero.
+
+Все бесконечные ленты и орбиты приостанавливаются вне viewport, при скрытой
+вкладке и при взаимодействии с содержимым. `prefers-reduced-motion: reduce`
+убирает scrub, autoplay и reveal-трансформации, но оставляет весь контент видимым.
+Изменение системной настройки во время открытой страницы безопасно перезапускает
+motion-слой. Мобильный drawer получает focus trap, делает основной контент
+`inert` и возвращает фокус на кнопку после закрытия. FAQ работает как
+эксклюзивный accordion с animated close, testimonial rails принимают touch swipe,
+а hover-lift карточек имеет эквивалентный `focus-visible` state.
+
+## Доступность: контракт reveal-слоя
+
+Самое важное, что нужно знать перед правкой motion-слоя: **скрытие анимируемых
+блоков делается через `opacity`, а не через `visibility`.** Это не вкусовщина.
+
+`visibility: hidden` и `opacity: 0` рисуют одно и то же — ничего. Но `visibility`
+дополнительно выкидывает узел из дерева доступности и из порядка табуляции, а
+селектор flash guard в `src/css/05-motion.css` покрывает большую часть страницы.
+Замеры до правки: скринридер доставал 3% текста главной вместо 100%, **22 из 23
+заголовков** отсутствовали в дереве доступности Chromium до первого скролла, и
+клавиатурой нельзя было добраться ни до одной ссылки ниже первого экрана.
+
+Был и второй порядок следствий: `aria-labelledby` на `<section>` указывал на
+заголовок, слова которого скрыты, имя вычислялось пустым, секция перестала быть
+ориентиром `region` — и атрибут стал на ней недопустимым. Одно объявление CSS
+генерировало ещё и 68 нарушений `aria-prohibited-attr`.
+
+Поэтому:
+
+- flash guard ставит `opacity: 0`;
+- в `src/js/app.js` нет ни одного `autoAlpha` — только `opacity`. `autoAlpha` это
+  opacity плюс visibility, и половина с visibility и создавала проблему;
+- ветки `.no-motion` и `@media (prefers-reduced-motion)` форсируют полную
+  видимость и трогать их не нужно;
+- у сфокусированного элемента есть `scroll-margin-block`, чтобы браузер довёл его
+  до линии триггера, а не остановился, едва вписав в viewport.
+
+Прозрачный узел остаётся в дереве и остаётся фокусируемым: фокус в него входит,
+браузер подскроллит, триггер срабатывает, блок проявляется. `python3
+.qa/keyboard.py` проходит табом весь порядок фокуса на пяти страницах и проверяет,
+что reveal-контейнер каждой остановки раскрылся.
+
+**Не возвращайте `visibility: hidden`, посчитав `opacity` небрежностью.**
+
+Контраст: `--grey-300` и `--lime-lo` — цвета для тёмных поверхностей, и на
+светлых у них 1.69:1 и 1.37:1. Для текста на светлом есть отдельные токены
+`--muted-on-light` и `--lime-on-light`; оба проверены и на белом, и на
+`--grey-100`, потому что серая панель стоит примерно 0.4 пункта отношения.
+
+## Страницы культур
+
+Семь культур живут на отдельных страницах `/services/<slug>/`, потому что «купити
+пшеницю оптом» и «соя не-ГМО» — разные запросы с разными конкурентами, и одна
+страница не ранжируется по семи товарным кластерам.
+
+**Чтобы добавить восьмую культуру, нужна одна запись в JSON.** В
+`content/uk.json` и `content/en.json` в `crops.items[]` добавляется объект с
+ключами:
+
+| Ключ | Что это |
+|---|---|
+| `name` `img` `alt` `text` | как у существующих: имя, картинка из `assets/img/manifest.json`, alt, короткое описание для аккордеона |
+| `area` `yield` `volume` | строки вида `4 800 га`. Числа для счётчиков парсятся из них при сборке — второй копии цифр нет |
+| `specs` | ровно те 4 пары, что показывает аккордеон на главной |
+| `specs_extra` | остальные пары спецификации; страница культуры показывает `specs + specs_extra` |
+| `slug` | латиницей, одинаков в обеих локалях |
+| `seo_title` `seo_description` | до 53 символов (дальше не влезает суффикс бренда) и 140–160 символов |
+| `lead` `body` `terms` `related` | подзаголовок, 4–6 секций текста, два блока условий, индексы 2–3 других культур |
+
+Больше ничего. Тройной цикл в `tools/build_site.py` подхватит запись и построит
+6 страниц (3 вариации × 2 локали), `sitemap.xml` получит 2 новых URL,
+`tools/verify.py` пересчитает ожидаемое число файлов сам — счётчики в нём
+выводятся из контента, а не записаны литералами.
+
+`templates/pages/crop.html.j2` не упоминает `V` и не вводит ни одного нового
+класса — подробнее в `docs/ARCHITECTURE.md`.
 
 ## Замеренный вес
 
@@ -116,34 +195,53 @@ x-height), кириллица полная. Итого из двух шрифт�
 
 | Ресурс | Raw | Gzip |
 |---|---:|---:|
-| `index.html` (V1, uk) | 85.5 KB | **15.9 KB** |
-| `assets/css/main.css` | 55.7 KB | **11.1 KB** |
-| `assets/js/app.js` | 11.2 KB | **3.8 KB** |
+| `index.html` (V1, uk) | 155.2 KB | **37.4 KB** |
+| `en/index.html` | 145.1 KB | **34.8 KB** |
+| `assets/css/main.css` | 107.2 KB | **20.9 KB** |
+| `assets/js/app.js` | 23.5 KB | **7.1 KB** |
 | GSAP + ScrollTrigger + Lenis | 127.7 KB | **48.8 KB** |
-| `onest.woff2` + `geistmono.woff2` | 51.2 KB | — |
+| `onest.woff2` + `geistmono.woff2` | 51.3 KB | — |
 | LCP `hero-v1-1440.avif` | 36.2 KB | — |
-| **Первый экран целиком** | | **167 KB** |
+| **Первый экран целиком** | | **201.7 KB** |
 
-Прошлая итерация давала 118 KB. Прирост — цена GSAP + Lenis и шрифтов шаблона;
-обмен сознательный, он и был задачей этой итерации.
+Таблица снималась заново на текущем коммите. Предыдущая версия обещала 97.0 KB
+для `index.html` при фактических 155.2 KB — расхождение 59%: она была снята на
+коммите `d3525bf`, а следующие восемь коммитов добавили на главную приборные
+capacity-виджеты, карту с маршрутами и орбиту партнёров. Числа в README
+устаревают молча, поэтому перед каждой правкой этого раздела стоит прогнать
+`python3 tools/verify.py` и переписать столбцы из его вывода.
 
-Изображений в репозитории 6.9 MB — 128 файлов, все плотности и форматы; браузер
-грузит из них единицы. AVIF + WebP через `<picture>`, `width`/`height` на каждом
-`<img>` (CLS ≈ 0), `preload` только на LCP-картинке.
+Первый экран вырос до 201.7 KB. Прирост относительно 181.5 KB — это разросшаяся
+разметка главной и вторая предзагрузка шрифта (см. ниже); новых
+runtime-библиотек и сторонних запросов не добавлено, их по-прежнему ноль.
 
-**Не замерено:** Lighthouse и реальные Core Web Vitals — нужен живой хостинг.
-Цифры выше это вес ассетов, а не LCP/INP на устройстве.
+Изображений в репозитории 6.9 MB — все плотности и форматы; браузер грузит из них
+единицы. AVIF + WebP через `<picture>`, `width`/`height` на каждом `<img>`,
+`preload` на LCP-картинке и на **обоих** шрифтах.
+
+Предзагрузка `geistmono.woff2` добавлена во втором проходе и стоит отдельного
+абзаца: до неё моношрифт запрашивался только после разбора CSS, его подмена
+перерисовывала hero на ~340-й миллисекунде, и на V2 desktop это давало CLS 0.028
+со скачками до 0.068 (3 прогона из 10). После предзагрузки CLS — **0.0000 на
+10 прогонах из 10** во всех трёх вариациях. Цена — 12–20 мс LCP: второй шрифт
+конкурирует за полосу с hero-картинкой. Технически это изменение первых кадров:
+моношрифт теперь рисуется финальной гарнитурой сразу, без FOUT.
+
+`tools/measure_runtime.py` даёт воспроизводимую локальную диагностику CLS,
+локального LCP, long tasks и frame interval p50/p95/p99 для трёх вариантов на
+desktop и mobile. Это не field Core Web Vitals: Lighthouse и реальные
+LCP/INP всё равно нужно повторить на живом HTTPS-хостинге и физических устройствах.
 
 ## SEO
 
-- Свои `title` / `description` на каждую из 30 страниц, `canonical`, `hreflang` uk/en/x-default
+- Свои `title` / `description`, `canonical` и `hreflang` uk/en/x-default на всех 90 локализованных страницах
 - Open Graph + Twitter Card, свои OG-картинки 1200×630 на локаль
 - JSON-LD по типу страницы: `Organization` (+`hasOfferCatalog` по семи культурам,
   +`employee`), `LocalBusiness`, `WebSite`, и далее `WebPage` / `AboutPage` /
-  `CollectionPage` / `ContactPage`, `FAQPage`, `ItemList` для новостей и истории
+  `CollectionPage` / `ContactPage` / `ProfilePage`, `Article`, `Person`, `FAQPage` и `ItemList`
 - **Вариации 2 и 3 помечены `noindex, follow`.** Это один и тот же контент в другой
   вёрстке; три проиндексированные копии сайта одной компании конкурировали бы
-  между собой. В `sitemap.xml` попадает только V1 — 10 URL.
+  между собой. В `sitemap.xml` попадает только V1 — 30 URL: основные страницы, статьи и профили в UA/EN.
 - `robots.txt`, `sitemap.xml`, `site.webmanifest`, `theme-color`
 - Один `h1` на страницу, непрерывная иерархия заголовков, landmarks, `alt` везде,
   skip-link, `:focus-visible`, `aria-expanded`, `<time datetime>` в ISO
@@ -153,9 +251,11 @@ x-height), кириллица полная. Итого из двух шрифт�
 ## Структура
 
 ```
-├── index.html  about/  services/  blog/  contacts/     ← V1, uk
-├── v2/ …  v3/ …                                        ← V2, V3
-├── en/ …  en/v2/ …  en/v3/ …                           ← те же в EN
+├── index.html  about/  services/  blog/  contacts/     ← основные V1, uk
+├── blog/<slug>/                                         ← 6 статей на вариант и локаль
+├── about/team/<slug>/                                   ← 4 профиля на вариант и локаль
+├── v2/ …  v3/ …                                        ← те же routes для V2, V3
+├── en/ …  en/v2/ …  en/v3/ …                           ← полный набор в EN
 ├── variants.html · 404.html · robots.txt · sitemap.xml
 ├── assets/
 │   ├── css/main.css        ← сборка из src/css/*, минифицировано
@@ -170,7 +270,8 @@ x-height), кириллица полная. Итого из двух шрифт�
 │   ├── base.html.j2        ← общая обёртка
 │   ├── blocks.html.j2      ← библиотека секций (макросы)
 │   ├── icons.html.j2       ← свой набор иконок
-│   └── pages/*.html.j2     ← пять типов страниц
+│   ├── ukraine-map.svg.j2  ← локальный CC0-контур и route overlay
+│   └── pages/*.html.j2     ← основные, article и profile templates
 └── tools/
 ```
 
@@ -188,7 +289,7 @@ python3 tools/build_logo.py       # логотип, favicon, apple-touch-icon
 python3 tools/build_images.py      # AVIF + WebP (нужны исходные кадры)
 python3 tools/build_og.py          # OG-картинки
 python3 tools/extend_content.py    # добавляет блоки страниц в uk.json
-python3 tools/build_site.py        # 31 HTML + CSS/JS bundle + robots/sitemap
+python3 tools/build_site.py        # 91 content HTML + 404 + CSS/JS + robots/sitemap
 python3 tools/verify.py            # проверки и бюджеты; ненулевой код = FAIL
 ```
 
@@ -201,21 +302,56 @@ python3 tools/build_site.py && python3 tools/verify.py
 `tools/build_preview.py` собирает страницу в один self-contained HTML со
 встроенными CSS, JS, шрифтами и картинками — удобно отправить файлом.
 
+### Browser QA
+
+Визуальные и интерактивные проверки используют Playwright только как dev-зависимость:
+
+```bash
+pip install playwright
+python3 -m playwright install chromium
+
+python3 tools/visual_smoke.py
+python3 tools/interaction_smoke.py
+python3 tools/measure_runtime.py
+```
+
+`visual_smoke.py` снимает детерминированные скриншоты основных и representative
+detail pages с reduced motion на 320, 375, 390, 768, 1024, 1440 и 1920 px.
+Проверяются horizontal overflow, один `h1`, clipped text, media coverage внутри
+rounded masks, marquee overlap, видимые изображения и скрытый после boot контент.
+Артефакты пишутся в игнорируемую папку `.visual-regression/`.
+
+`interaction_smoke.py` проверяет mobile drawer, focus trap, все V3 testimonial
+rails, double marquee, exclusive accordion, hover lift, detail routes, demo-формы,
+reduced-motion и no-JS fallback. `measure_runtime.py`
+записывает локальные диагностические p50/p95/p99 в
+`.visual-regression/runtime.json` и явно не выдаёт их за field CWV.
+
 ### Что где править
 
 | Задача | Файл |
 |---|---|
-| Текст, цифры, команда, история, услуги, новости | `content/uk.json` + `content/en.json` |
+| Текст, статьи, профили, цифры, команда, услуги | `content/uk.json` + `content/en.json` |
 | Состав и порядок секций вариации | `content/variants.json` |
 | Цвета, шрифтовая шкала, отступы, тени | `src/css/01-tokens.css` |
 | Тайминги и кривые анимаций | `DUR` / `EASE` в начале `src/js/app.js` |
-| Разметка секции | `templates/blocks.html.j2` |
+| Разметка секции и shared components | `templates/blocks.html.j2` |
+| Article / profile layouts | `templates/pages/article.html.j2` + `profile.html.j2` |
+| Карта и источник | `templates/ukraine-map.svg.j2` + `docs/map-source.md` |
 | Иконки | `templates/icons.html.j2` |
 | Домен | `BASE` и `SUBPATH` в `tools/build_site.py` |
 
 `verify.py` проверяет паритет структуры `uk.json` и `en.json`, отсутствие битых
-ссылок, дубли `id`, `alt` и размеры у картинок, порядок заголовков, валидность
-JSON-LD, `noindex` у вариаций и бюджеты веса.
+ссылок, дубли `id`, `alt` и размеры у картинок, порядок заголовков, типы e-mail
+полей, сохранение native form validation, 92-page count, 36 Article и 24 Person
+routes, валидность JSON-LD, внутренние ссылки, `noindex` и бюджеты веса.
+
+## Карта
+
+Geography использует локальный inline SVG без tile API и runtime-запросов.
+Контур получен из Natural Earth Admin 0 1:10m, упрощён и дополнен точками
+Винницы, Гайсина, Киева и порта Одессы. Источник, commit, координаты и
+public-domain/CC0 условия зафиксированы в `docs/map-source.md`.
 
 ## Деплой
 
@@ -228,4 +364,6 @@ GitHub Pages, режим **Deploy from a branch** — workflow не нужен, 
 
 Код свободен к использованию. **Onest** и **Geist Mono** — SIL Open Font License 1.1.
 **GSAP** — стандартная лицензия GreenSock (бесплатна для этого типа использования),
-**Lenis** — MIT. Изображения сгенерированы для этого макета.
+**Lenis** — MIT. Natural Earth boundary data — public domain; GeoJSON conversion
+and map provenance are documented in `docs/map-source.md`. Изображения
+сгенерированы для этого макета.

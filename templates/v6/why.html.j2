@@ -1,0 +1,91 @@
+{#- ============================================================================
+    v6 "why" — the client's four card designs, placed as images.
+
+    Earlier passes rebuilt these cards in CSS from a Figma export. This one
+    stops doing that: the client supplied the cards as rendered images, so the
+    section places the images and the browser is no longer asked to
+    re-implement a design it kept getting subtly wrong.
+
+    The images are normalised by tools/build_why_cards.py onto a single canvas
+    anchored on the card's white body, so all four are the same box with the
+    body in the same place (38, 77 at 1x, body 218.96 wide). That is what makes
+    them line up: the markup below does not nudge anything per card.
+
+    Sizing: --card-w in 08-v6-why.css is the *body* width, i.e. the size the
+    client specified in Figma. The image is wider than the body because the
+    tilted plate and the glow lean outside it, so .wfig pulls those overhangs
+    back out of the text column with negative margins derived from the same
+    canvas geometry. Text and card therefore share one left edge, and changing
+    --card-w rescales the whole thing with the aspect ratio locked (the image
+    only ever sets a width; height stays auto).
+
+    Accessibility: the figures now live in pixels, so every number is repeated
+    in a visually-hidden figcaption, driven off the same content/*.json the CSS
+    version used. Screen readers and search engines still get the data, and on
+    the English pages that text is English even while the artwork is not.
+
+    Card order is the reference's (chart, silos, lab, route), resolved by
+    widget name rather than by reordering capacity.cards, which is also indexed
+    positionally by the dispatch radar in tools/build_site.py and by the legacy
+    #capacity macro in blocks.html.j2.
+    ============================================================================ -#}
+
+{%- macro section() -%}
+{%- set card_img = {'chart': 'why-chart', 'bars': 'why-silos', 'lab': 'why-lab', 'orbit': 'why-route'} -%}
+{#- The image is laid out at the body's natural width; see .wfig. -#}
+{%- set img_sizes = '(max-width: 40rem) 96vw, 301px' -%}
+{%- set by_widget = {} -%}
+{%- for card in c.capacity.cards %}{% set _ = by_widget.update({card.widget: card}) %}{% endfor -%}
+{%- set ordered = [] -%}
+{%- for w in ['chart', 'bars', 'lab', 'orbit'] %}{% if w in by_widget %}{% set _ = ordered.append(by_widget[w]) %}{% endif %}{% endfor -%}
+{%- for card in c.capacity.cards %}{% if card not in ordered %}{% set _ = ordered.append(card) %}{% endif %}{% endfor -%}
+<section class="section section--tight why-us" id="why" role="region" aria-labelledby="whyus-t">
+  <div class="wrap">
+    <div class="head">
+      <span class="tag tag--lime" data-r>{{ c.capacity.eyebrow }}</span>
+      <h2 id="whyus-t" class="h-iconic" data-split>{{ iconic(c.capacity.title_rich) }}</h2>
+      <p class="lead" data-r>{{ c.capacity.lead }}</p>
+    </div>
+
+    <div class="wcards">
+      {%- for card in ordered %}
+      {%- set name = card_img[card.widget] %}
+      {%- set m = imgs[name] %}
+      <article class="wcard" data-card>
+        <figure class="wfig">
+          <picture>
+            <source type="image/avif" srcset="{{ srcset(name, 'avif') }}" sizes="{{ img_sizes }}">
+            <img src="{{ p }}assets/img/{{ name }}-{{ m.widths[0] }}.webp"
+                 srcset="{{ srcset(name, 'webp') }}" sizes="{{ img_sizes }}"
+                 width="{{ m.widths[-1] }}" height="{{ m['h' ~ m.widths[-1]] }}"
+                 alt="{{ card.head }} — {{ card.fig }} {{ card.fig_unit }}. {{ card.cap_k }}"
+                 loading="lazy" decoding="async">
+          </picture>
+          {#- Every figure the artwork shows, as text. -#}
+          <figcaption class="sr">
+            {%- if card.widget == 'chart' -%}
+            {{ c.a11y.chart_caption }}:
+            {%- for s in card.series %} {{ s.year }} — {{ s.v | string | replace('.', decimal) }} {{ card.fig_unit }}
+            {%- if s.dry is defined and s.dry %} ({{ card.dry_label }}){% endif %}{{ ';' if not loop.last else '.' }}
+            {%- endfor %} {{ card.cap_k }}: {{ card.cap_v }}.
+            {%- elif card.widget == 'bars' -%}
+            {{ card.cap_k }} — {{ card.cap_v }}.
+            {%- for r in card.rows[:2] %} {{ r.name }} — {{ r.val }} ({{ r.pct }}%){{ ';' if not loop.last else '.' }}{% endfor %}
+            {%- elif card.widget == 'lab' -%}
+            {{ card.cap_k }}, {{ card.fig }} {{ card.fig_unit }}.
+            {%- for r in card.rows %} {{ r.name }} — {{ r.val }} {{ r.unit }} ({{ r.trend }}){{ ';' if not loop.last else '.' }}{% endfor %}
+            {%- elif card.widget == 'orbit' -%}
+            {{ card.cap_k }} — {{ card.cap_v }}.
+            {%- for s in card.stops %} {{ s.name }} — {{ s.km }} {{ card.km_unit }}{{ ';' if not loop.last else '.' }}{% endfor %}
+            {%- endif -%}
+          </figcaption>
+        </figure>
+
+        <h3 class="wcard__h3"><span class="wcard__num">{{ '%02d' % loop.index }}</span>{{ card.title }}</h3>
+        <p class="wcard__p">{{ card.text }}</p>
+      </article>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+{%- endmacro -%}

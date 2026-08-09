@@ -8,13 +8,20 @@
     ============================================================================ -#}
 {%- import "icons.html.j2" as I with context -%}
 {%- import "partners.html.j2" as P with context -%}
+{#- The v6 sections, ported from the client mockups. Each file owns one
+    section and its three variant finishes; the old macros they replace are
+    left in place but no longer dispatched. -#}
+{%- import "v6/why.html.j2" as V6WHY with context -%}
+{%- import "v6/geo.html.j2" as V6GEO with context -%}
+{%- import "v6/tl.html.j2"  as V6TL  with context -%}
+{%- import "v6/orb.html.j2" as V6ORB with context -%}
 
 {#- ---------------------------------------------------------------- images -#}
 {%- macro pic(name, alt, sizes, priority=False, cls='') -%}
 {%- set m = imgs[name] -%}
 <picture{% if cls %} class="{{ cls }}"{% endif %}>
 <source type="image/avif" srcset="{{ srcset(name, 'avif') }}" sizes="{{ sizes }}">
-<img src="{{ p }}assets/img/{{ name }}-{{ m.widths[0] }}.webp" srcset="{{ srcset(name, 'webp') }}" sizes="{{ sizes }}" width="{{ m.widths[-1] }}" height="{{ m['h' ~ m.widths[-1]] }}" alt="{{ alt }}"{% if priority %} fetchpriority="high" decoding="sync"{% else %} loading="lazy" decoding="async"{% endif %}>
+<img src="{{ p }}assets/img/{{ name }}-{{ m.widths[0] }}.webp" srcset="{{ srcset(name, 'webp') }}" sizes="{{ sizes }}" width="{{ m.widths[-1] }}" height="{{ m['h' ~ m.widths[-1]] }}" alt="{{ alt }}"{% if priority %} fetchpriority="high" loading="eager" decoding="async"{% else %} loading="lazy" decoding="async"{% endif %}>
 </picture>
 {%- endmacro -%}
 
@@ -29,10 +36,10 @@
 {#- =============================================================== HEROES = -#}
 
 {%- macro hero_fan() -%}
-<section class="hero hero--fan" data-hero aria-labelledby="hero-t">
+<section class="hero hero--fan" data-hero>
   <div class="hero__bg" data-hero-media>{{ pic(V.hero_img, c.hero.image_alt, '100vw', priority=True) }}</div>
   <div class="hero__in wrap">
-    <h1 id="hero-t" data-hero-title>{{ c.hero.title_1 }} <span class="soft">{{ c.hero.title_2 }}</span></h1>
+    <h1 id="hero-t" data-hero-title>{{ c.hero.title_1 }} <span class="hero-glyph" aria-hidden="true">{{ I.icon('wheat') }}</span> <span class="soft">{{ c.hero.title_2 }}</span></h1>
     <p class="lead" data-hero-item>{{ c.hero.lead }}</p>
     <div class="hero__cta" data-hero-item>
       {{ btn(c.hero.cta_primary, url_for('contacts')) }}
@@ -45,12 +52,12 @@
 {%- endmacro -%}
 
 {%- macro hero_pright() -%}
-<section class="hero hero--pright" data-hero aria-labelledby="hero-t">
+<section class="hero hero--pright" data-hero>
   <div class="hero__bg" data-hero-media>{{ pic(V.hero_img, c.hero.image_alt_v2, '100vw', priority=True) }}</div>
   <div class="wrap">
     <div class="hero__in">
       <span class="tag" data-hero-item>{{ c.hero.badge }}</span>
-      <h1 id="hero-t" data-hero-title>{{ c.hero.title_1 }} <span class="soft">{{ c.hero.title_2 }}</span></h1>
+      <h1 id="hero-t" data-hero-title><span class="hero-lead-in">{{ c.hero.title_1 }} <span class="hero-glyph hero-glyph--sky" aria-hidden="true">{{ I.icon('drone') }}</span></span> <span class="soft">{{ c.hero.title_2 }}</span></h1>
       <p class="lead" data-hero-item>{{ c.hero.lead }}</p>
       <div class="hero__cta" data-hero-item>
         {{ btn(c.hero.cta_primary, url_for('contacts')) }}
@@ -64,14 +71,14 @@
 {%- endmacro -%}
 
 {%- macro hero_pcentre() -%}
-<section class="hero hero--pcentre" data-hero aria-labelledby="hero-t">
+<section class="hero hero--pcentre" data-hero>
   <div class="hero__bg" data-hero-media>{{ pic(V.hero_img, c.hero.image_alt_v3, '100vw', priority=True) }}</div>
   <div class="hero__in wrap">
-    <h1 id="hero-t" data-hero-title>{{ c.hero.title_1 }} <span class="soft">{{ c.hero.title_2 }}</span></h1>
+    <h1 id="hero-t" data-hero-title>{{ c.hero.title_1 }} <span class="hero-glyph hero-glyph--glass" aria-hidden="true">{{ I.icon('leaf') }}</span> <span class="soft">{{ c.hero.title_2 }}</span></h1>
     <p class="lead" data-hero-item>{{ c.hero.lead }}</p>
     <div class="hero__cta" data-hero-item>{{ btn(c.hero.cta_primary, url_for('contacts')) }}</div>
   </div>
-  <div class="hero__foot" data-hero-item>
+  <div class="hero__foot">
     <div class="wrap">
       <div class="logo-bar">
         <div class="logo-bar__rating">
@@ -95,15 +102,15 @@
 
 {#- inner-page hero: compact, on a light surface -#}
 {%- macro hero_page(eyebrow, title, lead, img='about-team', alt='', tags=None) -%}
-<section class="wrap" aria-labelledby="ph-t">
-  <div class="phero">
+<section class="wrap">
+  <div class="phero" data-page-hero>
     <div class="phero__copy">
-      <span class="tag tag--lime" data-r>{{ eyebrow }}</span>
-      <h1 id="ph-t" data-split>{{ title }}</h1>
-      {%- if lead %}<p class="lead" data-r data-delay=".12">{{ lead }}</p>{% endif %}
-      <div data-r data-delay=".2">{{ avatars() }}</div>
+      <span class="tag tag--lime" data-page-item>{{ eyebrow }}</span>
+      <h1 id="ph-t" class="h-iconic" data-page-title>{{ iconic(title) }}</h1>
+      {%- if lead %}<p class="lead" data-page-item>{{ lead }}</p>{% endif %}
+      <div data-page-item>{{ avatars() }}</div>
     </div>
-    <div class="phero__ph">{{ pic(img, alt or title, '(max-width: 64rem) 100vw, 50vw', priority=True) }}</div>
+    <div class="phero__ph media-frame" data-page-media>{{ pic(img, alt or title, '(max-width: 64rem) 100vw, 50vw', priority=True) }}</div>
   </div>
 </section>
 {%- if tags %}{{ tag_band() }}{% endif %}
@@ -123,18 +130,44 @@
 
 {#- ======================================================== HERO WIDGETS = -#}
 
+{#- Sparkline for the .land card, built server-side into a static path — no
+    canvas, no rAF, just a filled area + line drawn once at build time from
+    the card's series (percent-from-top points on a 0..34 viewBox, matching
+    the mockup's own coordinate scheme). -#}
+{%- macro spark_html(series) -%}
+{%- set pts = [] -%}
+{%- for v in series -%}{%- set _ = pts.append((loop.index0 * (120 / (series|length - 1)), v)) -%}{%- endfor -%}
+{%- set line = pts | map('join', ',') | join(' L') -%}
+<svg class="spark" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true">
+  <path class="spark__area" d="M{{ line }} L120,34 L0,34 Z"/>
+  <path class="spark__line" d="M{{ line }}"/>
+  <circle class="spark__tip" cx="{{ pts[-1][0] }}" cy="{{ pts[-1][1] }}" r="2.6"/>
+</svg>
+{%- endmacro -%}
+
 {%- macro fcard(card, idx) -%}
-<div class="fcard{{ ' fcard--dark' if card.kind in ('lab', 'pills') else '' }}{{ ' fcard--lime' if card.kind == 'stat' and idx == 5 else '' }}">
+<article class="fcard{{ ' fcard--dark' if card.kind in ('lab', 'pills') else '' }}{{ ' fcard--lime' if card.kind == 'stat' else '' }}{{ ' fcard--photo' if card.kind == 'photo' else '' }}">
   {%- if card.kind == 'photo' %}
   <div class="fcard__ph">{{ pic(card.img, '', '12rem') }}</div>
-  <span class="fcard__l">{{ card.label }}</span><span class="fcard__n">{{ card.note }}</span>
+  {%- if card.get('badge') %}<span class="fcard__live"><i></i>{{ card.badge }}</span>{% endif %}
+  <span class="fcard__l">{{ card.label }}</span>
+  <div class="glass">
+    {%- for st in card.stats %}
+    <div class="glass__cell"><span class="glass__k">{{ st.k }}</span><span class="glass__v">{{ st.v }}{% if st.get('u') %} <em>{{ st.u }}</em>{% endif %}</span></div>
+    {%- endfor %}
+  </div>
   {%- elif card.kind == 'stat' %}
   <span class="fcard__l">{{ card.label }}</span><span class="fcard__n">{{ card.note }}</span>
   <span class="fcard__big">{{ card.value }} <em>{{ card.unit }}</em></span>
+  {%- elif card.kind == 'land' %}
+  <span class="fcard__l">{{ card.label }}</span><span class="fcard__n">{{ card.note }}</span>
+  {{ spark_html(card.series) }}
+  <span class="fcard__big">{{ card.value }} <em>{{ card.unit }}</em></span>
+  <span class="fcard__delta"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 10V2M6 2 2.6 5.4M6 2l3.4 3.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>{{ card.delta }}</span>
   {%- elif card.kind == 'chart' %}
   <span class="fcard__l">{{ card.label }}, {{ card.unit }}</span>{{ chart_html(card.series) }}
   {%- elif card.kind == 'bars' %}
-  <span class="fcard__l">{{ card.label }} · {{ card.value }}</span>
+  <span class="fcard__l">{{ card.label }}</span>
   <div class="bars">
     {%- for r in card.rows %}
     <div class="bars__row"><div class="bars__top"><span class="bars__name">{{ r.name }}</span><span class="bars__val">{{ r.pct }}%</span></div>
@@ -142,22 +175,28 @@
     {%- endfor %}
   </div>
   {%- elif card.kind == 'lab' %}
-  <span class="fcard__l">{{ card.label }} · {{ card.note }}</span>
+  <span class="fcard__l"><i class="fcard__dot"></i>{{ card.label }} · {{ card.note }}</span>
   <div class="lab">
-    {%- for r in card.rows %}<div class="lab__row"><span class="lab__name">{{ r.name }}</span><span class="lab__val">{{ r.val }}</span></div>{% endfor %}
+    {%- for r in card.rows %}<div class="lab__row{{ ' lab__row--ok' if r.get('ok') }}"><span class="lab__name">{{ r.name }}</span><span class="lab__val">{{ r.val }}</span></div>{% endfor %}
   </div>
   {%- elif card.kind == 'pills' %}
   <span class="fcard__l">{{ card.label }}</span><span class="fcard__n">{{ card.note }}</span>
   <div class="fcard__pills">{% for i in card['items'] %}<span class="fcard__pill">{{ i }}</span>{% endfor %}</div>
   {%- endif %}
-</div>
+</article>
 {%- endmacro -%}
 
 {%- macro fan_cards() -%}
-<div class="fan">
+<div class="fan" tabindex="0" role="group" aria-label="{{ c.a11y.fan_widgets }}">
   {%- for card in c.hero.cards %}
   {%- set f = fan[loop.index0] %}
-  <div class="fan__item" style="--ry:{{ f.ry }}deg;--rz:{{ f.rz }}deg;--ty:{{ f.ty }}px;--tz:{{ f.tz }}px;--sc:{{ f.sc }};--z:{{ f.z }}" aria-hidden="true">{{ fcard(card, loop.index0) }}</div>
+  {#- Three layers, each owning exactly one transform, because they cannot
+      share one. .fan__item holds the resting fan geometry and the hover lift
+      (CSS only). .fan__rise is the entrance GSAP animates. .fcard carries the
+      idle levitation. Collapsing any two of these means one animation
+      overwrites the other's transform — which is precisely what made the cards
+      jump into place when the entrance handed control back. -#}
+  <div class="fan__item" style="--i:{{ f.i }};--ry:{{ f.ry }}deg;--rz:{{ f.rz }}deg;--ty:{{ f.ty }}px;--tz:{{ f.tz }}px;--sc:{{ f.sc }};--z:{{ f.z }}" aria-hidden="true"><div class="fan__rise">{{ fcard(card, loop.index0) }}</div></div>
   {%- endfor %}
 </div>
 {%- endmacro -%}
@@ -165,17 +204,32 @@
 {%- macro card_rail() -%}
 <div class="marq" data-marquee="left" data-speed="34" data-marquee-hover aria-hidden="true">
   <div class="marq__track">
-    {%- for pass_ in [1, 2] %}{% for card in c.hero.cards %}{{ fcard(card, loop.index0) }}{% endfor %}{% endfor %}
+    <div class="marq__group">{% for card in c.hero.cards %}{{ fcard(card, loop.index0) }}{% endfor %}</div>
+    <div class="marq__group" aria-hidden="true">{% for card in c.hero.cards %}{{ fcard(card, loop.index0) }}{% endfor %}</div>
   </div>
 </div>
 {%- endmacro -%}
 
+{#- The partner ecosystem, as an orbit on every variation. It used to be an
+    orbit on v1 and a marquee on v2, and absent from v3 entirely; the orbit is
+    the thing the copy actually describes ("everything turns around one lot
+    standard"), so all three now say it the same way and differ in finish
+    rather than in idea. Three rings, six partners, one hub. -#}
 {%- macro logo_strip() -%}
-<div class="strip">
-  <div class="strip__in">
-    <p class="strip__l"><span class="tag tag--lime">{{ c.partners.label }}</span></p>
-    <div class="marq marq--logos" data-marquee="left" data-speed="52" data-marquee-hover>
-      <div class="marq__track">{{ P.row(c.partners['items']) }}</div>
+<div class="strip strip--orbit{{ ' strip--quiet' if V.id == 'v3' }}">
+  <div class="wrap partner-stage">
+    <div class="partner-stage__copy">
+      <span class="tag tag--lime">{{ c.partners.label }}</span>
+      <p>{{ c.partners.note }}</p>
+    </div>
+    <div class="partner-orbit" data-partner-orbit>
+      <span class="partner-orbit__ring partner-orbit__ring--outer" aria-hidden="true"></span>
+      <span class="partner-orbit__ring partner-orbit__ring--mid" aria-hidden="true"></span>
+      <span class="partner-orbit__ring partner-orbit__ring--inner" aria-hidden="true"></span>
+      <span class="partner-orbit__hub"><span>{{ c.brand.word_1 }}</span><small>{{ c.brand.word_2 }}</small></span>
+      {%- for ptn in c.partners['items'][:6] %}
+      <span class="partner-orbit__node" style="--i:{{ loop.index0 }};--count:6">{{ P.mark(ptn) }}</span>
+      {%- endfor %}
     </div>
   </div>
 </div>
@@ -185,12 +239,14 @@
 <div class="tagband" aria-hidden="true">
   <div class="marq marq--tags" data-marquee="left" data-speed="40">
     <div class="marq__track">
-      {%- for pass_ in [1, 2] %}{% for t in c.tagmarquee.row_a %}<span class="tag-pill{{ ' tag-pill--lime' if loop.index0 % 3 == 1 }}">{{ t }}</span>{% endfor %}{% endfor %}
+      <div class="marq__group">{% for t in c.tagmarquee.row_a %}<span class="tag-pill{{ ' tag-pill--lime' if loop.index0 % 3 == 1 }}">{{ t }}</span>{% endfor %}</div>
+      <div class="marq__group" aria-hidden="true">{% for t in c.tagmarquee.row_a %}<span class="tag-pill{{ ' tag-pill--lime' if loop.index0 % 3 == 1 }}">{{ t }}</span>{% endfor %}</div>
     </div>
   </div>
-  <div class="marq marq--tags" data-marquee="right" data-speed="40">
+  <div class="marq marq--tags" data-marquee="right" data-speed="47">
     <div class="marq__track">
-      {%- for pass_ in [1, 2] %}{% for t in c.tagmarquee.row_b %}<span class="tag-pill{{ ' tag-pill--dark' if loop.index0 % 3 == 2 }}">{{ t }}</span>{% endfor %}{% endfor %}
+      <div class="marq__group">{% for t in c.tagmarquee.row_b %}<span class="tag-pill{{ ' tag-pill--dark' if loop.index0 % 3 == 2 }}">{{ t }}</span>{% endfor %}</div>
+      <div class="marq__group" aria-hidden="true">{% for t in c.tagmarquee.row_b %}<span class="tag-pill{{ ' tag-pill--dark' if loop.index0 % 3 == 2 }}">{{ t }}</span>{% endfor %}</div>
     </div>
   </div>
 </div>
@@ -199,7 +255,7 @@
 {#- ========================================================= HOME BLOCKS = -#}
 
 {%- macro sec_about() -%}
-<section class="section" id="about" aria-labelledby="about-t">
+<section class="section" id="about" role="region" aria-labelledby="about-t">
   <div class="wrap">
     <div class="about__grid">
       <div class="about__copy">
@@ -209,7 +265,7 @@
         {%- for para in c.about.body %}<p data-r data-delay=".{{ loop.index }}">{{ para }}</p>{% endfor %}
         <div class="about__cta" data-r>{{ btn(c.about.cta, url_for('services'), 'dark') }}</div>
       </div>
-      <figure class="about__ph" data-r="right">
+      <figure class="about__ph media-frame" data-r="right">
         <span data-parallax="8">{{ pic('about-team', c.about.image_alt, '(max-width: 64rem) 92vw, 44vw') }}</span>
         <figcaption class="about__badge">
           <span class="itile" aria-hidden="true">{{ I.icon('chart') }}</span>
@@ -222,21 +278,83 @@
 </section>
 {%- endmacro -%}
 
+{#- The value and its unit are two elements inside one nowrap flex row. As a
+    single text node ("46 000 т") the line-breaker was free to drop the unit
+    onto its own line, which it did on every narrow column — and the unit
+    inherited the 2.4rem display size, so it read as part of the figure rather
+    than a qualifier. Splitting them also lets the counter rewrite the digits
+    without touching the unit on every animation frame. -#}
+{#- `wide` and the icon/tone cycles are driven by position, so a caller that
+    passes fewer than six figures still gets a coherent set. `display` prints a
+    literal instead of animating a counter: the counter rounds every frame, so a
+    fractional figure such as 6,4 t/ha would count up to 6. Existing callers pass
+    two arguments and render exactly as before. -#}
+{%- macro stat_card(s, idx, display=None) -%}
+{%- set icons = ['wheat', 'grain', 'silo', 'truck', 'clock', 'ship'] -%}
+{%- set tones = ['plain', 'plain', 'lime', 'ink', 'plain', 'plain'] -%}
+{%- set wide = idx in [0, 3] -%}
+<article class="stat stats-card stats-card--{{ tones[idx % 6] }}{{ ' stats-card--wide' if wide }}" data-stat-card>
+  <div class="stats-card__top">
+    <span class="icon-badge icon-badge--sm" aria-hidden="true">{{ I.icon(icons[idx % (icons|length)]) }}</span>
+    <span class="stats-card__index">{{ '%02d' % (idx + 1) }}</span>
+  </div>
+  <span class="stat__v">
+    {%- if display %}<b class="stat__num">{{ display }}</b>
+    {%- else %}
+    {#- Bigger figures count for longer: scale reads as weight. -#}
+    {%- set dur = 1.3 if s.value < 100 else (1.9 if s.value < 10000 else 2.5) -%}
+    <b class="stat__num" data-count="{{ s.value }}" data-dur="{{ dur }}">0</b>
+    {%- endif %}
+    {%- if s.suffix %}<em class="stat__u">{{ s.suffix|trim }}</em>{% endif %}
+  </span>
+  <span class="stat__l">{{ s.label }}</span>
+  {%- if wide %}
+  <span class="stats-card__plot" aria-hidden="true">
+    {%- for h in [26, 34, 30, 46, 41, 55, 62, 58, 71, 79, 88, 100] %}<i style="--h:{{ h }}%"></i>{% endfor %}
+  </span>
+  {%- else %}
+  <span class="stats-card__spark" aria-hidden="true">
+    {%- for h in [44 + idx * 3, 62 - idx * 2, 50 + (idx % 3) * 8, 72 - idx, 58 + idx * 2] %}<i style="--h:{{ h }}%"></i>{% endfor %}
+  </span>
+  {%- endif %}
+</article>
+{%- endmacro -%}
+
+{#- The about figures use their own compact bento rather than stat_card().
+    stat_card() still serves the crop detail pages unchanged — it carries a
+    decorative bar plot and an icon/index header that make sense next to a
+    single crop's numbers but turned this block into 517px of mostly filler.
+
+    Anatomy is the client's reference: a small mono label above the figure
+    rather than a caption under it, the figure large and tight with its unit
+    kept small beside it, and exactly one lime accent in the group. Reading
+    the label first and the number second is also why this reads as compact —
+    the number needs no second line to explain itself.
+
+    Widths are per row, not per card: `hero` takes the wider column in each
+    row, and the two rows put the two large tonnages there. Tones cycle so
+    the lime lands top-middle and the ink bottom-left, which keeps the two
+    heavy cards off the same diagonal. -#}
 {%- macro sec_stats(inner=False) -%}
 {%- if not inner %}<section class="section" aria-label="{{ c.about.eyebrow }}"><div class="wrap">{% endif %}
-<div class="stats about__stats" data-stagger=".08">
+{%- set tones = ['plain', 'plain', 'lime', 'ink', 'plain', 'plain'] -%}
+<div class="abstats about__stats" data-stagger=".06">
   {%- for s in c.about.stats %}
-  <div class="stat">
-    <span class="stat__v" data-count="{{ s.value }}" data-suffix="{{ s.suffix }}">0{{ s.suffix }}</span>
-    <span class="stat__l">{{ s.label }}</span>
-  </div>
+  {%- set dur = 1.3 if s.value < 100 else (1.9 if s.value < 10000 else 2.5) -%}
+  <article class="abstat abstat--{{ tones[loop.index0 % 6] }}{{ ' abstat--hero' if loop.index0 % 3 == 0 }}">
+    <span class="abstat__k"><i aria-hidden="true"></i>{{ s.label }}</span>
+    <span class="abstat__v">
+      <b class="stat__num" data-count="{{ s.value }}" data-dur="{{ dur }}">0</b>
+      {%- if s.suffix %}<em>{{ s.suffix|trim }}</em>{% endif %}
+    </span>
+  </article>
   {%- endfor %}
 </div>
 {%- if not inner %}</div></section>{% endif %}
 {%- endmacro -%}
 
 {%- macro sec_crops() -%}
-<section class="section" id="crops" aria-labelledby="crops-t">
+<section class="section" id="crops" role="region" aria-labelledby="crops-t">
   <div class="wrap">
     <div class="head-row">
       <div class="head">
@@ -274,7 +392,7 @@
 {%- endmacro -%}
 
 {%- macro sec_capacity() -%}
-<section class="section" id="capacity" aria-labelledby="cap-t">
+<section class="section" id="capacity" role="region" aria-labelledby="cap-t">
   <div class="wrap">
     <div class="head head--center">
       <span class="tag tag--lime" data-r>{{ c.capacity.eyebrow }}</span>
@@ -282,42 +400,99 @@
       <p class="lead" data-r>{{ c.capacity.lead }}</p>
     </div>
     <div class="cap">
+      {%- set capacity_icons = {'chart':'chart', 'bars':'silo', 'orbit':'route', 'lab':'flask'} -%}
       {%- for card in c.capacity.cards %}
-      <article class="cap__card" data-card>
+      <article class="cap__card" data-card data-capacity-card="{{ card.widget }}">
+        <div class="cap__meta"><span class="icon-badge" aria-hidden="true">{{ I.icon(capacity_icons[card.widget]) }}</span><span>{{ '%02d' % loop.index }}</span></div>
         <div class="cap__viz"
              {% if card.widget == 'chart' %}data-chart{% elif card.widget == 'bars' %}data-bars{% elif card.widget == 'orbit' %}data-orbit{% elif card.widget == 'lab' %}data-lab{% endif %}>
+          {#- Two layers. A dark plate carries the card's name and its headline
+              figure and sits tilted behind; the instrument itself sits square
+              in front of it, holding a mono caption strip and the readout.
+              Neither layer is aria-hidden: the plate is where the figure is
+              published, so hiding it would cost a screen reader the number. -#}
+          <div class="cap__stage">
+            <div class="cap__back">
+              <span class="cap__back-l"><b>{{ card.head }}</b><span>{{ card.sub }}</span></span>
+              <span class="cap__back-r"><b>{{ card.fig }}</b><i>{{ card.fig_unit }}</i></span>
+            </div>
+          <div class="gauge">
+            <div class="gauge__cap">
+              <span>{{ card.cap_k }}</span><em>{{ card.cap_v }}</em>
+            </div>
+            <div class="gauge__body">
           {%- if card.widget == 'chart' %}
           <figure><figcaption class="sr">{{ c.a11y.chart_caption }}</figcaption>{{ chart_html(card.series, big=True) }}</figure>
           {%- elif card.widget == 'bars' %}
-          <div class="bars">
+          {#- Capacity as one fraction with a split track, then the three
+              facilities as rows. The old silo strip said the same thing twice
+              and was cropped by the panel doing it. -#}
+          <div class="frac">
+            <div class="frac__nums">
+              <span class="frac__big">{{ card.rows[0].val }}</span>
+              <span class="frac__rest">/ {{ card.total }}&nbsp;{{ card.total_unit }}</span>
+            </div>
+            <div class="frac__track" aria-hidden="true">
+              <i class="frac__seg" style="--w:79%"></i>
+              <i class="frac__seg frac__seg--alt" style="--w:21%"></i>
+            </div>
+            <div class="frac__key" aria-hidden="true">
+              <span><i></i>{{ card.key_a }}</span><span><i></i>{{ card.key_b }}</span>
+            </div>
+          </div>
+          <div class="grows">
+            {%- set row_icons = ['silo', 'grain', 'clock'] -%}
             {%- for r in card.rows %}
-            <div class="bars__row"><div class="bars__top"><span class="bars__name">{{ r.name }}</span><span class="bars__val">{{ r.val }}</span></div>
-            <span class="bars__track"><span class="bars__fill" style="--w:{{ r.pct }}%"></span></span></div>
+            <div class="grow">
+              <span class="grow__chip" aria-hidden="true">{{ I.icon(row_icons[loop.index0]) }}</span>
+              <span class="grow__info">
+                <span class="grow__name">{{ r.name }}</span>
+                <span class="grow__detail">{{ r.detail }}</span>
+              </span>
+              <span class="grow__val">{{ r.val }}</span>
+            </div>
             {%- endfor %}
           </div>
           {%- elif card.widget == 'orbit' %}
-          <div class="orbit">
-            {%- for ins in ['4%', '20%', '36%'] %}<span class="orbit__ring" style="--inset:{{ ins }}" aria-hidden="true"></span>{% endfor %}
-            <span class="orbit__hub">{{ card.center }}</span>
-            {%- for it in card['items'] %}{% set o = orbit[loop.index0] %}
-            <span class="orbit__arm" style="--a:{{ o.a }}deg;--r:{{ o.r }};--d:{{ o.d }}s">
-              <span class="orbit__hold" style="--a:{{ o.a }}deg;--d:{{ o.d }}s">
-                <span class="orbit__pill">{{ it }}</span>
-              </span>
-            </span>
+          <div class="radar">
+            <svg class="radar__field" viewBox="0 0 400 220" aria-hidden="true" focusable="false">
+              {%- for r in [(62, 34), (112, 62), (162, 90)] %}
+              <ellipse class="radar__ring" cx="{{ radar_c[0] }}" cy="{{ radar_c[1] }}" rx="{{ r[0] }}" ry="{{ r[1] }}"/>
+              {%- endfor %}
+              <path class="radar__cross" d="M{{ radar_c[0] }} 16V204M34 {{ radar_c[1] }}H366"/>
+              {%- for n in radar %}
+              <path class="radar__route" d="M{{ radar_c[0] }} {{ radar_c[1] }}L{{ n.x }} {{ n.y }}"/>
+              {%- endfor %}
+              {%- for n in radar %}
+              <path class="radar__beam" pathLength="100" style="--d:{{ n.d }}s" d="M{{ radar_c[0] }} {{ radar_c[1] }}L{{ n.x }} {{ n.y }}"/>
+              {%- endfor %}
+              {%- for n in radar %}
+              <circle class="radar__node" cx="{{ n.x }}" cy="{{ n.y }}" r="4.5"/>
+              {%- endfor %}
+            </svg>
+            <span class="radar__sweep" aria-hidden="true"></span>
+            <span class="radar__hub">{{ card.center }}</span>
+            {%- for it in card['items'] %}{% set n = radar[loop.index0] %}
+            <span class="radar__pin radar__pin--{{ n.side }}" style="--l:{{ n.left }}%;--t:{{ n.top }}%"><b>{{ it }}</b></span>
             {%- endfor %}
           </div>
           {%- elif card.widget == 'lab' %}
-          <div class="lab">
+          {#- A 2x2 of measured values rather than a fourth list: the block
+              already has one, and four figures read faster side by side. -#}
+          <div class="gmetrics">
             {%- for r in card.rows %}
-            <div class="lab__row{{ ' drift-a' if loop.index0 % 2 == 0 else ' drift-b' }}">
-              <span class="lab__name">{{ r.name }}</span>
-              <span class="lab__right"><span class="lab__val">{{ r.val }}</span>
-              <span class="chip {{ 'chip--down' if '−' in r.trend or '-' in r.trend else 'chip--up' }}">{{ r.trend }}</span></span>
+            <div class="gmetric">
+              <span class="gmetric__n">{{ r.name }}</span>
+              <span class="gmetric__v">{{ r.val }}
+                <span class="delta{{ ' delta--down' if '−' in r.trend or '-' in r.trend }}">{{ r.trend }}</span>
+              </span>
             </div>
             {%- endfor %}
           </div>
           {%- endif %}
+            </div>
+          </div>
+          </div>
         </div>
         <div class="cap__txt"><h3>{{ card.title }}</h3><p>{{ card.text }}</p></div>
       </article>
@@ -328,7 +503,7 @@
 {%- endmacro -%}
 
 {%- macro sec_process() -%}
-<section class="section" id="process" aria-labelledby="proc-t">
+<section class="section" id="process" role="region" aria-labelledby="proc-t">
   <div class="wrap">
     <div class="head">
       <span class="tag tag--lime" data-r>{{ c.process.eyebrow }}</span>
@@ -339,7 +514,7 @@
       {%- for s in c.process.steps %}
       <li class="step">
         <span class="step__n">{{ s.n }}</span>
-        <div class="step__ph">{{ pic(s.img, s.alt, '(max-width: 35rem) 6.5rem, (max-width: 56.25rem) 46vw, 18vw') }}</div>
+        <div class="step__ph media-frame">{{ pic(s.img, s.alt, '(max-width: 35rem) 6.5rem, (max-width: 56.25rem) 46vw, 18vw') }}</div>
         <div class="step__body"><h3>{{ s.title }}</h3><p>{{ s.text }}</p></div>
       </li>
       {%- endfor %}
@@ -349,7 +524,7 @@
 {%- endmacro -%}
 
 {%- macro sec_geo() -%}
-<section class="section" id="geo" aria-labelledby="geo-t">
+<section class="section section--room" id="geo" role="region" aria-labelledby="geo-t">
   <div class="wrap">
     <div class="head">
       <span class="tag tag--lime" data-r>{{ c.geo.eyebrow }}</span>
@@ -357,20 +532,18 @@
       <p class="lead" data-r>{{ c.geo.lead }}</p>
     </div>
     <div class="geo__grid">
-      <div class="plan-map" data-r="left">
-        {%- for cl in c.geo.clusters %}
-        <div class="parcel">
-          {{ pic(geo_imgs[loop.index0], cl.name ~ ' — ' ~ cl.role, '(max-width: 35rem) 92vw, 40vw') }}
-          <span class="parcel__ha">{{ fmt_num(cl.area) }} {{ ha }}</span>
-          <span class="parcel__n">{{ cl.name }}</span>
-          <span class="parcel__r">{{ cl.role }}</span>
-        </div>
-        {%- endfor %}
+      <div class="ukraine-map-card" data-r="left" data-route-map>
+        {% include "ukraine-map.svg.j2" %}
       </div>
       <div class="geo__side">
+        {#- The map's four points already carry data-place, in this order and
+            built from these same four entries. Repeating the key on the rows
+            lets the stylesheet tie a row to its pin with :has() — no JS, and
+            nothing to keep in sync, because both sides read one list. -#}
+        {%- set places = ['vinnytsia', 'haisyn', 'odesa', 'kyiv'] %}
         <div class="dists" data-r="right">
           {%- for d in c.geo.distances %}
-          <div class="dist"><span class="dist__to">{{ d.to }}</span><span class="dist__km">{{ d.km }}</span></div>
+          <div class="dist" data-place="{{ places[loop.index0] }}"><span class="dist__to">{{ d.to }}</span><span class="dist__km">{{ d.km }}</span></div>
           {%- endfor %}
         </div>
         <p class="geo__note" data-r="right" data-delay=".1">{{ c.geo.note }}</p>
@@ -381,7 +554,7 @@
 {%- endmacro -%}
 
 {%- macro sec_terms() -%}
-<section class="section" id="terms" aria-labelledby="terms-t">
+<section class="section" id="terms" role="region" aria-labelledby="terms-t">
   <div class="wrap">
     <div class="head head--center">
       <span class="tag tag--lime" data-r>{{ c.terms.eyebrow }}</span>
@@ -409,7 +582,7 @@
 {%- endmacro -%}
 
 {%- macro sec_testimonials() -%}
-<section class="section" aria-labelledby="tst-t">
+<section class="section" role="region" aria-labelledby="tst-t">
   <div class="wrap">
     <div class="head-row">
       <div class="head">
@@ -424,10 +597,10 @@
     </div>
   </div>
   <div class="wrap">
-    <div class="rail" data-rail data-stagger=".1">
+    <div class="rail" data-rail data-stagger=".1" tabindex="0" role="group" aria-label="{{ c.a11y.rail_testimonials }}">
       {%- for t in c.testimonials['items'] %}
-      <figure class="quote">
-        <div class="quote__ph">{{ pic(t.img, t.alt, '23.5rem') }}</div>
+      <figure class="quote card-lift">
+        <div class="quote__ph media-frame">{{ pic(t.img, t.alt, '23.5rem') }}</div>
         <div class="quote__body">
           <span class="quote__mark" aria-hidden="true">&bdquo;</span>
           <blockquote class="quote__txt">{{ t.quote }}</blockquote>
@@ -444,7 +617,7 @@
 {%- endmacro -%}
 
 {%- macro sec_faq() -%}
-<section class="section section--tight" id="faq" aria-labelledby="faq-t">
+<section class="section section--tight" id="faq" role="region" aria-labelledby="faq-t">
   <div class="wrap wrap--narrow">
     <div class="head" style="margin-bottom:2.25rem">
       <span class="tag tag--lime" data-r>{{ c.faq.eyebrow }}</span>
@@ -462,8 +635,31 @@
 </section>
 {%- endmacro -%}
 
+{%- macro story_card(n, idx) -%}
+<a class="post card-lift" href="{{ article_url(n.slug) }}" data-post="{{ '%02d' % idx }}" aria-label="{{ n.title }}">
+  {{ pic(n.img, n.alt, '(max-width: 35rem) 92vw, (max-width: 64rem) 46vw, 30vw') }}
+  <span class="post__meta"><span class="chip chip--lime">{{ n.tag }}</span><time class="post__date" datetime="{{ n.iso }}">{{ n.date }}</time></span>
+  <span class="post__title">{{ n.title }}</span>
+  {%- if n.excerpt %}<span class="post__ex">{{ n.excerpt }}</span>{% endif %}
+  <span class="post__go">{{ c.blog_page.read if c.blog_page is defined else c.news.read }}{{ I.arrow() }}</span>
+</a>
+{%- endmacro -%}
+
+{#- Same markup contract as story_card, different subject: a crop has an area
+    rather than a date, and links to its own page. Built on .post so every
+    variant override that reshapes a news card reshapes this one too. -#}
+{%- macro crop_card(cr, idx) -%}
+<a class="post card-lift" href="{{ crop_url(cr.slug) }}" data-post="{{ '%02d' % idx }}" aria-label="{{ cr.name }}">
+  {{ pic(cr.img, cr.alt, '(max-width: 35rem) 92vw, (max-width: 64rem) 46vw, 30vw') }}
+  <span class="post__meta"><span class="chip chip--lime">{{ cr.area }}</span><span class="post__date">{{ cr['yield'] }}</span></span>
+  <span class="post__title">{{ cr.name }}</span>
+  <span class="post__ex">{{ cr.text }}</span>
+  <span class="post__go">{{ c.detail_labels.crop_more }}{{ I.arrow() }}</span>
+</a>
+{%- endmacro -%}
+
 {%- macro sec_news() -%}
-<section class="section" id="news" aria-labelledby="news-t">
+<section class="section" id="news" role="region" aria-labelledby="news-t">
   <div class="wrap">
     <div class="head-row">
       <div class="head">
@@ -473,24 +669,14 @@
       <div data-r>{{ btn(c.news.cta, url_for('blog'), 'outline') }}</div>
     </div>
     <div class="news" data-stagger=".1">
-      {%- for n in c.news['items'] %}
-      <article class="post">
-        {{ pic(n.img, n.alt, '(max-width: 35rem) 92vw, (max-width: 64rem) 46vw, 30vw') }}
-        <div class="post__meta">
-          <span class="chip chip--lime">{{ n.tag }}</span>
-          <time class="post__date" datetime="{{ n.iso }}">{{ n.date }}</time>
-        </div>
-        <h3>{{ n.title }}</h3>
-        <span class="post__go">{{ c.news.read }}{{ I.arrow() }}</span>
-      </article>
-      {%- endfor %}
+      {%- for n in c.blog_page.posts[:3] %}{{ story_card(n, loop.index) }}{% endfor %}
     </div>
   </div>
 </section>
 {%- endmacro -%}
 
 {%- macro sec_cta() -%}
-<section class="section section--tight" aria-labelledby="cta-t">
+<section class="section section--tight" role="region" aria-labelledby="cta-t">
   <div class="wrap">
     <div class="ctap" data-r="in">
       <span data-parallax="10">{{ pic('cta-field', c.cta.image_alt, '(max-width: 80rem) 100vw, 76rem') }}</span>
@@ -508,7 +694,7 @@
 {#- ======================================================== ABOUT BLOCKS = -#}
 
 {%- macro sec_team(style='cards') -%}
-<section class="section" id="team" aria-labelledby="team-t">
+<section class="section" id="team" role="region" aria-labelledby="team-t">
   <div class="wrap">
     <div class="head">
       <span class="tag tag--lime" data-r>{{ c.team.eyebrow }}</span>
@@ -516,26 +702,26 @@
       <p class="lead" data-r>{{ c.team.lead }}</p>
     </div>
     {%- if style == 'rail' %}
-    <div class="rail" style="margin-top:2.5rem" data-stagger=".09">
+    <div class="rail" style="margin-top:2.5rem" data-stagger=".09" tabindex="0" role="group" aria-label="{{ c.a11y.rail_team }}">
       {%- for m in c.team['items'] %}
-      <div class="member" style="width:min(17rem,74vw)">
-        <div class="member__ph">{{ pic(m.img, m.alt, '17rem') }}<span class="member__role">{{ m.role }}</span></div>
+      <a class="member card-lift" href="{{ profile_url(m.slug) }}" style="width:min(17rem,74vw)" aria-label="{{ m.name }} — {{ m.role }}">
+        <div class="member__ph media-frame">{{ pic(m.img, m.alt, '17rem') }}<span class="member__role">{{ m.role }}</span></div>
         <div class="member__body"><span class="member__n">{{ m.name }}</span><p class="member__bio">{{ m.bio }}</p></div>
-      </div>
+      </a>
       {%- endfor %}
     </div>
     {%- else %}
     <div class="team{{ ' team--wide' if style == 'grid-wide' }}" data-stagger=".09">
       {%- for m in c.team['items'] %}
-      <div class="member member--top">
+      <a class="member member--top card-lift" href="{{ profile_url(m.slug) }}" aria-label="{{ m.name }} — {{ m.role }}">
         <div class="member__head">
           <span class="member__n">{{ m.name }}</span>
           <span class="member__r">{{ m.role }}</span>
         </div>
         <span class="member__go" aria-hidden="true">{{ I.arrow() }}</span>
-        <div class="member__ph">{{ pic(m.img, m.alt, '(max-width: 35rem) 92vw, (max-width: 75rem) 46vw, 22vw') }}</div>
+        <div class="member__ph media-frame">{{ pic(m.img, m.alt, '(max-width: 35rem) 92vw, (max-width: 75rem) 46vw, 22vw') }}</div>
         <p class="member__bio">{{ m.bio }}</p>
-      </div>
+      </a>
       {%- endfor %}
     </div>
     {%- endif %}
@@ -544,7 +730,7 @@
 {%- endmacro -%}
 
 {%- macro sec_journey() -%}
-<section class="section" id="journey" aria-labelledby="jr-t">
+<section class="section" id="journey" role="region" aria-labelledby="jr-t">
   <div class="wrap">
     {%- if V.id == 'v2' %}
     {#- V2 keeps the vertical rail: it sits inside a dark band where a card grid
@@ -585,7 +771,7 @@
 {%- endmacro -%}
 
 {%- macro sec_mission() -%}
-<section class="section" id="mission" aria-labelledby="ms-t">
+<section class="section" id="mission" role="region" aria-labelledby="ms-t">
   <div class="wrap">
     <div class="head">
       <span class="tag tag--lime" data-r>{{ c.mission.eyebrow }}</span>
@@ -606,7 +792,7 @@
 {%- endmacro -%}
 
 {%- macro sec_intro() -%}
-<section class="section" aria-labelledby="in-t">
+<section class="section" role="region" aria-labelledby="in-t">
   <div class="wrap">
     <div class="about__grid">
       <div class="about__copy">
@@ -615,8 +801,8 @@
         <p class="lead" data-r>{{ c.about.lead }}</p>
         {%- for para in c.about.body %}<p data-r data-delay=".{{ loop.index }}">{{ para }}</p>{% endfor %}
       </div>
-      <figure class="about__ph" data-r="right">
-        <span data-parallax="8">{{ pic('about-team', c.about.image_alt, '(max-width: 64rem) 92vw, 44vw') }}</span>
+      <figure class="about__ph about__ph--intro media-frame" data-r="right">
+        <span data-parallax="8">{{ pic('ops-drone' if V.id == 'v1' else ('ops-soil' if V.id == 'v2' else 'ops-lab'), c.services['items'][4].alt if V.id == 'v1' else (c.services['items'][1].alt if V.id == 'v2' else c.services['items'][3].alt), '(max-width: 64rem) 92vw, 44vw') }}</span>
       </figure>
     </div>
   </div>
@@ -626,7 +812,7 @@
 {#- ===================================================== SERVICES / BLOG = -#}
 
 {%- macro sec_services() -%}
-<section class="section" id="services" aria-labelledby="sv-t">
+<section class="section" id="services" role="region" aria-labelledby="sv-t">
   <div class="wrap">
     <div class="head-row">
       <div class="head">
@@ -638,11 +824,17 @@
     </div>
     <div class="svc-list">
       {%- for s in c.services['items'] %}
-      <article class="svc" data-card>
-        <div class="svc__ph">{{ pic(s.img, s.alt, '(max-width: 64rem) 100vw, 46vw') }}</div>
+      <article class="svc" data-card data-service="{{ '%02d' % loop.index }}">
+        <div class="svc__ph media-frame">{{ pic(s.img, s.alt, '(max-width: 64rem) 100vw, 46vw') }}</div>
         <div class="svc__body">
+          <span class="svc__index" aria-hidden="true">{{ '%02d' % loop.index }}</span>
           <h3>{{ s.title }}</h3>
           <p>{{ s.text }}</p>
+          <div class="svc-signal" aria-hidden="true">
+            <span class="svc-signal__track"><i style="--v:{{ 52 + loop.index0 * 6 }}%"></i></span>
+            <span class="svc-signal__track"><i style="--v:{{ 78 - loop.index0 * 4 }}%"></i></span>
+            <span class="svc-signal__track"><i style="--v:{{ 64 + (loop.index0 % 3) * 9 }}%"></i></span>
+          </div>
           <ul class="svc__points">
             {%- for pt in s.points %}<li>{{ I.tick() }}<span>{{ pt }}</span></li>{% endfor %}
           </ul>
@@ -655,7 +847,7 @@
 {%- endmacro -%}
 
 {%- macro sec_why() -%}
-<section class="section" aria-labelledby="why-t">
+<section class="section section--room" role="region" aria-labelledby="why-t">
   <div class="wrap">
     <div class="head">
       <span class="tag tag--lime" data-r>{{ c.why.eyebrow }}</span>
@@ -671,22 +863,11 @@
 {%- endmacro -%}
 
 {%- macro sec_blog() -%}
-<section class="section" aria-labelledby="bg-t">
+<section class="section" role="region" aria-labelledby="bg-t">
   <div class="wrap">
     <h2 id="bg-t" class="sr">{{ c.blog_page.title }}</h2>
     <div class="blog-grid" data-stagger=".09">
-      {%- for n in c.blog_page.posts %}
-      <article class="post">
-        {{ pic(n.img, n.alt, '(max-width: 35rem) 92vw, (max-width: 64rem) 46vw, 30vw') }}
-        <div class="post__meta">
-          <span class="chip chip--lime">{{ n.tag }}</span>
-          <time class="post__date" datetime="{{ n.iso }}">{{ n.date }}</time>
-        </div>
-        <h3>{{ n.title }}</h3>
-        <p class="post__ex">{{ n.excerpt }}</p>
-        <span class="post__go">{{ c.blog_page.read }}{{ I.arrow() }}</span>
-      </article>
-      {%- endfor %}
+      {%- for n in c.blog_page.posts %}{{ story_card(n, loop.index) }}{% endfor %}
     </div>
   </div>
 </section>
@@ -695,15 +876,15 @@
 {#- ============================================================ CONTACTS = -#}
 
 {%- macro contact_form(dark=False) -%}
-<form class="form{{ ' form--dark' if dark }}" data-demo-form novalidate>
+<form class="form{{ ' form--dark' if dark }}" data-demo-form>
   <div class="form__grid">
     <div class="field">
       <label for="f-name">{{ c.contact.form.name }}</label>
-      <input id="f-name" name="name" type="text" autocomplete="organization" placeholder="{{ c.contact.form.name_ph }}" required>
+      <input id="f-name" name="name" type="text" autocomplete="name" placeholder="{{ c.contact.form.name_ph }}" required>
     </div>
     <div class="field">
       <label for="f-mail">{{ c.contact.form.email }}</label>
-      <input id="f-mail" name="contact" type="text" autocomplete="email" placeholder="{{ c.contact.form.email_ph }}" required>
+      <input id="f-mail" name="contact" type="email" inputmode="email" autocomplete="email" placeholder="{{ c.contact.form.email_ph }}" required>
     </div>
     <div class="field">
       <label for="f-crop">{{ c.contact.form.crop }}</label>
@@ -720,9 +901,15 @@
       <textarea id="f-msg" name="message" rows="4" placeholder="{{ c.contact.form.message_ph }}"></textarea>
     </div>
   </div>
-  <div class="form__ok">{{ I.tick() }}<span>{{ c.contact.form.demo_notice }}</span></div>
+  <div class="form__ok" aria-live="polite">{{ I.tick() }}<span>{{ c.contact.form.demo_notice }}</span></div>
   <button class="btn" type="submit">{{ c.contact.form.submit }}<span class="btn__badge">{{ I.arrow() }}</span></button>
-  <p class="form__note">{{ c.contact.form.note }}</p>
+  {#- The consent line is where a privacy policy belongs, and until now it
+      promised a document that did not exist. Its middle clause becomes the link:
+      the sentence is unchanged word for word, and `a` inherits colour with no
+      decoration, so the line occupies exactly the same pixels. The link is
+      therefore invisible at rest — it underlines on hover, matching .cinfo__v a
+      — which is noted in the report as something the owner may want louder. -#}
+  <p class="form__note">{{ c.contact.form.note_before }}<a class="form__note-link" href="{{ url_for('privacy') }}">{{ c.contact.form.note_link }}</a>{{ c.contact.form.note_after }}</p>
 </form>
 {%- endmacro -%}
 
@@ -826,7 +1013,7 @@
   <p class="tag tag--lime" style="margin-bottom:.75rem">{{ c.contact_page.social_label }}</p>
   <div class="chips">
     {%- for s in c.contact_page.social %}
-    <a href="{{ s.href }}" aria-label="{{ s.label }}">{{ I.icon(s.icon) }}</a>
+    <span class="chips__demo" role="img" aria-label="{{ s.label }}" title="{{ s.handle }}">{{ I.icon(s.icon) }}</span>
     {%- endfor %}
     <a href="mailto:{{ c.contact.email }}" aria-label="{{ c.contact.email_label }}">{{ I.icon('mail') }}</a>
   </div>
@@ -836,7 +1023,7 @@
 {%- macro contacts_body() -%}
 {%- if V.contact_layout == 'split' -%}
 {#- V1 — grey panel one third, photograph two thirds, form card floating on it -#}
-<section class="wrap ct" id="contact" aria-labelledby="ct-t">
+<section class="wrap ct" id="contact" role="region" aria-labelledby="ct-t">
   <div class="ct1">
     <div class="ct1__panel">
       <div style="display:flex;flex-direction:column;gap:var(--s-lg)">
@@ -857,7 +1044,7 @@
 </section>
 {%- elif V.contact_layout == 'centred-photo' -%}
 {#- V2 — centred header, then one grey tray holding form + portrait strip -#}
-<section class="wrap ct" id="contact" aria-labelledby="ct-t">
+<section class="wrap ct" id="contact" role="region" aria-labelledby="ct-t">
   <div class="head head--center">
     <span class="tag tag--lime" data-r>{{ c.contact_page.eyebrow }}</span>
     <h1 id="ct-t" data-split>{{ c.contact_page.title }}</h1>
@@ -876,7 +1063,7 @@
 </section>
 {%- else -%}
 {#- V3 — no photograph, no containers: form naked on white, details beside it -#}
-<section class="wrap ct" id="contact" aria-labelledby="ct-t">
+<section class="wrap ct" id="contact" role="region" aria-labelledby="ct-t">
   <div class="ct3">
     <div class="ct3__head">
       <span class="tag tag--lime" data-r>{{ c.contact_page.eyebrow }}</span>
@@ -896,14 +1083,14 @@
 
 {#- ================================================= section dispatcher = -#}
 {%- macro render(name) -%}
-{%- if   name == 'logos'        %}{{ logo_strip() }}
+{%- if   name == 'logos'        %}{{ V6ORB.section() }}
 {%- elif name == 'about'        %}{{ sec_about() }}
 {%- elif name == 'intro'        %}{{ sec_intro() }}
 {%- elif name == 'stats'        %}{{ sec_stats() }}
 {%- elif name == 'crops'        %}{{ sec_crops() }}
-{%- elif name == 'capacity'     %}{{ sec_capacity() }}
+{%- elif name == 'capacity'     %}{{ V6WHY.section() }}
 {%- elif name == 'process'      %}{{ sec_process() }}
-{%- elif name == 'geo'          %}{{ sec_geo() }}
+{%- elif name == 'geo'          %}{{ V6GEO.section() }}
 {%- elif name == 'terms'        %}{{ sec_terms() }}
 {%- elif name == 'testimonials' %}{{ sec_testimonials() }}
 {%- elif name == 'faq'          %}{{ sec_faq() }}
@@ -911,7 +1098,7 @@
 {%- elif name == 'cta'          %}{{ sec_cta() }}
 {%- elif name == 'tagmarquee'   %}{{ tag_band() }}
 {%- elif name == 'team'         %}{{ sec_team(V.team_style) }}
-{%- elif name == 'journey'      %}{{ sec_journey() }}
+{%- elif name == 'journey'      %}{{ V6TL.section() }}
 {%- elif name == 'mission'      %}{{ sec_mission() }}
 {%- elif name == 'services'     %}{{ sec_services() }}
 {%- elif name == 'why'          %}{{ sec_why() }}

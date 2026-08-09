@@ -1,0 +1,142 @@
+/* ==========================================================================
+   #why — "why us" cards, placed as the client's own rendered images.
+
+   Previous passes rebuilt these four cards in CSS from a Figma export and kept
+   getting the details subtly wrong, so the cards are now the images the client
+   supplied. There is no widget CSS here any more: no bars, no silos, no spec
+   rows, no tilted plates. The browser is not asked to redraw a design that
+   already exists as artwork.
+
+   GEOMETRY — why the numbers below are what they are
+   --------------------------------------------------
+   tools/build_why_cards.py normalises all four exports onto one canvas
+   anchored on the card's white body, so every image is the same box with the
+   body at the same place:
+
+       canvas 1204 x 1272 (at 4x)   body 876 wide, at x=152
+       => image / body = 1204/876 = 1.374429
+          left overhang =  152/876 = 0.173516   (glow, and route's plate)
+          right overhang = 176/876 = 0.200913   (glow, and lab's plate)
+
+   --card-w is the *body* width — the size specified in Figma, and the only
+   number to change to rescale the section. Everything else is a ratio of it,
+   so the aspect ratio cannot drift: the image is only ever given a width, and
+   height stays auto.
+
+   The image is wider than the body because the tilted plate and the glow lean
+   outside it. .wfig pulls those overhangs back out of the column with negative
+   margins, so the text below sits on the same left edge as the card itself
+   rather than on the edge of the artwork's transparent margin — which is what
+   made earlier attempts look misaligned.
+
+   Because the four images are one box with the body in one place, nothing here
+   positions anything per card. Alignment is a property of the assets.
+   ========================================================================== */
+
+#why { background: linear-gradient(180deg, var(--white), var(--mist)); }
+
+.wcards {
+  /* the Figma size. Change this one value to scale the whole section. */
+  --card-w: 219px;
+  --img-w:   calc(var(--card-w) * 1.374429);
+  --bleed-l: calc(var(--card-w) * -0.173516);
+  --bleed-r: calc(var(--card-w) * -0.200913);
+
+  display: grid;
+  grid-template-columns: repeat(2, var(--card-w));
+  /* Floor is set by the artwork, not by taste. lab's plate reaches 41.3px past
+     its body on the right, route's reaches 18.8px past its own on the left,
+     and those two are neighbours in both the 2-up and 4-up rows — so anything
+     under ~60px makes the plates touch. Measured extents live in the image
+     manifest ("art"); tools/why_audit.py checks the clearance against them. */
+  column-gap: clamp(4.75rem, 5vw, 5.5rem);
+  row-gap: clamp(1.75rem, 3vw, 2.75rem);
+  justify-content: center;
+  margin-top: clamp(1.25rem, 2.4vw, 2rem);
+}
+
+.wcard {
+  width: var(--card-w);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.wfig {
+  margin: 0 var(--bleed-r) 0 var(--bleed-l);
+  transition: transform var(--dur) var(--ease-out);
+}
+.wfig img {
+  display: block;
+  width: var(--img-w);
+  height: auto;   /* the aspect-ratio lock */
+}
+
+.wcard__h3 {
+  font-size: 1rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: -.03em;
+  line-height: 1.25;
+  margin: .5rem 0 .2rem;
+}
+.wcard__num {
+  font-family: var(--mono);
+  font-size: .6875rem;
+  color: var(--text-2);
+  margin-right: .45rem;
+}
+.wcard__p { font-size: .8125rem; color: var(--text-2); line-height: 1.5; margin: 0; }
+
+/* The artwork carries its own shadow in its alpha, so a box-shadow would draw
+   a rectangle around a card that is not rectangular. A small lift is all the
+   hover needs. */
+@media (hover: hover) and (pointer: fine) {
+  .wcard:hover .wfig { transform: translateY(-4px); }
+}
+
+/* ============================================================================
+   V2 — Banded: the section sits on a dark full-bleed band. The cards are
+   light objects on it, which is what they already look like; only the
+   section's own type needs to change hands.
+   ============================================================================ */
+.v2 #why { background: var(--ink); color: var(--on-dark); }
+.v2 #why .tag { color: var(--on-dark-2); }
+.v2 #why .lead { color: var(--on-dark-2); }
+.v2 #why .wcard__h3 { color: var(--on-dark); }
+.v2 #why .wcard__num { color: var(--on-dark-2); }
+.v2 #why .wcard__p { color: var(--on-dark-2); }
+
+/* ============================================================================
+   V3 — Quiet: lighter type, no added chrome. The cards are the same artwork;
+   this variant's restraint is carried by the type around them.
+   ============================================================================ */
+.v3 .wcard__h3 { font-weight: var(--fw-light); font-size: var(--fs-lg); }
+.v3 .wcard__num { color: var(--text-2); }
+
+/* ============================================================================
+   Responsive
+   ============================================================================ */
+@media (min-width: 75rem) {
+  /* All four at their specified size in one row, rather than leaving the
+     section a narrow island in the middle of a wide page. The threshold is
+     arithmetic, not a round number: the row needs 4*219 + 3*76 = 1104px plus
+     the 40px gutters = 1184px, so 72rem (1152px) overflowed and scrolled the
+     page sideways. 75rem leaves 16px in hand. */
+  .wcards { grid-template-columns: repeat(4, var(--card-w)); }
+}
+
+@media (max-width: 36rem) {
+  .wcards {
+    /* One column. Below ~300px of usable width the card can no longer be
+       shown at its Figma size, so it scales down proportionally — the image
+       still only gets a width, so nothing stretches. The divisor is the same
+       image/body ratio used above, so the overhangs stay inside the gutter. */
+    --card-w: min(219px, calc((100vw - 2.5rem) / 1.374429));
+    grid-template-columns: var(--card-w);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wfig { transition-duration: .01ms !important; }
+  .wcard:hover .wfig { transform: none; }
+}

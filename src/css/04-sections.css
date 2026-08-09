@@ -7,21 +7,37 @@
 
 .hero {
   position: relative;
-  padding-top: calc(var(--header-h) + clamp(2rem, 5vw, 4.5rem));
-  padding-bottom: clamp(1.5rem, 4vw, 3rem);
+  /* The opening screen owns the whole viewport: the visitor sees the headline,
+     the call to action and the widget fan as one composition, and everything
+     else starts strictly below the fold. `svh` rather than `vh` so a mobile
+     browser's collapsing address bar cannot make the section taller than the
+     screen it is measured against. */
+  min-height: 100svh;
+  padding-top: calc(var(--header-h) + clamp(1.5rem, 4vh, 3.5rem));
+  padding-bottom: clamp(1.25rem, 3vh, 2.5rem);
   display: flex;
   flex-direction: column;
-  gap: clamp(2rem, 4.5vw, 3.5rem);
-  overflow: hidden;
+  gap: clamp(1.5rem, 3.5vh, 3rem);
+  overflow: clip;
   isolation: isolate;
   color: var(--white);
   background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 55%, var(--sky-low) 100%);
 }
-.hero__bg { position: absolute; inset: 0; z-index: -2; }
-.hero__bg img { width: 100%; height: 100%; object-fit: cover; }
+@supports (min-height: 100dvh) {
+  .hero { min-height: 100dvh; }
+}
+/* Auto margins on the copy block absorb whatever height is left over, so the
+   headline sits optically centred while the fan / logo bar stays pinned to the
+   bottom edge — at any window height, without a media query per size. */
+.hero__in { margin-block: auto; }
+.hero__fan, .hero__foot { flex: none; }
+.hero__bg { position: absolute; inset: 0; z-index: -2; overflow: hidden; }
+.hero__bg picture { width: 100%; height: 100%; }
+.hero__bg img { width: 100%; height: 100%; object-fit: cover; will-change: transform; transform-origin: center center; }
 .hero__in { display: flex; flex-direction: column; gap: var(--s-lg); }
-.hero h1 { color: var(--white); }
-.hero .lead { color: rgba(255, 255, 255, .88); }
+.hero h1 { color: var(--white); text-shadow: 0 2px 22px rgba(3, 19, 31, .16); }
+.hero h1 > .soft { color: rgba(255, 255, 255, .76); }
+.hero .lead { color: rgba(255, 255, 255, .92); }
 .hero__cta { display: flex; flex-wrap: wrap; gap: var(--s-md); margin-top: var(--s-xs); }
 .hero__trust {
   display: inline-flex; align-items: center; gap: .55rem;
@@ -51,9 +67,19 @@
 }
 
 /* variation 2 — copy left, portrait right */
-.hero--pright { min-height: min(100svh, 54rem); justify-content: center; }
-.hero--pright .hero__in { align-items: flex-start; text-align: left; max-width: 34rem; }
-.hero--pright h1 { max-width: 18ch; }
+.hero--pright {
+  justify-content: center;
+  padding-top: calc(var(--header-h) + clamp(2.5rem, 6vh, 5rem));
+}
+.hero--pright .hero__in { align-items: flex-start; text-align: left; max-width: 33rem; gap: var(--s-md); }
+/* Capped at 3.5rem, not 4.5rem: at the larger size "Вирощуємо зерно" could not
+   fit the 33rem copy column and broke after the first word, so the headline
+   opened on five ragged lines beside the portrait. */
+.hero--pright h1 { max-width: 18ch; font-size: clamp(2.5rem, 1.1rem + 3.4vw, 3.5rem); }
+/* The opening phrase and its glyph stay on one line wherever there is room. */
+@media (min-width: 48rem) {
+  .hero--pright h1 > .hero-lead-in { white-space: nowrap; }
+}
 .hero--pright .lead { max-width: 42ch; }
 .hero--pright .hero__bg img { object-position: 72% 40%; }
 .hero--pright .hero__bg::after {
@@ -65,20 +91,17 @@
 }
 
 /* variation 3 — centred, portrait rising from the bottom, glass logo bar */
-.hero--pcentre { min-height: min(100svh, 56rem); }
 .hero--pcentre .hero__in { align-items: center; text-align: center; }
-.hero--pcentre h1 { max-width: 20ch; }
+.hero--pcentre h1 { max-width: 20ch; text-wrap: balance; }
 .hero--pcentre .lead { max-width: 48ch; }
 .hero--pcentre .hero__cta { justify-content: center; }
-.hero--pcentre .hero__bg img { object-position: 50% 88%; }
+.hero--pcentre .hero__bg img { object-position: 50% 70%; }
 .hero--pcentre .hero__bg::after {
   content: "";
   position: absolute; inset: 0;
   background:
     linear-gradient(180deg, rgba(6, 26, 44, .56) 0%, rgba(6, 26, 44, .22) 34%, transparent 58%, rgba(6, 26, 44, .35) 100%);
 }
-.hero--pcentre .hero__foot { margin-top: auto; }
-
 /* --- hero widget: fanned cards ------------------------------------------ */
 
 .fan {
@@ -89,9 +112,43 @@
   perspective: 1600px;
   perspective-origin: 50% 40%;
   padding-inline: var(--gutter);
-  transform-style: preserve-3d;
+  /* The outermost cards are pushed ~61px below the flex baseline by their fan
+     transform, and each carries a 13px shadow. Without this reserve the hero's
+     clip cut the bottom off the outer cards — the single most visible fault on
+     the opening screen. Deepening the arc in fan_transforms() moved that drop
+     from ~50px to ~61px, so the reserve grew with it and still leaves ~23px of
+     slack for the shadow. The idle levitation adds 6px more travel, which the
+     same slack absorbs. */
+  padding-bottom: 5.25rem;
+  /* Deliberately flat, not preserve-3d. `perspective` above is what gives the
+     cards their depth and it reaches the children either way; preserve-3d only
+     decides whether those children share a single 3D space. What it also does
+     in Chromium is break hit-testing for them — with preserve-3d the deepest
+     hovered node is .fan itself, so :hover never reached a card and the hover
+     lift silently did nothing. Confirmed by toggling the property at runtime.
+     Nothing is lost visually: the cards never intersect, and their paint order
+     is already pinned by the z-index on .fan__item rather than by depth
+     sorting. */
+  transform-style: flat;
 }
-.fan__item { flex: none; width: clamp(8.5rem, 12vw, 11.5rem); z-index: var(--z); }
+.fan__item {
+  flex: none;
+  width: clamp(8.5rem, 12vw, 11.5rem);
+  z-index: var(--z);
+  /* positions the hover glow pseudo-element */
+  position: relative;
+}
+/* Pure carrier for the entrance tween. No box of its own, so the card's
+   geometry is unchanged whether or not JavaScript ever runs. */
+.fan__rise { display: block; }
+/* Short windows: shrink the fan rather than letting it eat the headline. The
+   cards get smaller but their fan transform does not, so this reserve has to
+   clear the same ~61px drop as the full-height one. */
+@media (max-height: 46rem) and (min-width: 64rem) {
+  .fan__item { width: clamp(7.25rem, 10vw, 9.5rem); }
+  .fcard { height: 10.5rem; }
+  .fan { padding-bottom: 4.25rem; }
+}
 
 .fcard {
   border-radius: var(--r-md);
@@ -108,25 +165,31 @@
 }
 .fcard--dark { background: var(--ink); color: var(--white); }
 .fcard--lime { background: var(--lime); }
+/* The card's own name — what the card is *about*. It is the primary label on
+   a widget this small, so it carries a little more size than the note beneath
+   it; the note stays where it was, because enlarging both would flatten the
+   hierarchy rather than sharpen it. */
 .fcard__l {
   font-family: var(--mono);
-  font-size: .53rem;
-  letter-spacing: .11em;
+  font-size: .575rem;
+  letter-spacing: .105em;
   text-transform: uppercase;
   color: var(--text-2);
   line-height: 1.3;
 }
 .fcard--dark .fcard__l { color: var(--on-dark-2); }
 .fcard--lime .fcard__l { color: #4a6110; }
+/* The headline figure. Bumped from 1.7rem: it is the one thing a visitor is
+   meant to read off the fan from across the viewport. */
 .fcard__big {
-  font-size: 1.7rem;
+  font-size: 1.9rem;
   font-weight: var(--fw-medium);
-  letter-spacing: -.06em;
+  letter-spacing: -.062em;
   line-height: 1;
   margin-top: auto;
 }
 .fcard__big em { font-style: normal; font-size: .46em; letter-spacing: -.02em; }
-.fcard__n { font-size: .58rem; line-height: 1.4; color: var(--grey-300); }
+.fcard__n { font-size: .58rem; line-height: 1.4; color: var(--muted-on-light); }
 .fcard--dark .fcard__n { color: var(--on-dark-2); }
 .fcard--lime .fcard__n { color: #4a6110; }
 .fcard__ph { margin: -.85rem -.85rem 0; aspect-ratio: 4 / 3; }
@@ -156,6 +219,14 @@
 /* --- hero widget: auto-scrolling card rail (variation 2) ---------------- */
 
 .card-rail { position: relative; }
+/* The marquee clips on both axes, so the cards travelling through it need
+   vertical room for their shadow or it is shaved into a hard line along the
+   top and bottom of the rail. The negative margin returns the space so the
+   hero's spacing is untouched. */
+.card-rail .marq {
+  padding-block: 1.25rem;
+  margin-block: -1.25rem;
+}
 .card-rail .marq__track { gap: var(--s-md); align-items: stretch; }
 .card-rail .fcard { width: clamp(9.5rem, 13vw, 12.5rem); flex: none; height: 12rem; }
 
@@ -169,6 +240,12 @@
 .strip { border-block: 1px solid var(--border); background: var(--white); }
 .strip__in { display: flex; flex-direction: column; gap: .3rem; padding-block: var(--s-lg); }
 .strip__l { text-align: center; }
+.strip--orbit {
+  background:
+    radial-gradient(circle at 74% 50%, rgba(209, 255, 92, .12), transparent 30%),
+    linear-gradient(180deg, var(--white), var(--mist));
+}
+.strip--quiet { border-block-color: transparent; border-bottom-color: var(--border); }
 .logo-mark__t {
   font-family: var(--mono);
   font-size: var(--fs-sm);
@@ -177,15 +254,32 @@
   margin-left: .5rem;
 }
 
+/* A section whose last element is a shadowed card needs its own bottom room:
+   the section system gives spacing through the NEXT section's padding-top, and
+   a shadow with a 53px offset and 32px blur reaches straight into that — where
+   the next section's own background then cuts it off as a hard dark line. */
+.section--room { padding-bottom: clamp(3.25rem, 6vw, 6rem); }
+
 /* --- tag marquee band --------------------------------------------------- */
 
 .tagband {
   display: flex;
   flex-direction: column;
-  gap: .5rem;
+  /* Two tracks running opposite ways need to read as two tracks, not one
+     thicket — and the band as a whole needs air above it or it fuses with the
+     hero card sitting directly on top of it. */
+  gap: .85rem;
   padding-block: var(--s-huge);
+  margin-top: clamp(3rem, 6vw, 5.5rem);
+  border-top: 1px solid var(--border);
   background: var(--grey-100);
   overflow: hidden;
+}
+/* Fade both ends into the band instead of guillotining the pills at the
+   viewport edge. */
+.tagband .marq {
+  -webkit-mask-image: linear-gradient(90deg, #0000 0, #000 6%, #000 94%, #0000 100%);
+  mask-image: linear-gradient(90deg, #0000 0, #000 6%, #000 94%, #0000 100%);
 }
 
 /* --- about -------------------------------------------------------------- */
@@ -223,13 +317,115 @@
   line-height: 1.4;
   color: var(--black);
 }
-.about__stats { margin-top: clamp(2.5rem, 5vw, 4rem); }
+/* --- about figures: compact bento ---------------------------------------
+   Built to the client's reference: a small mono label with a dot above the
+   figure, the figure large and tight with its unit small beside it, and one
+   lime accent in the group.
+
+   This is its own component rather than a restyle of .stat, which still
+   serves the crop detail pages with the icon/index header and bar plot that
+   suit a single crop's numbers. Here those turned six figures into 517px of
+   mostly filler; dropping them and moving the label above the number takes
+   the block to roughly 300px without shrinking a single figure.
+
+   Widths are per row, not per card: column 1 is wider and the loop puts a
+   `hero` there every third card, so the two large tonnages get the room and
+   the four short figures share the narrow columns.
+   ------------------------------------------------------------------------ */
+.about__stats { margin-top: clamp(1.75rem, 3.5vw, 2.75rem); }
+
+.abstats {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr 1fr;
+  gap: clamp(.55rem, .9vw, .85rem);
+}
+.abstat {
+  background: var(--white);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+  padding: clamp(.9rem, 1.4vw, 1.3rem) clamp(1rem, 1.6vw, 1.45rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: clamp(.75rem, 1.7vw, 1.3rem);
+  min-width: 0;
+}
+
+.abstat__k {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  font-family: var(--mono);
+  font-size: .625rem;
+  letter-spacing: .13em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--text-2);
+  min-width: 0;
+}
+.abstat__k i {
+  width: .3125rem;
+  height: .3125rem;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .5;
+  flex: none;
+}
+
+.abstat__v { display: flex; align-items: baseline; gap: .38rem; min-width: 0; }
+.abstat__v b {
+  font-size: clamp(1.75rem, .9rem + 2.5vw, 2.9rem);
+  font-weight: var(--fw-medium);
+  letter-spacing: -.045em;
+  line-height: .92;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.abstat__v em {
+  font-style: normal;
+  font-size: clamp(.75rem, .55rem + .45vw, .9375rem);
+  letter-spacing: -.01em;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+.abstat--hero .abstat__v b { font-size: clamp(2rem, .95rem + 3.2vw, 3.6rem); }
+
+/* the one lime accent, and the one dark anchor opposite it */
+.abstat--lime { background: var(--lime); box-shadow: none; }
+.abstat--lime .abstat__k { color: #46600d; }
+.abstat--lime .abstat__k i { opacity: .75; }
+.abstat--lime .abstat__v em { color: #46600d; }
+
+.abstat--ink { background: var(--ink); box-shadow: none; }
+.abstat--ink .abstat__k { color: var(--on-dark-2); }
+.abstat--ink .abstat__k i { background: var(--lime); opacity: 1; }
+.abstat--ink .abstat__v b { color: var(--white); }
+.abstat--ink .abstat__v em { color: var(--on-dark-2); }
+
+@media (max-width: 60rem) {
+  .abstats { grid-template-columns: 1fr 1fr; }
+  .abstat--hero .abstat__v b { font-size: clamp(1.75rem, .9rem + 2.5vw, 2.9rem); }
+}
+@media (max-width: 30rem) {
+  /* Stay two-up rather than dropping to one column: six figures in a single
+     stack ran 492px, which is the opposite of the point. The figure comes
+     down instead, so two cards still fit a 320px screen without the unit
+     wrapping under the number. */
+  .abstat { padding: .8rem .9rem; gap: .55rem; }
+  .abstat__v b,
+  .abstat--hero .abstat__v b { font-size: 1.5rem; }
+  .abstat__v em { font-size: .6875rem; }
+  .abstat__k { font-size: .5625rem; letter-spacing: .1em; }
+}
 
 /* --- capacity grid ------------------------------------------------------ */
 
 .cap {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  /* Equal rows, so the four cards line up as a block instead of each one
+     ending wherever its own copy happens to stop. */
+  grid-auto-rows: 1fr;
   gap: var(--s-lg);
   margin-top: clamp(2.25rem, 4vw, 3.5rem);
 }
@@ -241,17 +437,137 @@
   display: flex;
   flex-direction: column;
   gap: var(--s-xl);
+  /* Grid items refuse to go below min-content unless told otherwise. */
+  min-width: 0;
 }
+/* One ratio for all four visualizations. Sized by ratio rather than by content
+   means the illustration frame cannot grow or shrink with the length of the
+   copy underneath, and the four titles land on the same line across the grid. */
+/* The grey panel is the bench the instrument sits on — it is what lets a white
+   card with a soft shadow read at all. Padding is asymmetric on purpose: the
+   shadow falls downwards, so the bottom needs more room than the top, and the
+   panel no longer clips, because a clipped shadow is exactly the dark line this
+   pass has been removing everywhere else. */
 .cap__viz {
   background: var(--grey-100);
   border-radius: var(--r-md);
-  padding: clamp(1.1rem, 2vw, 1.6rem);
-  min-height: 13.5rem;
+  padding: clamp(.9rem, 1.7vw, 1.3rem) clamp(.9rem, 1.7vw, 1.3rem) clamp(1.3rem, 2.4vw, 1.9rem);
+  /* The plate now occupies the top ~3.5rem of the panel, so the panel is taller
+     than it was: keeping the old ratio would have taken that height straight
+     out of the instrument and squeezed the readouts. */
+  aspect-ratio: 400 / 305;
+  min-height: 18rem;
+  /* An aspect-ratio box derives whichever dimension is not constrained, so a
+     binding min-height makes it inflate its own WIDTH instead. max-width:100%
+     alone did not hold: the card is a grid item, grid items default to
+     min-width:auto, so the card simply grew to its min-content width and took
+     the page with it — 425px of card inside a 420px viewport. Pinning the
+     width makes it the definite axis, which leaves height as the derived one,
+     which is the way round this box was always meant to work. The card is told
+     it may shrink in the rule below. */
+  width: 100%;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: stretch;
 }
-.cap__txt { display: flex; flex-direction: column; gap: var(--s-sm); }
+/* --- capacity: the instrument stands on a tilted plate -------------------
+   Two layers. The plate behind is where the card publishes its name and its
+   one headline figure; the instrument in front holds the readout. The tilt is
+   small (2.4deg) and pivots on the plate's bottom-left corner, so the plate
+   reads as something the instrument was set down on rather than as a card that
+   failed to align.
+
+   The plate is in normal reading order and is not aria-hidden — the figure on
+   it exists nowhere else in the card, so hiding it would cost a screen reader
+   the number. */
+.cap__stage { position: relative; display: flex; flex-direction: column; flex: 1; }
+.cap__back {
+  position: absolute;
+  /* Not flush to the top of the bench. A rotation lifts the far end of the
+     plate by tan(angle) x its length, and at the one-column breakpoint the
+     cards are wide enough for that to be ~10px — enough to push the plate's
+     corner up out of the grey panel. This inset is the headroom that lift
+     needs, which is also why the angle is small. */
+  inset: .65rem 7% auto 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-md);
+  background: linear-gradient(150deg, var(--field-2), var(--ink) 62%);
+  border-radius: var(--r-md);
+  /* Deep bottom padding: the instrument overlaps the plate, and this is the
+     strip that stays visible underneath it. */
+  padding: .8rem 1.05rem 2.1rem;
+  transform: rotate(-1.5deg);
+  transform-origin: 8% 100%;
+  box-shadow: 0 16px 34px -16px #07150e8c;
+  transition: transform var(--dur-md) var(--ease-out);
+}
+.cap__back-l b {
+  display: block;
+  color: var(--white);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  letter-spacing: -.02em;
+}
+.cap__back-l span,
+.cap__back-r i {
+  display: block;
+  font-family: var(--mono);
+  font-size: .5625rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--on-dark-2);
+  margin-top: .3rem;
+  font-style: normal;
+}
+.cap__back-r { text-align: right; flex: none; }
+.cap__back-r b {
+  display: block;
+  color: var(--white);
+  font-size: 1.4rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: -.045em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.cap__stage .gauge {
+  position: relative;
+  /* Clears the plate's label block with room to spare. At 3.5rem the sub-label
+     sat 2-4px off the instrument's top edge, which read as a collision. */
+  margin-top: 4.6rem;
+  flex: 1;
+  transition: transform var(--dur-md) var(--ease-out);
+}
+/* The mono caption strip that replaced the instrument's old dark header: the
+   name and the figure moved to the plate, so what is left here is the one line
+   that says what the readout underneath is measuring. */
+.gauge__cap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-md);
+  font-family: var(--mono);
+  font-size: .5625rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted-on-light);
+  padding-bottom: .6rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: .4rem;
+}
+.gauge__cap em { font-style: normal; color: var(--ink); }
+/* On hover the stack opens: the plate swings a little further out and the
+   instrument settles, which reads as two separate objects rather than one
+   printed graphic. */
+@media (hover: hover) and (pointer: fine) {
+  .cap__card:hover .cap__back { transform: rotate(-2.9deg) translateY(-4px); }
+  .cap__card:hover .cap__stage .gauge { transform: translateY(3px); }
+}
+
+/* Pinned to the bottom of the card, so every card's heading sits on one line. */
+.cap__txt { display: flex; flex-direction: column; gap: var(--s-sm); margin-top: auto; }
 .cap__txt p { font-size: var(--fs-sm); color: var(--text-2); }
 
 /* --- process ------------------------------------------------------------ */
@@ -269,7 +585,7 @@
 .step__n {
   display: inline-flex; align-items: center; gap: .6rem;
   font-family: var(--mono); font-size: var(--fs-xs);
-  letter-spacing: .12em; color: var(--grey-300);
+  letter-spacing: .12em; color: var(--muted-on-light);
 }
 .step__n::after { content: ""; height: 1px; flex: 1; background: var(--border); }
 .step h3 { font-size: var(--fs-h4); font-weight: var(--fw-medium); letter-spacing: -.03em; }
@@ -360,9 +676,16 @@
 .post img {
   position: absolute; inset: 0; z-index: -2;
   width: 100%; height: 100%; object-fit: cover;
-  transition: transform var(--dur-xl) var(--ease-out);
+  border-radius: inherit;
+  /* The hover zoom rides the independent `scale` property rather than
+     `transform`: GSAP owns `transform` for the parallax scrub and would
+     overwrite a transform-based hover outright. These two compose. */
+  scale: 1;
+  transition: scale var(--dur-xl) var(--ease-out);
+  will-change: transform;
 }
-.post:hover img { transform: scale(1.06); }
+.post:hover img,
+.post:focus-within img { scale: 1.05; }
 .post::after {
   content: "";
   position: absolute; inset: 0; z-index: -1;
@@ -373,7 +696,7 @@
   font-family: var(--mono); font-size: .64rem;
   letter-spacing: .08em; text-transform: uppercase; color: rgba(255, 255, 255, .72);
 }
-.post h3 { font-size: var(--fs-h4); font-weight: var(--fw-medium); letter-spacing: -.03em; color: var(--white); }
+.post__title { font-size: var(--fs-h4); font-weight: var(--fw-medium); letter-spacing: -.03em; color: var(--white); line-height: 1.28; }
 .post__ex { font-size: var(--fs-xs); color: rgba(255, 255, 255, .78); line-height: 1.55; }
 .post__go {
   display: inline-flex; align-items: center; gap: .45rem;
@@ -384,10 +707,21 @@
 .post__go svg { width: .62rem; height: .62rem; }
 .post:hover .post__go { gap: .75rem; }
 
-/* blog page: first post spans two columns */
-.blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-lg); }
-.blog-grid > :first-child { grid-column: span 2; min-height: 24rem; }
-.blog-grid > :first-child h3 { font-size: var(--fs-h3); }
+/* blog page: first post spans two columns.
+   `grid-auto-rows: 1fr` plus stretched items is what keeps the feature card and
+   the card beside it the same height — previously the feature carried a taller
+   min-height of its own and its neighbour simply stopped short, leaving the row
+   visibly ragged. */
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
+  align-items: stretch;
+  gap: var(--s-lg);
+}
+.blog-grid > * { min-height: 24rem; height: 100%; }
+.blog-grid > :first-child { grid-column: span 2; }
+.blog-grid > :first-child .post__title { font-size: var(--fs-h3); }
 
 /* --- team --------------------------------------------------------------- */
 
@@ -502,6 +836,33 @@
 .svc__points { display: flex; flex-direction: column; gap: .5rem; margin-top: var(--s-xs); }
 .svc__points li { display: flex; gap: .6rem; align-items: flex-start; font-size: var(--fs-sm); }
 .svc__points svg { width: 1.05rem; height: 1.05rem; flex: none; margin-top: .18rem; color: var(--ink); }
+.svc__index {
+  font-family: var(--mono);
+  font-size: .68rem;
+  letter-spacing: .12em;
+  color: var(--muted-on-light);
+}
+.svc-signal {
+  display: grid;
+  gap: .42rem;
+  padding-block: .15rem;
+}
+.svc-signal__track {
+  height: .34rem;
+  overflow: hidden;
+  border-radius: var(--r-pill);
+  background: var(--grey-200);
+}
+.svc-signal__track i {
+  display: block;
+  width: var(--v);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ink);
+  transform-origin: left center;
+}
+.svc-signal__track:nth-child(2) i { background: var(--lime-lo); }
+.svc-signal__track:nth-child(3) i { background: var(--sky); }
 
 /* --- "why us" ---------------------------------------------------------- */
 
@@ -510,7 +871,7 @@
 .why__n {
   font-family: var(--mono);
   font-size: var(--fs-lg);
-  color: var(--lime-lo);
+  color: var(--lime-on-light);
   padding-bottom: var(--s-sm);
   border-bottom: 1px solid var(--border);
 }
@@ -557,7 +918,7 @@
 .cinfo__row:first-child { border-top: 1px solid var(--border); }
 .cinfo__k {
   font-family: var(--mono); font-size: .64rem;
-  letter-spacing: .1em; text-transform: uppercase; color: var(--grey-300);
+  letter-spacing: .1em; text-transform: uppercase; color: var(--muted-on-light);
 }
 .cinfo__v { font-size: var(--fs-sm); line-height: 1.55; }
 .cinfo__v a:hover { border-bottom: 1px solid currentColor; }
@@ -935,7 +1296,7 @@
 .ccard:hover { transform: translateY(-5px); box-shadow: var(--shadow-lift), var(--shadow); }
 .ccard__k {
   font-family: var(--mono); font-size: .64rem;
-  letter-spacing: .1em; text-transform: uppercase; color: var(--grey-300);
+  letter-spacing: .1em; text-transform: uppercase; color: var(--muted-on-light);
 }
 .ccard__v { font-size: var(--fs-lg); font-weight: var(--fw-medium); letter-spacing: -.03em; }
 .ccard__n { font-size: var(--fs-xs); color: var(--text-2); margin-top: auto; }
@@ -1123,7 +1484,7 @@
 
 /* shared: social chips */
 .chips { display: flex; gap: .5rem; flex-wrap: wrap; }
-.chips a {
+.chips :is(a, .chips__demo) {
   width: 2.5rem; height: 2.5rem;
   border-radius: 50%;
   display: grid; place-items: center;
@@ -1131,13 +1492,293 @@
   color: var(--white);
   transition: background var(--dur-xs) var(--ease), transform var(--dur-xs) var(--ease);
 }
-.chips a svg { width: 1.05rem; height: 1.05rem; }
+.chips :is(a, .chips__demo) svg { width: 1.05rem; height: 1.05rem; }
 .chips a:hover { background: var(--lime); color: var(--black); transform: translateY(-3px); }
+.chips__demo { cursor: default; opacity: .82; }
 
 @media (max-width: 64rem) {
   .ct1, .ct2__tray, .ct3 { grid-template-columns: 1fr; }
   .ct1 { min-height: 0; }
-  .ct1__media { min-height: 22rem; }
-  .ct1__card { position: static; inset: auto; width: auto; margin-top: -4rem; }
+  .ct1__media {
+    min-height: 0;
+    overflow: visible;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .ct1__media > picture {
+    height: auto;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--r);
+    overflow: hidden;
+  }
+  .ct1__card {
+    position: relative;
+    z-index: 1;
+    inset: auto;
+    width: auto;
+    margin: -2rem var(--s-md) 0;
+  }
   .ct2__side { min-height: 18rem; }
 }
+
+/* ==========================================================================
+   UKRAINE ROUTE MAP
+   ========================================================================== */
+.ukraine-map-card {
+  --map-hi: #f8faf5;
+  --map-lo: #e9eee5;
+  position: relative;
+  min-width: 0;
+  border-radius: var(--r);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 68% 30%, rgba(57,191,238,.12), transparent 34%),
+    linear-gradient(145deg, var(--white), var(--grey-100));
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  padding: clamp(.75rem, 2vw, 1.5rem);
+  /* The card stretches to the height of the distance list beside it, so centre
+     the map inside rather than letting it sit at the top with a void below. */
+  display: flex;
+  align-items: center;
+}
+.ukraine-map { display:block; width:100%; height:auto; overflow:visible; }
+
+/* Oblasts, not a silhouette. Every region is its own path, filled from a
+   shared gradient so the country still reads as one shape, separated by
+   hairlines that stay 1px at any render size. The home oblast is the only one
+   that carries colour — the point of the map is where the grain starts. */
+.ukraine-map__oblast {
+  fill: url(#map-fill);
+  stroke: var(--grey-300);
+  stroke-width: .7;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  transition: fill var(--dur-sm) var(--ease);
+}
+.ukraine-map__oblast.is-home { fill: var(--lime-hi); stroke: var(--ink); stroke-width: 1.2; }
+@media (hover: hover) and (pointer: fine) {
+  .ukraine-map__oblast:hover { fill: var(--grey-200); }
+  .ukraine-map__oblast.is-home:hover { fill: var(--lime); }
+}
+/* One darker pass around the whole country, drawn from the same paths, so the
+   national border reads heavier than the internal ones. */
+.ukraine-map__oblasts { paint-order: fill stroke; }
+
+.ukraine-map__route {
+  fill:none; stroke:var(--lime-lo); stroke-width:3.4; stroke-linecap:round;
+  stroke-dasharray:1; stroke-dashoffset:1; vector-effect:non-scaling-stroke;
+  filter:url(#route-glow);
+}
+.ukraine-map__route--north { stroke:var(--sky); }
+/* The two short hops need to hold their own beside the glowing long hauls
+   without shouting: solid ink for the oblast capital, dashed for the local
+   run, both at a weight that survives the glow filter around them. */
+.ukraine-map__route--regional { stroke:var(--ink); stroke-width:2.6; opacity:.8; }
+.ukraine-map__route--local { stroke:var(--ink); stroke-width:2.6; opacity:.8; }
+/* A short bright segment that keeps travelling once the route has drawn, so
+   the map stays alive without ever moving anything the eye has to read. */
+.ukraine-map__spark {
+  fill:none; stroke:var(--white); stroke-width:5; stroke-linecap:round;
+  vector-effect:non-scaling-stroke; opacity:0;
+  stroke-dasharray:.07 .93; stroke-dashoffset:1;
+  filter:url(#route-glow);
+}
+/* Scale about each circle's own centre. Without fill-box an SVG transform
+   resolves against the user-space origin, and GSAP compensates with a
+   translation that does not unwind — the markers ended up above and left of
+   their coordinates while the routes stayed put, which is exactly why every
+   line looked like it stopped short of its city. */
+.ukraine-map__point circle,
+.ukraine-map__hub circle {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.ukraine-map__point circle:not(.ukraine-map__pulse) { fill:var(--ink); stroke:var(--lime); stroke-width:2; vector-effect:non-scaling-stroke; }
+.ukraine-map__point text { font:500 14px/1 var(--font); fill:var(--ink); paint-order:stroke; stroke:var(--white); stroke-width:4.5px; stroke-linejoin:round; }
+.ukraine-map__point .ukraine-map__km { font:11px/1 var(--mono); fill:var(--grey-500); }
+.ukraine-map__pulse { fill:var(--lime); opacity:.22; transform-box:fill-box; transform-origin:center; animation:map-pulse 2.4s var(--ease-out) infinite; }
+.ukraine-map__pulse--hub { animation-duration:3.2s; }
+.ukraine-map__hub circle:not(.ukraine-map__pulse) { fill:var(--lime); stroke:var(--ink); stroke-width:1.5; vector-effect:non-scaling-stroke; }
+@keyframes map-pulse { 0%,100%{transform:scale(.72);opacity:.28} 55%{transform:scale(1.45);opacity:0} }
+
+/* ==========================================================================
+   ARTICLE AND PROFILE DETAILS
+   ========================================================================== */
+.detail-hero, .profile-hero { padding-top:calc(var(--header-h) + clamp(1.25rem,3vw,2.5rem)); }
+.detail-back {
+  display:inline-flex; align-items:center; gap:.55rem; width:max-content;
+  font:500 .68rem/1.4 var(--mono); letter-spacing:.1em; text-transform:uppercase;
+  color:var(--text-2); border-bottom:1px solid var(--border); padding-bottom:.35rem;
+}
+.detail-back svg { width:.72rem; height:.72rem; }
+/* The breadcrumb on a crop page puts chevrons in this row, and an inline SVG with
+   no intrinsic size stretches to fill whatever contains it — unsized, a single
+   separator covered the entire viewport. Matched to .detail-back above rather
+   than invented. No existing page has an SVG inside .detail-meta (checked
+   against the built output), so this cannot move an article or a profile. */
+.detail-meta svg { width:.72rem; height:.72rem; flex:none; }
+.detail-hero { display:flex; flex-direction:column; gap:clamp(1.5rem,3vw,2.5rem); }
+.detail-hero__copy { max-width:61rem; display:flex; flex-direction:column; align-items:center; text-align:center; gap:var(--s-lg); margin-inline:auto; }
+.detail-hero__copy h1 { max-width:18ch; text-wrap:balance; }
+/* A long Ukrainian compound in a 40px display size does not fit a 320px screen:
+   "конфіденційності" measures 300px against 284px of column, and on v2 the ink
+   panel's padding took it 34px past the viewport. The headings already carry
+   overflow-wrap:break-word, which by spec permits a break but does NOT reduce
+   min-content width — and each word here is wrapped in an inline-block for the
+   reveal, so the heading's min-content width is that atomic box and nothing can
+   break inside it.
+   hyphens gives the break a hyphen where the dictionary has one; `anywhere` is
+   the guarantee for words it does not know, and unlike break-word it does lower
+   min-content width. Both only engage when a word cannot fit on a line by
+   itself, so headings that already fit are untouched — verified against the
+   reference matrix. */
+.detail-hero__copy h1,
+.detail-hero__copy h1 .w,
+.detail-hero__copy h1 .w__i { hyphens: auto; overflow-wrap: anywhere; }
+.detail-hero__copy .lead { max-width:62ch; }
+.detail-meta { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:.65rem 1rem; font: .68rem/1.4 var(--mono); color:var(--text-2); letter-spacing:.06em; text-transform:uppercase; }
+.detail-hero__media { --media-radius:var(--r-lg); aspect-ratio:16/8.2; box-shadow:var(--shadow); }
+.detail-content { padding-top:clamp(2.5rem,6vw,6rem); }
+.article-body { display:flex; flex-direction:column; gap:clamp(2rem,5vw,4rem); }
+.article-section { display:flex; flex-direction:column; gap:var(--s-lg); }
+.article-section h2 { font-size:clamp(1.75rem,1.2rem + 1.8vw,2.65rem); max-width:22ch; }
+.article-section p { font-size:clamp(1rem,.95rem + .25vw,1.14rem); line-height:1.75; color:var(--text-2); }
+.article-section p:first-of-type { color:var(--text); font-size:var(--fs-xl); line-height:1.55; }
+.article-section ul { display:grid; gap:.7rem; padding:var(--s-xl); border-radius:var(--r); background:var(--grey-100); }
+.article-section li { display:flex; gap:.75rem; align-items:flex-start; line-height:1.55; }
+.article-section li svg { width:1.15rem; height:1.15rem; flex:none; color:var(--ink); margin-top:.18rem; }
+.detail-related__grid { margin-top:clamp(2rem,4vw,3rem); }
+
+.profile-hero { display:grid; grid-template-columns:minmax(0,1fr) minmax(22rem,.8fr); gap:clamp(2rem,6vw,6rem); align-items:stretch; }
+.profile-hero__copy { display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:var(--s-lg); border-top:1px solid var(--border); padding-block:clamp(2rem,6vw,5rem); }
+.profile-hero__copy h1 { max-width:12ch; }
+.profile-role { font:500 .72rem/1.4 var(--mono); letter-spacing:.12em; text-transform:uppercase; color:var(--lime-on-light); }
+.profile-hero__media { --media-radius:var(--r-lg); min-height:34rem; }
+.profile-hero__media img { object-position:50% 24%; }
+.profile-body__grid { display:grid; grid-template-columns:.85fr 1.15fr; gap:clamp(2rem,6vw,6rem); align-items:start; }
+.profile-list { display:grid; gap:.75rem; margin-top:var(--s-xl); }
+.profile-list li { display:flex; align-items:center; gap:.8rem; padding:.8rem 0; border-bottom:1px solid var(--border); }
+.profile-quote { border-radius:var(--r); padding:clamp(1.5rem,4vw,3rem); background:var(--ink); color:var(--white); box-shadow:var(--shadow); }
+.profile-quote > span { display:block; color:var(--lime); font-size:3.5rem; line-height:.55; }
+.profile-quote p { font-size:clamp(1.45rem,1.1rem + 1.2vw,2.2rem); line-height:1.35; letter-spacing:-.035em; text-wrap:balance; }
+.profile-quote footer { margin-top:var(--s-xl); font: .68rem/1.5 var(--mono); letter-spacing:.08em; color:var(--on-dark-2); text-transform:uppercase; }
+
+@media (max-width:64rem) {
+  .profile-hero { grid-template-columns:1fr; }
+  .profile-hero__media { min-height:0; aspect-ratio:4/3; order:-1; }
+  .profile-body__grid { grid-template-columns:1fr; }
+}
+@media (max-width:48rem) {
+  .detail-hero__copy { text-align:left; align-items:flex-start; }
+  .detail-meta { justify-content:flex-start; }
+  .detail-hero__media { aspect-ratio:4/3; --media-radius:var(--r); }
+  .article-section ul { padding:var(--s-lg); }
+  .profile-hero__media { aspect-ratio:4/5; }
+}
+
+
+/* --- geo: the list and the map answer each other ------------------------
+   Hovering a distance lights its pin, and hovering a pin lights its row. The
+   pairing is keyed on data-place, which the map's four points already carried
+   and the rows now repeat, so the two sides cannot drift.
+
+   Decorative by design, and hover-only on purpose. Every figure here is
+   already published twice — once in the list, once as a label on the map — so
+   a keyboard or touch visitor loses no information by not getting the
+   highlight, and making four static rows focusable to deliver a colour change
+   would add tab stops that lead nowhere. */
+.dist,
+.ukraine-map__point { transition: color var(--dur-sm) var(--ease-out); }
+.ukraine-map__point circle:not(.ukraine-map__pulse) { transition: r var(--dur-sm) var(--ease-out), fill var(--dur-sm) var(--ease-out); }
+
+@media (hover: hover) and (pointer: fine) {
+  .geo__grid:has(.dist[data-place="vinnytsia"]:hover) .ukraine-map__point--vinnytsia,
+  .geo__grid:has(.dist[data-place="haisyn"]:hover)    .ukraine-map__point--haisyn,
+  .geo__grid:has(.dist[data-place="odesa"]:hover)     .ukraine-map__point--odesa,
+  .geo__grid:has(.dist[data-place="kyiv"]:hover)      .ukraine-map__point--kyiv,
+  .ukraine-map__point:hover { color: var(--ink); }
+
+  .geo__grid:has(.dist[data-place="vinnytsia"]:hover) .ukraine-map__point--vinnytsia circle:not(.ukraine-map__pulse),
+  .geo__grid:has(.dist[data-place="haisyn"]:hover)    .ukraine-map__point--haisyn    circle:not(.ukraine-map__pulse),
+  .geo__grid:has(.dist[data-place="odesa"]:hover)     .ukraine-map__point--odesa     circle:not(.ukraine-map__pulse),
+  .geo__grid:has(.dist[data-place="kyiv"]:hover)      .ukraine-map__point--kyiv      circle:not(.ukraine-map__pulse),
+  .ukraine-map__point:hover circle:not(.ukraine-map__pulse) { r: 6.5; fill: var(--lime-lo); }
+
+  .geo__grid:has(.ukraine-map__point--vinnytsia:hover) .dist[data-place="vinnytsia"],
+  .geo__grid:has(.ukraine-map__point--haisyn:hover)    .dist[data-place="haisyn"],
+  .geo__grid:has(.ukraine-map__point--odesa:hover)     .dist[data-place="odesa"],
+  .geo__grid:has(.ukraine-map__point--kyiv:hover)      .dist[data-place="kyiv"],
+  .dist:hover { color: var(--ink); }
+  .geo__grid:has(.ukraine-map__point--vinnytsia:hover) .dist[data-place="vinnytsia"] .dist__km,
+  .geo__grid:has(.ukraine-map__point--haisyn:hover)    .dist[data-place="haisyn"]    .dist__km,
+  .geo__grid:has(.ukraine-map__point--odesa:hover)     .dist[data-place="odesa"]     .dist__km,
+  .geo__grid:has(.ukraine-map__point--kyiv:hover)      .dist[data-place="kyiv"]      .dist__km,
+  .dist:hover .dist__km { color: var(--lime-on-light); }
+}
+
+/* The map's markers are 4px dots. Findable, but not comfortably hoverable, and
+   they are now interactive targets that light their row in the list. A wide
+   transparent stroke gives each one a ~20-unit hit area without changing a
+   single painted pixel; pointer-events:all is what makes an unpainted stroke
+   hit-test. */
+.ukraine-map__point circle:not(.ukraine-map__pulse) {
+  stroke: transparent;
+  stroke-width: 16;
+  pointer-events: all;
+}
+
+/* --- journey: a rail through the cards ----------------------------------
+   The six entries were a plain 2x3 grid of cards, which reads as six facts
+   rather than as eighteen seasons in one direction. A rail down the gutter
+   with a node against each year turns the same cards into a sequence, without
+   moving any of them. Drawn on the container so it cannot end up between two
+   cards, and hidden once the grid collapses to one column. */
+.jgrid__cards { position: relative; }
+.jgrid__cards::before {
+  content: "";
+  position: absolute;
+  top: var(--s-lg);
+  bottom: var(--s-lg);
+  /* 2px and no half-pixel nudge. At 1px with translateX(-.5px) the rail landed
+     between two device pixels and antialiased to (221,222,220) against a
+     (244,245,241) ground — present in the DOM, invisible on screen. */
+  left: calc(50% - 1px);
+  width: 2px;
+  /* --border on --grey-100 is a 3% step and simply did not read. */
+  background: linear-gradient(180deg, transparent, var(--grey-300) 12%, var(--grey-300) 88%, transparent);
+  pointer-events: none;
+}
+.jcard { position: relative; }
+.jcard__y { position: relative; }
+.jcard__y::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: .4rem;
+  height: .4rem;
+  border-radius: 50%;
+  background: var(--lime-lo);
+  box-shadow: 0 0 0 3px var(--grey-100);
+  transform: translateY(-50%);
+}
+/* One node per row, not per card. In a two-column grid the odd card is the left
+   one and the even card is the right one *of the same row*, so giving both a
+   node put two dots at the same point on the rail. The left card carries it. */
+.jcard__y::after { display: none; }
+.jgrid__cards > .jcard:nth-child(odd) .jcard__y::after {
+  display: block;
+  right: calc(-1 * var(--s-md) / 2 - .2rem);
+}
+/* One column: there is no gutter between two columns left to run a rail down,
+   and the nodes would hang off the outer edges of the cards pointing at
+   nothing. The stack is already a sequence on its own. */
+@media (max-width: 48rem) {
+  .jgrid__cards::before { display: none; }
+  .jcard__y::after { display: none; }
+}
+/* v3 lays the cards out in three columns, so a single centre rail would run
+   through the middle column rather than between columns. */
+.v3 .jgrid__cards::before,
+.v3 .jcard__y::after { display: none; }

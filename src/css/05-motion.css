@@ -10,12 +10,29 @@
 
 /* --- flash guard ---------------------------------------------------------
    `.js` is set by a tiny inline script in <head>, so a no-JS visitor never
-   sees hidden content. GSAP writes visibility back as it animates. */
+   sees hidden content. GSAP writes the opacity back as it animates.
+
+   `opacity: 0` and not `visibility: hidden`, which is what this was. Both
+   render nothing, so the page looks identical either way — but `visibility`
+   also takes the node out of the accessibility tree and out of the tab order,
+   and this selector covers most of the page. Measured before the change: 22 of
+   the home page's 23 headings were absent from Chromium's accessibility tree
+   until something scrolled, and no keyboard could reach a link below the first
+   screen. There is a second-order effect too: `aria-labelledby` on a section
+   pointed at a heading whose words were hidden, so the name resolved empty, so
+   the section stopped being a `region` landmark and the attribute became
+   invalid on it — one CSS declaration was generating the aria-prohibited-attr
+   failures as well.
+
+   An opaque-zero node stays in the tree and stays focusable, so a keyboard can
+   reach it, the browser scrolls it into view, and its own trigger reveals it.
+   Both branches below still force full visibility, and GSAP's `autoAlpha` was
+   swapped to plain `opacity` in app.js so nothing writes `visibility` back. */
 html.js [data-r],
 html.js [data-card],
 html.js [data-split],
 html.js [data-stagger] > * {
-  visibility: hidden;
+  opacity: 0;
 }
 
 /* If GSAP failed to load, or motion is reduced, show everything immediately. */
@@ -27,17 +44,31 @@ html.no-motion [data-stagger] > * {
   opacity: 1 !important;
   transform: none !important;
 }
+html.no-motion .ukraine-map__route { stroke-dashoffset: 0 !important; }
+html.no-motion .storage-viz__flow i,
+html.no-motion .ukraine-map__pulse { animation: none !important; }
 
 /* --- word reveal ---------------------------------------------------------
    Each word gets a clipping wrapper so the inner span can slide up from
-   underneath. The padding/negative-margin pair keeps descenders (у, р, ц, g)
-   from being clipped by that same overflow. */
+   underneath. That wrapper has to clear the glyph's *ink*, not its advance
+   width: round and italic letters (О, С, Ф, ж) overshoot the box sideways, tall
+   ones (Й, Ї, the acute on і) overshoot upward, descenders (у, р, ц, щ)
+   downward. A bottom-only inset shaved the side bearings off every large
+   heading. Pad all four edges and pull the same amount back with negative
+   margins, so the mask grows while the text stays exactly where the type
+   designer put it. */
 .w {
   display: inline-block;
   overflow: hidden;
   vertical-align: top;
-  padding-bottom: .16em;
-  margin-bottom: -.16em;
+  padding: .2em .11em .22em;
+  margin: -.2em -.11em -.22em;
+}
+/* Display sizes carry tighter tracking (-.06em), which pulls the ink further
+   past the advance width, so they need a wider safety margin still. */
+h1 .w, .h-iconic .w, .stat__v .w, .post__title .w {
+  padding-inline: .16em;
+  margin-inline: -.16em;
 }
 .w__i {
   display: inline-block;
@@ -46,28 +77,31 @@ html.no-motion [data-stagger] > * {
 
 /* --- elements GSAP animates from a known start state -------------------- */
 .chart__fill { transform-origin: bottom center; }
-.bars__fill  { transform-origin: left center; }
+.frac__seg { transform-origin: left center; }
+.bars__fill,
+.svc-signal__track i { transform-origin: left center; }
 .chart__val  { opacity: 0; }
 
-/* --- orbit: continuous rotation, started once revealed ------------------ */
-.orbit__arm,
-.orbit__hold {
-  animation-play-state: paused;
-}
-.orbit.is-spinning .orbit__arm,
-.orbit.is-spinning .orbit__hold {
-  animation-play-state: running;
-}
-.orbit__arm  { animation: orbit-cw var(--d) linear infinite; }
-.orbit__hold { animation: orbit-ccw var(--d) linear infinite; }
-
-@keyframes orbit-cw  { to { transform: rotate(calc(var(--a) + 360deg)); } }
-@keyframes orbit-ccw { to { transform: rotate(calc(-1 * var(--a) - 360deg)); } }
+/* --- radar: light travelling out along each route ----------------------- */
+/* Held still until the card is on screen, and paused again on hover so a
+   pointer can rest on a label without motion under it. */
+.radar__beam,
+.radar__sweep { animation-play-state: paused; }
+.cap__card.is-active .radar__beam,
+.cap__card.is-active .radar__sweep { animation-play-state: running; }
+.radar:hover .radar__beam,
+.radar:hover .radar__sweep,
+.radar:focus-within .radar__beam,
+.radar:focus-within .radar__sweep { animation-play-state: paused; }
 
 /* --- marquee track ------------------------------------------------------ */
 .marq {
   position: relative;
+  width: 100%;
+  min-width: 0;
   overflow: hidden;
+  isolation: isolate;
+  contain: layout paint;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
@@ -75,6 +109,12 @@ html.no-motion [data-stagger] > * {
   display: flex;
   width: max-content;
   will-change: transform;
+}
+.marq__group {
+  display: flex;
+  align-items: inherit;
+  gap: inherit;
+  flex: none;
 }
 
 /* --- hero fan: final resting transform, GSAP animates in from below ----- */
@@ -85,6 +125,76 @@ html.no-motion [data-stagger] > * {
     scale(var(--sc));
 }
 
+/* --- hero fan: idle levitation ------------------------------------------
+   The bob lives on .fcard, one level in, rather than on .fan__item. The item's
+   transform is a composition of the per-card custom properties written by
+   fan_transforms(), and an animation on that same property would replace the
+   whole fan geometry instead of adding to it — every card would snap flat the
+   moment the animation started. Animating the child composes with the parent
+   for free.
+
+   Phase comes off --i so the cards drift out of step; the amplitude is 6px,
+   inside the shadow reserve .fan already holds. transform only, so this stays
+   on the compositor and costs no layout. */
+@keyframes fanFloat {
+  from { transform: translate3d(0, 2px, 0); }
+  to   { transform: translate3d(0, -4px, 0); }
+}
+.fan__item .fcard {
+  animation: fanFloat 6.5s var(--ease-soft) infinite alternate;
+  animation-delay: calc(var(--i, 0) * -.62s);
+}
+
+/* --- hero fan: hover flies one card out toward the viewer ----------------
+   The hover state re-declares the whole transform rather than transitioning a
+   custom property, so it works without @property support: the browser
+   interpolates `transform` natively, and the per-card values stay in play
+   because the hover rule reads the same variables. rotateY/rotateZ relax
+   toward zero so the card turns to face the visitor as it comes forward, and
+   z-index lifts it clear of the neighbours it grows into.
+
+   The flight is long (820ms) on a near-expo curve: it covers most of the
+   distance early and then eases out for a long tail, which is what reads as
+   "floating out" rather than "snapping out". The return is a touch quicker so
+   the fan settles rather than drifting after the cursor has gone.
+
+   The transition lives on .fan__item, which GSAP never touches — the entrance
+   is on .fan__rise inside it. Sharing one element would mean the transition
+   chasing a 60fps tween and smearing the whole entrance. */
+.fan__item { transition: transform 560ms cubic-bezier(.22, .9, .3, 1); }
+/* The glow: a soft dark halo that swells behind the card as it comes forward,
+   so the card reads as lifting off the field rather than just getting bigger.
+   A radial-gradient with a long tail rather than filter: blur() — same
+   softness, no extra raster pass on a 3D-transformed layer. */
+.fan__item::before {
+  content: "";
+  position: absolute;
+  inset: -16% -30% -34%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(50% 50% at 50% 56%, #04100ae0, #04100a96 38%, #04100a3d 60%, #04100a00 78%);
+  opacity: 0;
+  transform: scale(.82);
+  transition: opacity 620ms var(--ease-soft), transform 820ms var(--ease-out);
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .fan__item:hover { transition-duration: 820ms; transition-timing-function: var(--ease-out); }
+  .fan__item .fcard { transition: box-shadow 820ms var(--ease-out); }
+  .fan__item:hover {
+    transform:
+      translateY(calc(var(--ty) - 11px)) translateZ(calc(var(--tz) + 96px))
+      rotateY(calc(var(--ry) * .42)) rotateZ(calc(var(--rz) * .3))
+      scale(calc(var(--sc) + .035));
+    z-index: 40;
+  }
+  .fan__item:hover::before { opacity: 1; transform: scale(1); }
+  .fan__item:hover .fcard {
+    animation-play-state: paused;
+    box-shadow: var(--shadow-lift);
+  }
+}
+
 /* --- soft continuous drift, for widgets that would otherwise sit dead --- */
 @keyframes drift {
   from { transform: translate3d(0, 0, 0); }
@@ -92,6 +202,10 @@ html.no-motion [data-stagger] > * {
 }
 .drift-a { animation: drift 7s var(--ease-soft) infinite alternate; }
 .drift-b { animation: drift 9s var(--ease-soft) infinite alternate-reverse; }
+.cap__card .drift-a, .cap__card .drift-b,
+.cap__card .storage-viz__flow i { animation-play-state: paused; }
+.cap__card.is-active .drift-a, .cap__card.is-active .drift-b,
+.cap__card.is-active .storage-viz__flow i { animation-play-state: running; }
 
 /* --- the sticky-header sentinel: zero height, never painted ------------- */
 .sentinel {
@@ -129,18 +243,37 @@ html.no-motion [data-stagger] > * {
 
   .chart__fill { transform: scaleY(1) !important; }
   .bars__fill  { transform: scaleX(1) !important; }
+  .frac__seg   { transform: scaleX(1) !important; }
   .chart__val  { opacity: 1 !important; }
+  .chart__val--quiet { opacity: .55 !important; }
+  .grow, .gmetric { opacity: 1 !important; transform: none !important; }
 
-  .orbit__ring, .orbit__hub, .orbit__pill {
-    opacity: 1 !important;
-    transform: none !important;
+  .radar__beam, .radar__sweep,
+  .partner-orbit__node { animation: none !important; }
+  .radar__beam { stroke-dashoffset: 0; stroke-dasharray: none; opacity: .55; }
+  .partner-orbit__node { transform: rotate(var(--start)) translateX(var(--radius)) rotate(calc(-1 * var(--start))) !important; }
+
+  .marq {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+    -webkit-mask-image: none;
+    mask-image: none;
   }
-  .orbit__pill { transform: translate(-50%, -50%) !important; }
-  .orbit__arm, .orbit__hold { animation: none !important; }
-
   .marq__track { transform: none !important; }
-  .marq { -webkit-mask-image: none; mask-image: none; }
-  .drift-a, .drift-b { animation: none !important; }
+  .marq__group[aria-hidden="true"] { display: none !important; }
+  .drift-a, .drift-b,
+  .storage-viz__flow i,
+  .ukraine-map__pulse { animation: none !important; }
+  .ukraine-map__route { stroke-dashoffset: 0 !important; }
+  .stats-card__spark i { transform: none !important; }
 
+  /* The blanket rule above collapses every animation to .001ms with a single
+     iteration, which for an `alternate` loop means it lands on the `to` frame
+     and stays there — the fan would sit permanently 4px high. Switch the
+     levitation off outright instead. The !important transform below also
+     neutralises the hover pop, so hovering a card is a no-op here. */
+  .fan__item .fcard { animation: none !important; }
+  .fan__item::before { opacity: 0 !important; transform: none !important; }
   .fan__item { transform: rotateY(var(--ry)) rotateZ(var(--rz)) !important; }
 }

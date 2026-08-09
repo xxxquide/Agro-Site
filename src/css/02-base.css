@@ -24,7 +24,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  overflow-x: clip;
   font-variant-numeric: tabular-nums lining-nums;
 }
 
@@ -35,6 +35,10 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font);
   color: inherit;
   text-wrap: balance;
+  overflow-wrap: break-word;
+  min-width: 0;
+  padding-bottom: .06em;
+  margin-bottom: -.06em;
 }
 h1 { font-size: var(--fs-h1); line-height: var(--lh-h1); letter-spacing: var(--ls-h1); font-weight: var(--fw-medium); }
 h2 { font-size: var(--fs-h2); line-height: var(--lh-h2); letter-spacing: var(--ls-h2); font-weight: var(--fw-medium); }
@@ -62,6 +66,21 @@ button { background: none; border: 0; cursor: pointer; }
 }
 .on-dark :focus-visible,
 .footer :focus-visible { outline-color: var(--lime); }
+
+/* Give focus somewhere to land. When the browser scrolls a focused control into
+   view it stops the moment the box is technically inside the viewport, and two
+   things sit in that margin: the sticky header covers the top of the page, and a
+   reveal does not fire until its block's top crosses 90% of the viewport height.
+   Measured on v2: tabbing to the crops "Отримати прайс" link put its top at
+   823px in a 900px viewport — 13px short of the 810px trigger line — so focus
+   sat on a link its own block had not revealed yet.
+   scroll-margin participates only in scroll-into-view arithmetic and never in
+   layout or paint, so it buys both clearances without moving a pixel. Chosen
+   over a focusin handler that force-completes the reveal, which would have
+   popped the block in without its animation. */
+a[href], button, input, select, textarea, summary, [tabindex] {
+  scroll-margin-block: calc(var(--header-h) + 1rem) 8rem;
+}
 
 ::selection { background: var(--lime); color: var(--black); }
 
@@ -167,6 +186,7 @@ h1 > .soft, h2 > .soft { display: block; }
 /* --- section heading block ---------------------------------------------- */
 .head {
   display: flex;
+  min-width: 0;
   flex-direction: column;
   gap: var(--s-lg);
   max-width: 46rem;
@@ -183,6 +203,7 @@ h1 > .soft, h2 > .soft { display: block; }
   gap: var(--s-xhuge);
   flex-wrap: wrap;
 }
+.head-row > * { min-width: 0; }
 
 /* --- surfaces ------------------------------------------------------------ */
 

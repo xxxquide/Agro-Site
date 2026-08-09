@@ -1,0 +1,332 @@
+/* ==========================================================================
+   v6 "orb" — ports the mockup's #orb section (src6/v6-orb.html /
+   "4. PARTNER ORBIT" in v6.css) onto the site's existing partner content.
+   Two-column split: eyebrow + big heading + a numbered 01/02/03 claims list
+   on the left, the orbit itself (three concentric rings, six rotating
+   partner nodes, a soft-hubbed brand mark) on the right.
+
+   Geometry and animation are lifted from the mockup nearly verbatim — arms
+   rotate clockwise, nodes counter-rotate at the same rate so their labels
+   stay upright, three radii/durations pair the arms into three shells. What
+   changes here is the token layer (mockup hex -> this repo's --lime/--ink/
+   --border/etc, per 01-tokens.css) and the pause contract: this section
+   reuses the existing [data-partner-orbit] -> .is-spinning gate that
+   src/js/app.js's initPartnerOrbit() already drives off-screen/tab-hidden
+   (see 03-components.css's .partner-orbit for the sibling that owns that
+   JS), and adds its own hover/focus-within pause below since rotating text
+   nobody can currently read is this pattern's classic failure.
+   ========================================================================== */
+
+.v6orb { background: linear-gradient(180deg, var(--mist), var(--white)); }
+
+.v6orb__grid {
+  display: grid;
+  grid-template-columns: .95fr 1.05fr;
+  gap: clamp(2rem, 4vw, 4rem);
+  align-items: center;
+}
+
+.v6orb__head { display: flex; flex-direction: column; gap: var(--s-lg); min-width: 0; }
+.v6orb__head h2 { margin-top: var(--s-xs); }
+
+.v6orb__claims { display: flex; flex-direction: column; gap: 1.4rem; margin-top: 1rem; }
+.v6orb__claim {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: start;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--border);
+}
+.v6orb__claim:last-child { border-bottom: 0; padding-bottom: 0; }
+.v6orb__claim b {
+  font-family: var(--mono);
+  font-size: .6875rem;
+  letter-spacing: .1em;
+  color: var(--text-2);
+  padding-top: .2rem;
+  font-weight: var(--fw-regular);
+}
+.v6orb__claim p { font-size: .9375rem; color: var(--text-2); line-height: 1.5; margin: 0; }
+.v6orb__claim p strong { color: var(--ink); font-weight: var(--fw-medium); }
+
+/* --- the orbit stage ------------------------------------------------------ */
+
+.v6orb__stage {
+  position: relative;
+  aspect-ratio: 1;
+  width: 100%;
+  max-width: 32rem;
+  margin-inline: auto;
+}
+
+.v6orb__ring {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: calc(var(--r) * 2);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  pointer-events: none;
+}
+.v6orb__ring--d { border-style: dashed; border-color: var(--grey-300); }
+
+/* an arm is a square the size of its ring; rotating it walks the node round
+   the ring. Paused by default — .is-spinning (toggled by the existing
+   initPartnerOrbit() IntersectionObserver on [data-partner-orbit]) is what
+   sets it running, exactly like .partner-orbit__node in 03-components.css. */
+.v6orb__arm {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: calc(var(--r) * 2);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  animation: v6orbCW var(--dur) linear infinite;
+  animation-delay: var(--dl);
+  animation-play-state: paused;
+}
+/* the node counter-rotates at the same rate, so it never tips over */
+.v6orb__node {
+  position: absolute;
+  left: 50%; top: 0;
+  width: 5.5rem;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .4rem;
+  animation: v6orbCCW var(--dur) linear infinite;
+  animation-delay: var(--dl);
+  animation-play-state: paused;
+}
+.v6orb__stage.is-spinning .v6orb__arm,
+.v6orb__stage.is-spinning .v6orb__node { animation-play-state: running; }
+/* Stop the carousel while someone is reading it — hover for a pointer,
+   focus-within so a keyboard user tabbing onto a node gets the same relief. */
+.v6orb__stage:hover .v6orb__arm,
+.v6orb__stage:hover .v6orb__node,
+.v6orb__stage:focus-within .v6orb__arm,
+.v6orb__stage:focus-within .v6orb__node { animation-play-state: paused; }
+
+@keyframes v6orbCW {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+@keyframes v6orbCCW {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(-360deg); }
+}
+
+.v6orb__b {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  flex: none;
+  box-shadow: var(--shadow-sm);
+  transition: background var(--dur-sm) var(--ease-out), border-color var(--dur-sm), transform var(--dur-sm) var(--ease-out);
+}
+.v6orb__b svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke var(--dur-sm);
+}
+.v6orb__n {
+  font-family: var(--mono);
+  font-size: .5625rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  text-align: center;
+  line-height: 1.35;
+  transition: color var(--dur-sm) var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .v6orb__node:hover .v6orb__b { background: var(--ink); border-color: var(--ink); transform: scale(1.1); }
+  .v6orb__node:hover .v6orb__b svg { stroke: var(--lime); }
+  .v6orb__node:hover .v6orb__n { color: var(--ink); }
+}
+.v6orb__node:focus-within .v6orb__b { background: var(--ink); border-color: var(--ink); }
+.v6orb__node:focus-within .v6orb__b svg { stroke: var(--lime); }
+.v6orb__node:focus-within .v6orb__n { color: var(--ink); }
+
+/* --- core: the site's own brand mark --------------------------------------
+   The mockup hardcodes #F7F6F1 (its near-white paper tone, used at .5 opacity
+   for the light diagonal hatching) and #C6F24E (its lime) directly in the SVG
+   fill/stroke attributes. Mapped onto tokens in orb.html.j2: the hatching
+   uses --grey-100 (the palette's own near-white, #f4f5f1, closest existing
+   token to the mockup's #F7F6F1) and the lime quadrant uses --lime, the
+   repo's own accent — neither is a hardcoded hex any more. */
+.v6orb__core {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 27%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 6px rgba(19, 19, 19, .06), 0 22px 50px -18px rgba(19, 19, 19, .28);
+  z-index: 5;
+}
+.v6orb__core::after {
+  content: '';
+  position: absolute;
+  inset: -30%;
+  border-radius: 50%;
+  z-index: -1;
+  background: radial-gradient(circle, color-mix(in srgb, var(--lime) 16%, transparent) 0%, color-mix(in srgb, var(--lime) 5%, transparent) 45%, transparent 72%);
+}
+.v6orb__mark { width: 62%; height: auto; display: block; }
+
+/* ============================================================================
+   V2 — Banded: dark full-bleed surface, hairline-border language. Rings drawn
+   in --border/--grey-300 are invisible on dark, so they move to --line-dark;
+   nodes become outlined tiles like every other v2 card; the lime bloom
+   behind the hub is dropped entirely — over the dark ground the same glow
+   blends into a warm brown cast rather than reading as light.
+   ============================================================================ */
+.v2 .v6orb { background: var(--ink); color: var(--on-dark); }
+.v2 .v6orb .lead,
+.v2 .v6orb .tag { color: var(--on-dark-2); }
+.v2 .v6orb__claim { border-bottom-color: var(--line-dark); }
+.v2 .v6orb__claim b { color: var(--on-dark-2); }
+.v2 .v6orb__claim p { color: var(--on-dark-2); }
+.v2 .v6orb__claim p strong { color: var(--on-dark); }
+
+.v2 .v6orb__ring { border-color: var(--line-dark); }
+.v2 .v6orb__ring--d { border-color: var(--line-dark-2); }
+.v2 .v6orb__core { background: var(--ink); border: 1px solid var(--line-dark-2); box-shadow: none; }
+.v2 .v6orb__core::after { display: none; }
+.v2 .v6orb__b { background: rgba(255, 255, 255, .05); border: 1px solid var(--line-dark); box-shadow: none; }
+.v2 .v6orb__b svg { stroke: var(--white); }
+.v2 .v6orb__n { color: var(--on-dark-2); }
+@media (hover: hover) and (pointer: fine) {
+  .v2 .v6orb__node:hover .v6orb__b { background: var(--white); border-color: var(--white); }
+  .v2 .v6orb__node:hover .v6orb__b svg { stroke: var(--ink); }
+  .v2 .v6orb__node:hover .v6orb__n { color: var(--white); }
+}
+.v2 .v6orb__node:focus-within .v6orb__b { background: var(--white); border-color: var(--white); }
+.v2 .v6orb__node:focus-within .v6orb__b svg { stroke: var(--ink); }
+.v2 .v6orb__node:focus-within .v6orb__n { color: var(--white); }
+
+/* ============================================================================
+   V3 — Quiet: no containers anywhere. Node outlines drop out entirely (the
+   type carries the mark on its own, same principle as .v3 .wcard elsewhere);
+   rings fade further; lime is spent exactly once, on the hub's own quadrant,
+   same restraint the rest of this variation uses. Lighter type on the claims.
+   ============================================================================ */
+.v3 .v6orb__claim b { font-weight: var(--fw-light); }
+.v3 .v6orb__claim p strong { font-weight: var(--fw-light); color: var(--text); }
+
+.v3 .v6orb__ring { border-color: color-mix(in srgb, var(--border) 55%, transparent); }
+.v3 .v6orb__ring--d { border-color: color-mix(in srgb, var(--border) 70%, transparent); }
+.v3 .v6orb__core { box-shadow: none; border: 1px solid var(--border); }
+.v3 .v6orb__core::after { opacity: .7; }
+.v3 .v6orb__b { background: none; border: 0; box-shadow: none; }
+.v3 .v6orb__b svg { stroke: var(--text); }
+@media (hover: hover) and (pointer: fine) {
+  .v3 .v6orb__node:hover .v6orb__b { background: none; border: 0; transform: none; }
+  .v3 .v6orb__node:hover .v6orb__b svg { stroke: var(--lime-on-light); }
+}
+.v3 .v6orb__node:focus-within .v6orb__b { background: none; border: 0; }
+.v3 .v6orb__node:focus-within .v6orb__b svg { stroke: var(--lime-on-light); }
+
+/* ============================================================================
+   Responsive
+   ============================================================================ */
+@media (max-width: 62.5rem) {
+  .v6orb__grid { grid-template-columns: 1fr; }
+  .v6orb__stage { margin-top: clamp(1.5rem, 4vw, 2.5rem); }
+}
+
+/* Below ~560px an orbit is not legible as an orbit: everything collapses to
+   a plain two-column grid of the six partners, same pattern the existing
+   .partner-orbit already uses at this width (06-responsive.css). A grid item
+   that is not stretched sizes itself from its content — the longest partner
+   name would then widen its own cell past the track and push the page
+   sideways, so place-items: stretch + min-width: 0 are load-bearing, not
+   decorative, on every level of this collapse. */
+@media (max-width: 35rem) {
+  .v6orb__stage {
+    aspect-ratio: auto;
+    width: 100%;
+    max-width: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .6rem;
+    place-items: stretch;
+  }
+  .v6orb__ring,
+  .v6orb__core { display: none; }
+  .v6orb__arm {
+    position: static;
+    left: auto; top: auto;
+    width: auto;
+    aspect-ratio: auto;
+    animation: none;
+    transform: none !important;
+    min-width: 0;
+  }
+  .v6orb__node {
+    position: static;
+    left: auto; top: auto;
+    width: 100%;
+    min-width: 0;
+    animation: none;
+    transform: none !important;
+    flex-direction: row;
+    justify-content: center;
+    gap: .55rem;
+    padding: .7rem .6rem;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--border);
+    background: var(--white);
+  }
+  .v6orb__b { flex: none; }
+  .v6orb__n {
+    text-align: left;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .v2 .v6orb__node { background: rgba(255, 255, 255, .05); border-color: var(--line-dark); }
+  .v3 .v6orb__node { background: none; border-color: var(--border); }
+}
+
+@media (max-width: 24.375rem) {
+  .v6orb__stage { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .v6orb__node { padding: .6rem .5rem; }
+  .v6orb__b { width: 40px; height: 40px; }
+  .v6orb__b svg { width: 17px; height: 17px; }
+}
+
+/* prefers-reduced-motion: rotation off entirely, every node resting at its
+   laid-out position on the ring rather than mid-orbit or hidden. The global
+   rule in 05-motion.css already zeroes every animation-duration to .001ms —
+   which for a `rotate(360deg)` keyframe still ends on-ring, so no separate
+   static-transform override is needed here the way .partner-orbit__node
+   needs one for its translateX-based geometry. */
+@media (prefers-reduced-motion: reduce) {
+  .v6orb__arm,
+  .v6orb__node { animation-play-state: paused !important; }
+}
+
+/* An arm is a square that rotates, and a rotated square's bounding box grows
+   by up to 41% even though nothing is painted in its corners. At the widths
+   where the stage nearly fills its column those empty corners reached past the
+   viewport and grew the document by 8px — a horizontal scrollbar caused by
+   geometry that is not on screen. Clip at the stage: the rings sit at 88% of
+   it and the nodes ride on the rings, so only the arms' empty corners are cut. */
+.v6orb__stage { overflow: clip; }

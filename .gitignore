@@ -1,7 +1,16 @@
 # build/ holds the self-contained preview bundles (~1 MB each) — regenerate with
 # tools/build_preview.py instead of committing them
 build/
+.visual-regression/
 
 __pycache__/
 *.pyc
 .DS_Store
+
+# build cache for tools/build_map.py — regenerate with --refresh
+tools/.cache/
+
+# QA harness for the accessibility/performance pass: axe copy, screenshot
+# matrices and metric reports. Regenerate with the scripts in .qa/, never commit
+# the artefacts — the screenshot matrix alone is ~15 MB per run.
+.qa/

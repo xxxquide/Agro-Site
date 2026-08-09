@@ -1,0 +1,57 @@
+{#- ============================================================================
+    Shared shell for the two legal documents — /privacy/ and /terms/.
+
+    One template, not two: the pages differ only in which entry of c.legal they
+    read, and two files that had to be edited in step would drift. `page_id` is
+    already the page's own key, so it selects the document directly.
+
+    Built on the article page's text column — .detail-content, .article-body,
+    .article-section — so a legal document reads at the same measure and in the
+    same type as everything else, and the three variations reshape it through the
+    classes they already override. No new class.
+    ============================================================================ -#}
+{%- extends "base.html.j2" -%}
+{%- import "blocks.html.j2" as B with context -%}
+{%- block body -%}
+{%- set doc = c.legal[page_id] -%}
+{%- set other = 'terms' if page_id == 'privacy' else 'privacy' -%}
+<section class="detail-hero wrap" data-page-hero>
+  <nav class="detail-meta" aria-label="{{ c.a11y.breadcrumb }}">
+    <a href="{{ url_for('home') }}">{{ c.detail_labels.crumb_home }}</a>
+    {{ I.chevron('right') }}
+    <span aria-current="page">{{ doc.title }}</span>
+  </nav>
+  <div class="detail-hero__copy">
+    <span class="tag tag--lime" data-page-item>{{ doc.eyebrow }}</span>
+    <h1 id="legal-t" data-page-title>{{ doc.title }}</h1>
+    <p class="lead" data-page-item>{{ doc.lead }}</p>
+    <p class="text-xs muted" data-page-item>{{ doc.updated }}</p>
+  </div>
+</section>
+
+<section class="section detail-content" aria-label="{{ doc.title }}">
+  <div class="wrap wrap--narrow">
+    <article class="article-body">
+      {%- for section in doc.body %}
+      <section class="article-section" data-r>
+        <h2>{{ section.heading }}</h2>
+        {%- for paragraph in section.paragraphs %}<p>{{ paragraph }}</p>{% endfor %}
+        {%- if section.get('items') %}
+        <ul>{% for point in section['items'] %}<li>{{ I.tick() }}<span>{{ point }}</span></li>{% endfor %}</ul>
+        {%- endif %}
+      </section>
+      {%- endfor %}
+      {#- Each document points at the other. Neither is reachable from the footer
+          — see the note in the report: there is no text there to host a link
+          without moving pixels — so this cross-link and the consent line under
+          the contact form are how a reader gets between them. -#}
+      <section class="article-section" data-r>
+        <h2>{{ c.legal[other].title }}</h2>
+        <p>{{ c.legal[other].lead }}</p>
+        <p>{{ B.btn(c.legal[other].title, url_for(other), 'outline') }}</p>
+      </section>
+    </article>
+  </div>
+</section>
+{{ B.sec_cta() }}
+{%- endblock -%}

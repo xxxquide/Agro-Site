@@ -16,13 +16,16 @@
 {%- endif %}
 <meta name="author" content="{{ c.brand.legal }}">
 <meta name="robots" content="{{ 'noindex, follow' if noindex else 'index, follow, max-image-preview:large' }}">
+{%- if c.seo.google_site_verification %}
+<meta name="google-site-verification" content="{{ c.seo.google_site_verification }}">
+{%- endif %}
 <meta name="theme-color" content="#131313">
 <meta name="format-detection" content="telephone=no">
 
 <link rel="canonical" href="{{ canonical }}">
 <link rel="alternate" hreflang="uk" href="{{ alt_uk }}">
 <link rel="alternate" hreflang="en" href="{{ alt_en }}">
-<link rel="alternate" hreflang="x-default" href="{{ alt_en }}">
+<link rel="alternate" hreflang="x-default" href="{{ alt_uk }}">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="{{ c.brand.name }}">
@@ -44,7 +47,12 @@
 <link rel="apple-touch-icon" href="{{ p }}assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="{{ p }}site.webmanifest">
 
+{#- Both families are on the first screen — Onest sets the headline, Geist Mono
+    sets the eyebrow, the buttons and the tags — but only one was preloaded, so
+    the mono face waited for the stylesheet to be parsed before it was even
+    requested. -#}
 <link rel="preload" href="{{ p }}assets/fonts/onest.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="{{ p }}assets/fonts/geistmono.woff2" as="font" type="font/woff2" crossorigin>
 {%- if hero_img %}
 <link rel="preload" as="image" type="image/avif" imagesrcset="{{ srcset(hero_img, 'avif') }}" imagesizes="100vw" fetchpriority="high">
 {%- endif %}
@@ -52,7 +60,7 @@
 
 {#- set .js before first paint so animated elements can be hidden without
     ever hiding them from a visitor whose JS failed -#}
-<script>document.documentElement.className="js";</script>
+<script>document.documentElement.classList.remove("no-js");document.documentElement.classList.add("js");</script>
 
 <script type="application/ld+json">{{ jsonld }}</script>
 </head>
@@ -84,14 +92,14 @@
         <a class="lang__i" href="{{ alt_en_rel }}" aria-current="{{ 'true' if c.lang == 'en' else 'false' }}" hreflang="en">EN</a>
       </div>
       <a class="btn btn--sm" href="{{ url_for('contacts') }}">{{ c.nav.cta }}<span class="btn__badge">{{ I.arrow() }}</span></a>
-      <button class="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="{{ c.nav.menu_open }}">
+      <button class="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="{{ c.nav.menu_open }}" data-label-open="{{ c.nav.menu_open }}" data-label-close="{{ c.nav.menu_close }}">
         <span class="burger__bars" aria-hidden="true"><span></span><span></span></span>
       </button>
     </div>
   </div>
 </header>
 
-<div class="drawer" id="drawer" aria-hidden="true">
+<div class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="{{ c.nav.aria_nav }}">
   <nav class="drawer__nav" aria-label="{{ c.nav.aria_nav }}">
     {%- for i in c.nav_pages['items'] %}
     <a class="drawer__link" href="{{ url_for(i.page) }}"><span>{{ i.label }}</span><span>{{ '%02d' % loop.index }}</span></a>
@@ -123,14 +131,14 @@
           </span>
         </a>
         <p class="footer__tag">{{ c.footer.tagline }}</p>
-        <form class="footer__nl" data-demo-form novalidate>
+        <form class="footer__nl" data-demo-form>
           <span class="footer__nl-l">{{ c.footer.newsletter_label }}</span>
           <label class="sr" for="f-nl">{{ c.footer.newsletter_ph }}</label>
           <div class="subscribe">
             <input id="f-nl" name="email" type="email" placeholder="{{ c.footer.newsletter_ph }}" required>
             <button class="btn btn--sm" type="submit">{{ c.footer.newsletter_cta }}<span class="btn__badge">{{ I.arrow() }}</span></button>
           </div>
-          <div class="form__ok">{{ I.tick() }}<span>{{ c.contact.form.demo_notice }}</span></div>
+          <div class="form__ok" aria-live="polite">{{ I.tick() }}<span>{{ c.contact.form.demo_notice }}</span></div>
         </form>
       </div>
 
@@ -146,8 +154,13 @@
         <nav aria-label="{{ c.footer.columns[1].title }}">
           <p class="footer__ct">{{ c.footer.columns[1].title }}</p>
           <div class="footer__links">
+            {#- All four of these pointed at /services/. They name individual
+                crops, so each now goes to that crop's own page; the link text is
+                untouched, so nothing about the footer moves. The fourth reads
+                "Соя та ріпак" and can only resolve to one page — it goes to soy,
+                and rapeseed is one click away from there. -#}
             {%- for l in c.footer.columns[1].links %}
-            <a href="{{ url_for('services') }}">{{ l.label }}</a>
+            <a href="{{ crop_url(c.crops['items'][l.crop].slug) }}">{{ l.label }}</a>
             {%- endfor %}
           </div>
         </nav>

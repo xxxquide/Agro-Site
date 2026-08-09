@@ -1,0 +1,277 @@
+/* ==========================================================================
+   #tl (rendered as #journey) — horizontal zigzag timeline, ported from
+   src6/v6-tl.html + src6/v6.js's MILES array and DOM-building code. The
+   mockup builds the grid, the rail and every card at runtime with JS; this
+   port is the same visual result as static markup (templates/v6/tl.html.j2)
+   — an <ol> of <li> milestones, each holding a decorative rail node and a
+   card, laid out on one CSS grid so :nth-child(odd/even) alone decides
+   whether a card sits above or below the rail line.
+
+   Class names are new (.jtl*) rather than reusing the site's existing
+   .journey/.milestone/.jgrid/.jcard — those belong to the section this
+   replaces and keep their own v2/v3 rules in 07-variants.css untouched.
+   ========================================================================== */
+
+#journey.jtl { background: var(--white); overflow: hidden; }
+
+.jtl__head { margin-bottom: 0; }
+
+/* --- top-right counter, mirrors the mockup's .tlcount ------------------- */
+.jtl__count { text-align: right; flex: none; min-width: 0; }
+.jtl__count-n {
+  display: block;
+  font-size: clamp(2.5rem, 4vw, 3.75rem);
+  font-weight: var(--fw-medium);
+  letter-spacing: -.06em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.jtl__count span {
+  font-family: var(--mono);
+  font-size: .6875rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+/* ==========================================================================
+   The rail + grid.
+
+   One grid carries the rail line, the dot column and every card, laid out
+   as 6 equal columns x 3 rows (top card / dot row / bottom card) — the same
+   shape as the mockup's .cgrail__items, just declared once in markup order
+   instead of split into three separate JS-built row groups. Odd items
+   (1st, 3rd, 5th...) land in the top row, even items in the bottom row, via
+   nth-child, matching the mockup's `i % 2 === 0` placement.
+
+   .jtl__grid is the actual grid container. The rail div and the <ol> are
+   both its direct children — the rail lands as a genuine grid item on
+   grid-row 2 (the dot row), and the list's <li>s become grid items too
+   because .jtl__list is `display:contents` (an <ol> can't itself be
+   `display:contents` grid content *and* a grid item at once, so the grid
+   lives one level up). Previously the rail was a sibling of .jtl__list
+   with .jtl__list itself as the grid — grid-row/grid-column on the rail
+   were inert since it was never actually inside that grid, and it just
+   flowed as a full-width block right after the heading.
+   ========================================================================== */
+.jtl__grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: auto 52px auto;
+  column-gap: var(--s-sm);
+  margin-top: clamp(3rem, 5vw, 4.5rem);
+}
+
+.jtl__rail {
+  grid-row: 2;
+  grid-column: 1 / -1;
+  align-self: center;
+  height: 2px;
+  background: var(--grey-200);
+  border-radius: 2px;
+  overflow: hidden;
+  z-index: 0;
+}
+.jtl__rail i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--lime-lo), var(--lime));
+  transform-origin: left;
+}
+
+.jtl__list {
+  display: contents; /* the <ol> takes no grid cell of its own — its <li>s do */
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.jtl__item {
+  display: contents; /* the <li> itself takes no grid cell — its two children do */
+}
+.jtl__item:nth-child(odd) .jtl__card { grid-row: 1; align-self: end; margin-bottom: 1.6rem; }
+.jtl__item:nth-child(even) .jtl__card { grid-row: 3; align-self: start; margin-top: 1.6rem; }
+.jtl__item .jtl__node { grid-row: 2; }
+
+/* place each of the six items in its own column, left to right, matching
+   MILES's own order (2008..2026) rather than relying on grid auto-flow,
+   which would happily pack a row-1 card and a row-3 card into the same
+   column slot only if both requested it — auto-placement cannot be trusted
+   to keep six alternating items aligned under their own dot otherwise. */
+.jtl__item:nth-child(1) .jtl__card,
+.jtl__item:nth-child(1) .jtl__node { grid-column: 1; }
+.jtl__item:nth-child(2) .jtl__card,
+.jtl__item:nth-child(2) .jtl__node { grid-column: 2; }
+.jtl__item:nth-child(3) .jtl__card,
+.jtl__item:nth-child(3) .jtl__node { grid-column: 3; }
+.jtl__item:nth-child(4) .jtl__card,
+.jtl__item:nth-child(4) .jtl__node { grid-column: 4; }
+.jtl__item:nth-child(5) .jtl__card,
+.jtl__item:nth-child(5) .jtl__node { grid-column: 5; }
+.jtl__item:nth-child(6) .jtl__card,
+.jtl__item:nth-child(6) .jtl__node { grid-column: 6; }
+
+.jtl__node {
+  justify-self: center;
+  align-self: center;
+  position: relative;
+  z-index: 2;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 2px solid var(--lime);
+}
+
+.jtl__card {
+  width: min(15rem, 100%);
+  min-width: 0;
+  justify-self: center;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 1.15rem;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+/* the short vertical stem joining a card to the rail */
+.jtl__card::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 1px;
+  height: 1.6rem;
+  background: var(--grey-200);
+}
+.jtl__item:nth-child(odd) .jtl__card::after { top: 100%; }
+.jtl__item:nth-child(even) .jtl__card::after { bottom: 100%; }
+
+.jtl__yr {
+  font-family: var(--mono);
+  font-size: .8125rem;
+  font-weight: var(--fw-semibold);
+  letter-spacing: .06em;
+  display: inline-block;
+  padding: .3rem .7rem;
+  border-radius: var(--r-pill);
+  background: var(--grey-100);
+  color: var(--ink);
+}
+.jtl__card--key .jtl__yr { background: var(--lime); }
+
+.jtl__t { font-size: .9375rem; font-weight: var(--fw-medium); margin: .7rem 0 .35rem; letter-spacing: -.03em; }
+.jtl__d { font-size: .8125rem; color: var(--text-2); line-height: 1.45; margin: 0; }
+
+.jtl__ha {
+  font-family: var(--mono);
+  font-size: .625rem;
+  letter-spacing: .1em;
+  color: var(--text-2);
+  margin-top: .7rem;
+  padding-top: .6rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-xs);
+}
+.jtl__ha b { color: var(--ink); font-weight: var(--fw-semibold); white-space: nowrap; }
+
+/* ==========================================================================
+   V2 — Banded: section sits on the dark full-bleed band (07-variants.css
+   already puts #capacity/#terms/#journey on --ink; this section keeps that
+   id so it inherits the band, but supplies its own on-dark card treatment
+   since .jtl__card is a class this file owns, not .card or .milestone).
+   ========================================================================== */
+.v2 #journey.jtl { background: var(--ink); color: var(--on-dark); }
+.v2 .jtl__count span { color: var(--on-dark-2); }
+.v2 .jtl__rail { background: var(--line-dark); }
+.v2 .jtl__node { background: var(--ink); border-color: var(--lime); box-shadow: 0 0 0 4px var(--ink); }
+.v2 .jtl__card {
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid var(--line-dark);
+  box-shadow: none;
+}
+.v2 .jtl__card::after { background: var(--line-dark); }
+.v2 .jtl__yr { background: rgba(255, 255, 255, .1); color: var(--on-dark); }
+.v2 .jtl__card--key .jtl__yr { background: var(--lime); color: var(--black); }
+.v2 .jtl__d { color: var(--on-dark-2); }
+.v2 .jtl__ha { color: var(--on-dark-2); border-top-color: var(--line-dark); }
+.v2 .jtl__ha b { color: var(--on-dark); }
+
+/* ==========================================================================
+   V3 — Quiet: no card containers. Keep the sequence and the rail; drop
+   fills/shadows and separate with rules and whitespace instead. Lighter
+   type, lime spent once (the year pill's fill on the three key years).
+   ========================================================================== */
+.v3 .jtl__card {
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  box-shadow: none;
+  padding: var(--s-lg) 0 0;
+}
+.v3 .jtl__item:nth-child(odd) .jtl__card { margin-bottom: 2rem; }
+.v3 .jtl__item:nth-child(even) .jtl__card { margin-top: 2rem; }
+.v3 .jtl__card::after { background: var(--border); }
+.v3 .jtl__yr { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.v3 .jtl__card--key .jtl__yr { background: transparent; border-color: var(--lime-on-light); color: var(--lime-on-light); }
+.v3 .jtl__t { font-weight: var(--fw-light); font-size: var(--fs-lg); }
+.v3 .jtl__ha { border-top: 0; padding-top: 0; margin-top: var(--s-md); }
+
+/* ==========================================================================
+   Responsive — below ~900px the zigzag has nowhere to go: collapse to one
+   vertical column with the rail down the left, same intent as the mockup's
+   own @media(max-width:1000px) block.
+   ========================================================================== */
+@media (max-width: 56.25rem) {
+  .jtl__head { flex-direction: column; align-items: flex-start; }
+  .jtl__count { text-align: left; }
+
+  .jtl__rail { display: none; }
+
+  .jtl__grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: clamp(2rem, 5vw, 3rem);
+  }
+  .jtl__list { display: contents; }
+  .jtl__item { display: block; }
+  .jtl__item .jtl__node { display: none; }
+  .jtl__item:nth-child(odd) .jtl__card,
+  .jtl__item:nth-child(even) .jtl__card {
+    grid-row: auto;
+    grid-column: auto;
+    margin: 0;
+    width: 100%;
+  }
+  .jtl__card {
+    border-left: 2px solid var(--lime);
+    border-radius: 0 var(--r-md) var(--r-md) 0;
+  }
+  .jtl__card::after { display: none; }
+  .v3 .jtl__card { border-left: 2px solid var(--lime-on-light); border-top: 0; padding: var(--s-md) 0 var(--s-md) var(--s-md); }
+  .v3 .jtl__item:nth-child(odd) .jtl__card,
+  .v3 .jtl__item:nth-child(even) .jtl__card { margin: 0; }
+  .v2 .jtl__card { border-left: 2px solid var(--lime); border-radius: 0 var(--r-md) var(--r-md) 0; }
+}
+
+@media (max-width: 24.375rem) {
+  .jtl__card { padding: 1rem; }
+  .jtl__count-n { font-size: clamp(2rem, 10vw, 2.5rem); }
+}
+
+/* ==========================================================================
+   Reduced motion — nothing here animates via CSS transition/keyframe (the
+   count-up is JS/GSAP and app.js already gates that globally), so there is
+   nothing to freeze mid-state. This rule exists to document that rather
+   than to change anything.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .jtl__rail i { transition: none; }
+}

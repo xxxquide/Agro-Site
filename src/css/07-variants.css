@@ -46,8 +46,14 @@
 .v2 #capacity h2, .v2 #terms h2, .v2 #journey h2,
 .v2 #capacity h3, .v2 #terms h3, .v2 #journey h3 { color: var(--white); }
 .v2 #capacity .lead, .v2 #terms .lead, .v2 #journey .lead { color: var(--on-dark-2); }
-.v2 #capacity .tag, .v2 #terms .tag, .v2 #journey .tag { color: var(--on-dark-2); }
-.v2 #capacity .tag::before, .v2 #terms .tag::before, .v2 #journey .tag::before { background: var(--lime); }
+/* #services and the two dark detail heroes were never added to this variation's
+   own on-dark rules, so the eyebrow kept its light-surface grey at 2.6:1. */
+.v2 #capacity .tag, .v2 #terms .tag, .v2 #journey .tag,
+.v2 #services .tag, .v2 .detail-hero__copy .tag,
+.v2 .profile-hero__copy .tag { color: var(--on-dark-2); }
+.v2 #capacity .tag::before, .v2 #terms .tag::before, .v2 #journey .tag::before,
+.v2 #services .tag::before, .v2 .detail-hero__copy .tag::before,
+.v2 .profile-hero__copy .tag::before { background: var(--lime); }
 
 /* cards inside a dark band invert */
 .v2 #capacity .cap__card {
@@ -55,19 +61,23 @@
   box-shadow: none;
   border: 1px solid var(--line-dark);
 }
-.v2 #capacity .cap__viz { background: rgba(0, 0, 0, .22); }
+/* The readouts used to sit bare on the dark band, so each one needed its own
+   inverted palette. They now live inside a self-contained white instrument
+   that sets its own colours, and those overrides would repaint its contents
+   white on white. All that is left for the band to style is the bench the
+   instrument stands on. */
+.v2 #capacity .cap__viz { background: rgba(0, 0, 0, .3); }
 .v2 #capacity .cap__txt p { color: var(--on-dark-2); }
-.v2 #capacity .bars__track { background: rgba(255, 255, 255, .12); }
-.v2 #capacity .bars__fill { background: var(--white); }
-.v2 #capacity .bars__row:first-child .bars__fill { background: var(--lime); }
-.v2 #capacity .bars__val { color: var(--on-dark-2); }
-.v2 #capacity .chart__fill { background: rgba(255, 255, 255, .18); }
-.v2 #capacity .chart__years { border-color: var(--line-dark); }
-.v2 #capacity .chart__years span { color: rgba(255, 255, 255, .45); }
-.v2 #capacity .lab__row { background: rgba(255, 255, 255, .07); }
-.v2 #capacity .orbit__ring { border-color: var(--line-dark-2); }
-.v2 #capacity .orbit__hub { background: var(--lime); color: var(--black); }
-.v2 #capacity .orbit__pill { background: var(--ink-2, #1c1c1c); color: var(--white); box-shadow: none; border: 1px solid var(--line-dark-2); }
+/* The plate behind the instrument is near-black by default, which is invisible
+   against this band. v2's whole grammar is hairline borders instead of fills,
+   so the plate becomes an outline here and the figure picks up the lime the
+   band already uses for accents. */
+.v2 #capacity .cap__back {
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid var(--line-dark-2);
+  box-shadow: none;
+}
+.v2 #capacity .cap__back-r b { color: var(--lime); }
 
 .v2 #terms .plan {
   background: rgba(255, 255, 255, .05);
@@ -75,10 +85,13 @@
   border: 1px solid var(--line-dark);
   color: var(--white);
 }
-.v2 #terms .plan__desc, .v2 #terms .plan__name { color: var(--on-dark-2); }
+/* the price unit was left on --text-2, which is 2.3:1 against the dark card */
+.v2 #terms .plan__desc, .v2 #terms .plan__name,
+.v2 #terms .plan__price span { color: var(--on-dark-2); }
 .v2 #terms .plan__list svg { color: var(--lime); }
 .v2 #terms .plan--hot { background: var(--lime); color: var(--black); border-color: var(--lime); }
-.v2 #terms .plan--hot .plan__desc, .v2 #terms .plan--hot .plan__name { color: #3f5610; }
+.v2 #terms .plan--hot .plan__desc, .v2 #terms .plan--hot .plan__name,
+.v2 #terms .plan--hot .plan__price span { color: #3f5610; }
 .v2 #terms .plan--hot .plan__list svg { color: var(--ink); }
 
 .v2 #journey::before { display: none; }
@@ -90,6 +103,7 @@
 /* --- light cards flatten to hairlines throughout v2 -------------------- */
 .v2 .card,
 .v2 .stat,
+.v2 .abstat,
 .v2 .value,
 .v2 .svc,
 .v2 .quote,
@@ -103,6 +117,44 @@
 
 /* subtle canvas alternation so the light sections do not run together */
 .v2 #crops, .v2 #faq { background: var(--grey-100); padding-bottom: var(--section); }
+
+/* v2 removes every card surface, so the shared card-lift dropped a soft shadow
+   from an invisible rectangle — a grey smudge hanging around bare text with no
+   edge to explain it. In this direction the hover has to be *drawn*: a hairline
+   frame and a white ground fade in behind the card. The surface lives on a
+   pseudo-element inset beyond the card's own box, so nothing in the grid moves
+   when it appears. */
+.v2 .member {
+  position: relative;
+  isolation: isolate;
+}
+.v2 .member::before {
+  content: "";
+  position: absolute;
+  inset: -.9rem -.9rem -1.1rem;
+  z-index: -1;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  transition: border-color var(--dur-sm) var(--ease),
+              background var(--dur-sm) var(--ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .v2 .member.card-lift:hover,
+  .v2 .member.card-lift:focus-visible {
+    box-shadow: none;
+    transform: translateY(-5px);
+  }
+  .v2 .member:hover::before,
+  .v2 .member:focus-visible::before {
+    border-color: var(--border);
+    background: var(--white);
+  }
+}
+/* Tonal stat tiles keep their fill in v2; the hairline border has to follow the
+   fill or it reads as a stray outline on a dark tile. */
+.v2 .stats-card--ink { border-color: var(--ink); }
+.v2 .stats-card--lime { border-color: var(--lime); }
 
 /* --- tighter, wider imagery -------------------------------------------- */
 .v2 .about__ph { border-radius: var(--r-sm); }
@@ -134,6 +186,7 @@
 /* --- no card containers: rules and space instead ----------------------- */
 .v3 .card,
 .v3 .stat,
+.v3 .abstat,
 .v3 .value,
 .v3 .cap__card,
 .v3 .plan,
@@ -147,9 +200,43 @@
 }
 .v3 .stat { border-top: 1px solid var(--border); border-radius: 0; padding-inline: 0; padding-top: var(--s-lg); }
 .v3 .stats { gap: var(--s-lg) var(--s-huge); }
+/* the about bento follows the same grammar: rules and space, no containers.
+   Its lime and ink cards lose their fills here, so their type has to come
+   back to the light-variant palette or it paints white on white. */
+.v3 .abstat { border-top: 1px solid var(--border); border-radius: 0; padding: var(--s-md) 0 0; }
+.v3 .abstats { gap: var(--s-md) var(--s-xl); }
+.v3 .abstat--lime .abstat__k,
+.v3 .abstat--ink .abstat__k { color: var(--text-2); }
+.v3 .abstat--ink .abstat__k i { background: currentColor; opacity: .5; }
+.v3 .abstat--ink .abstat__v b { color: var(--ink); }
+.v3 .abstat--lime .abstat__v em,
+.v3 .abstat--ink .abstat__v em { color: var(--text-2); }
+.v3 .abstat--ink { border-top-color: var(--ink); }
 .v3 .value { border-top: 1px solid var(--border); border-radius: 0; padding: var(--s-xl) 0 0; }
 .v3 .cap__card { border-top: 1px solid var(--border); border-radius: 0; padding: var(--s-huge) 0 0; }
 .v3 .cap__viz { background: transparent; border-radius: 0; padding: 0; min-height: 0; }
+/* v3 has no card containers at all, so a tilted plate would be the one boxed,
+   shadowed, rotated object on the page. The two tiers of information survive —
+   the card's name and its headline figure still lead the block — but they are
+   set as a plain typographic band on a rule, with no fill, no tilt and no
+   shadow, and the instrument follows directly underneath. */
+.v3 .cap__back {
+  position: static;
+  inset: auto;
+  background: none;
+  border-radius: 0;
+  border-top: 1px solid var(--border);
+  padding: var(--s-md) 0 0;
+  transform: none;
+  box-shadow: none;
+  align-items: baseline;
+}
+.v3 .cap__back-l b { color: var(--text); font-weight: var(--fw-light); font-size: var(--fs-lg); }
+.v3 .cap__back-l span, .v3 .cap__back-r i { color: var(--muted-on-light); }
+.v3 .cap__back-r b { color: var(--text); font-weight: var(--fw-light); font-size: 1.75rem; }
+.v3 .cap__stage .gauge { margin-top: var(--s-lg); }
+.v3 #capacity .cap__card:hover .cap__back,
+.v3 #capacity .cap__card:hover .cap__stage .gauge { transform: none; }
 .v3 .faq__i { border-bottom: 1px solid var(--border); border-radius: 0; }
 .v3 .faq__q { padding-inline: 0; }
 .v3 .faq__a { padding-inline: 0; }
@@ -181,6 +268,179 @@
 .v3 .milestone__body::before { display: none; }
 
 /* ==========================================================================
+   INNER-PAGE ART DIRECTION
+   ========================================================================== */
+
+/* V2 keeps the reference's editorial-industrial cadence on pages that do not
+   contain the home-only capacity/terms bands. */
+.v2 #services {
+  background: var(--ink);
+  color: var(--white);
+  margin-top: var(--section);
+  padding-block: var(--section);
+}
+.v2 #services .head h2,
+.v2 #services .svc h3 { color: var(--white); }
+.v2 #services .head .lead,
+.v2 #services .svc__body p { color: var(--on-dark-2); }
+.v2 #services .btn--outline {
+  color: var(--white);
+  box-shadow: inset 0 0 0 1px var(--line-dark-2);
+}
+.v2 #services .svc-list {
+  gap: 1px;
+  background: var(--line-dark);
+  border-block: 1px solid var(--line-dark);
+}
+.v2 #services .svc {
+  position: relative;
+  border: 0;
+  border-radius: 0;
+  background: var(--ink);
+  color: var(--white);
+}
+.v2 #services .svc__ph {
+  aspect-ratio: 16 / 10;
+  filter: saturate(.72) contrast(1.06);
+}
+.v2 #services .svc__body { min-height: 100%; justify-content: center; }
+.v2 #services .svc__index { color: var(--lime); }
+.v2 #services .svc-signal__track { background: rgba(255, 255, 255, .12); }
+.v2 #services .svc-signal__track i { background: var(--white); }
+.v2 #services .svc-signal__track:nth-child(2) i { background: var(--lime); }
+.v2 #services .svc__points svg { color: var(--lime); }
+.v2 #services .svc__points li { color: rgba(255, 255, 255, .88); }
+/* The mortar between the cards used to be a full ink panel showing through a
+   1px gap. Any moment a card had not painted yet — a lazy image still in
+   flight, a reveal mid-flight — that panel read as a black slab above the
+   grid. Hairline borders draw the same seam without a backing plate that can
+   ever be seen on its own. */
+.v2 .blog-grid {
+  gap: 0;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--ink);
+  border-radius: var(--r-sm);
+  overflow: clip;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+.v2 .blog-grid .post { border-radius: 0; box-shadow: 0 0 0 1px var(--ink); }
+.v2 .blog-grid .post:first-child { border-radius: var(--r-sm) 0 0 0; }
+.v2 .blog-grid .post:nth-child(2) { border-radius: 0 var(--r-sm) 0 0; }
+.v2 .blog-grid .post:last-child { grid-column: 1 / -1; min-height: 24rem; border-radius: 0 0 var(--r-sm) var(--r-sm); }
+
+/* V3 is a gallery rather than a flattened V1: services become indexed rows,
+   and the journal becomes one photographic feature beside a quiet index. */
+.v3 #services .head-row { align-items: end; }
+.v3 .svc-list { border-top: 1px solid var(--border); gap: 0; }
+.v3 .svc {
+  grid-template-columns: minmax(12rem, .62fr) minmax(18rem, 1.38fr);
+  border-top: 0;
+  border-bottom: 1px solid var(--border);
+  padding-block: clamp(1.5rem, 3vw, 2.5rem);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+.v3 .svc:nth-child(even) { grid-template-columns: minmax(12rem, .62fr) minmax(18rem, 1.38fr); }
+.v3 .svc:nth-child(even) .svc__ph { order: 0; }
+.v3 .svc__ph,
+.v3 .svc:nth-child(even) .svc__ph { aspect-ratio: 4 / 3; border-radius: var(--r-md); }
+.v3 .svc__body { padding: var(--s-sm) 0; }
+.v3 .svc__index { color: var(--text-2); }
+.v3 .svc-signal { grid-template-columns: repeat(3, 1fr); gap: .4rem; }
+.v3 .blog-grid {
+  grid-template-columns: minmax(0, 1.4fr) minmax(17rem, .6fr);
+  gap: 0 clamp(2rem, 5vw, 5rem);
+}
+.v3 .blog-grid .post:first-child {
+  grid-column: 1;
+  grid-row: 1 / span 5;
+  min-height: 44rem;
+  border-radius: var(--r-lg);
+}
+.v3 .blog-grid .post:not(:first-child) {
+  grid-column: 2;
+  min-height: 0;
+  padding: var(--s-lg) 0;
+  border-radius: 0;
+  border-top: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  overflow: visible;
+}
+.v3 .blog-grid .post:not(:first-child):last-child { border-bottom: 1px solid var(--border); }
+.v3 .blog-grid .post:not(:first-child)::after { display: none; }
+.v3 .blog-grid .post:not(:first-child) picture { display: none; }
+.v3 .blog-grid .post:not(:first-child) .post__title { color: var(--text); }
+.v3 .blog-grid .post:not(:first-child) .post__date,
+.v3 .blog-grid .post:not(:first-child) .post__ex { color: var(--text-2); }
+.v3 .blog-grid .post:not(:first-child) .post__go { color: var(--text); }
+.v3 .about__ph--intro { border-radius: 50% 50% var(--r-lg) var(--r-lg); aspect-ratio: 4 / 5; max-width: 30rem; justify-self: end; }
+
+/* ==========================================================================
+   PASS-2 ACCEPTANCE FIXES
+   ========================================================================== */
+
+.v1 .strip--orbit { overflow: clip; box-shadow: none; margin-bottom: clamp(1.5rem,3vw,3rem); }
+.v1 .partner-orbit__node .pm { min-width: 8.6rem; justify-content: center; transform: translateZ(0); }
+.v1 .partner-orbit__node .pm__t { text-align: center; }
+.v1 .about__ph, .v1 .phero__ph { background: transparent; }
+.v1 .stats-card { border: 1px solid rgba(229,232,224,.72); }
+
+.v2 .phero .tag { color: rgba(255,255,255,.72); }
+.v2 .phero .tag::before { background: var(--lime); }
+.v2 #capacity .chip--up, .v2 #capacity .chip--down { color: var(--white); background: rgba(255,255,255,.12); }
+.v2 #capacity .icon-badge { --badge-bg:var(--lime); --badge-fg:var(--ink); }
+.v2 .stats-card .icon-badge { --badge-bg:var(--ink); --badge-fg:var(--lime); }
+.v2 .tagband { margin-top: clamp(1.5rem,3vw,3rem); }
+.v2 #services + .section { padding-top: calc(var(--section) * 1.18); }
+.v2 .detail-hero__copy {
+  max-width:none; width:100%; padding:clamp(2rem,5vw,4.5rem);
+  border-radius:var(--r-sm); background:var(--ink); color:var(--white);
+}
+.v2 .detail-hero__copy h1, .v2 .profile-hero__copy h1 { color:var(--white); }
+/* Scoped to the ink panel, not to the page. On an article .detail-meta is inside
+   that panel; on a crop page it holds the breadcrumb and sits outside it, on
+   white, where on-dark grey measures 1.69:1. Same mistake the unscoped
+   .detail-back selector used to make. */
+.v2 .detail-hero__copy .lead, .v2 .detail-hero__copy .detail-meta,
+.v2 .detail-hero__copy .muted,
+.v2 .profile-hero__copy .lead, .v2 .profile-hero__copy .detail-back { color:var(--on-dark-2); }
+.v2 .profile-hero__copy { padding:clamp(2rem,5vw,4.5rem); border-radius:var(--r-sm); background:var(--ink); color:var(--white); border-top:0; }
+.v2 .profile-hero__copy .profile-role { color:var(--lime); }
+.v2 .detail-hero__media, .v2 .profile-hero__media { --media-radius:var(--r-sm); }
+
+.v3 .logo-bar {
+  background-color: rgba(224,237,246,.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  transform:translateZ(0);
+}
+.v3 .stats-card { min-height: 12.5rem; }
+.v3 .stats-card .icon-badge { --badge-bg:transparent; --badge-fg:var(--ink); box-shadow:inset 0 0 0 1px var(--border); }
+.v3 .stats-card::after { display:none; }
+.v3 .stats-card__spark i { background:var(--border); }
+.v3 .stats-card__spark i:nth-child(4), .v3 .stats-card__spark i:nth-child(5) { background:var(--ink); }
+.v3 .head-row {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,40rem) minmax(0,1fr);
+  align-items:end;
+  width:100%;
+}
+.v3 .head-row .head { grid-column:2; }
+.v3 .head-row > :last-child:not(.head) { grid-column:3; justify-self:end; }
+.v3 .quote {
+  background:var(--white);
+  border:1px solid var(--border);
+  box-shadow:0 12px 32px -25px rgba(15,30,20,.48);
+  overflow:hidden;
+}
+.v3 .quote__body { padding:var(--s-lg); min-height:13.5rem; }
+.v3 .rail-btns { margin-top:var(--s-sm); }
+.v3 .detail-hero__copy, .v3 .profile-hero__copy { border-top:1px solid var(--border); padding-top:var(--s-xl); }
+.v3 .profile-quote { box-shadow:none; border:1px solid var(--border); }
+
+/* ==========================================================================
    Shared: section numbering, used by v2 only
    ========================================================================== */
 
@@ -189,7 +449,7 @@
   font-family: var(--mono);
   font-size: var(--fs-xs);
   letter-spacing: .12em;
-  color: var(--grey-300);
+  color: var(--muted-on-light);
   display: block;
   margin-bottom: var(--s-sm);
 }
@@ -197,6 +457,165 @@
 .v2 #terms [data-secnum]::before,
 .v2 #journey [data-secnum]::before { color: rgba(255, 255, 255, .4); }
 
+/* --- inner-page heroes carry the same three art directions --------------- */
+.v2 .phero {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: clamp(31rem, 58vw, 43rem);
+  isolation: isolate;
+}
+.v2 .phero__copy,
+.v2 .phero__ph { grid-area: 1 / 1; min-height: inherit; }
+.v2 .phero__copy {
+  position: relative;
+  z-index: 2;
+  max-width: 42rem;
+  background: transparent;
+  color: var(--white);
+  padding: clamp(2rem, 6vw, 5.5rem);
+}
+.v2 .phero__copy h1 { color: var(--white); max-width: 14ch; }
+.v2 .phero__copy h1 > .soft { color: rgba(255, 255, 255, .66); }
+.v2 .phero__copy .lead,
+.v2 .phero__copy .avatars__t { color: rgba(255, 255, 255, .82); }
+.v2 .phero__ph { border-radius: var(--r); overflow: hidden; }
+.v2 .phero__ph::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(94deg, rgba(5, 24, 37, .88) 0%, rgba(5, 24, 37, .64) 42%, rgba(5, 24, 37, .08) 76%, transparent 100%);
+}
+.v2 .phero__ph img { object-position: 62% 50%; }
+
+.v3 .phero {
+  grid-template-columns: minmax(18rem, .85fr) minmax(24rem, 1.15fr);
+  gap: clamp(2rem, 6vw, 5rem);
+  align-items: stretch;
+  padding-bottom: clamp(2rem, 5vw, 4rem);
+  border-bottom: 1px solid var(--border);
+}
+.v3 .phero__copy {
+  background: transparent;
+  border-radius: 0;
+  padding-inline: 0;
+  border-top: 1px solid var(--border);
+}
+.v3 .phero__copy h1 { max-width: 13ch; }
+.v3 .phero__ph { border-radius: var(--r-lg); min-height: clamp(24rem, 42vw, 35rem); }
+.v3 .phero__ph img { object-position: 52% 50%; }
+
+/* V1 remains the elevated split-panel direction, but its surfaces are cleaner. */
+.v1 .phero__copy { background: linear-gradient(145deg, var(--grey-100), var(--mist)); }
+.v1 .phero__ph { box-shadow: var(--shadow); }
+
 @media (max-width: 64rem) {
   .v3 .milestone { grid-template-columns: 4rem 1fr; }
+  .v3 .phero { grid-template-columns: 1fr; }
+  .v3 .phero__copy { min-height: auto; padding-block: clamp(2rem, 6vw, 4rem); }
+  .v3 .phero__ph { min-height: 18rem; }
+  .v2 .phero { min-height: clamp(28rem, 78vw, 39rem); }
+  .v3 .svc,
+  .v3 .svc:nth-child(even) { grid-template-columns: 1fr; gap: var(--s-lg); }
+  .v3 .svc__ph,
+  .v3 .svc:nth-child(even) .svc__ph { order: -1; aspect-ratio: 16 / 9; }
+  .v3 .blog-grid { grid-template-columns: 1fr 1fr; gap: var(--s-lg); }
+  .v3 .blog-grid .post:first-child {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    min-height: 30rem;
+  }
+  .v3 .blog-grid .post:not(:first-child) { grid-column: auto; }
+}
+
+@media (max-width: 48rem) {
+  .v3 .head-row { grid-template-columns:1fr; gap:var(--s-xl); }
+  .v3 .head-row .head, .v3 .head-row > :last-child:not(.head) { grid-column:1; justify-self:center; }
+  .v3 .blog-grid { grid-template-columns: 1fr; }
+  .v3 .blog-grid .post:first-child { min-height: 24rem; }
+  .v3 .blog-grid .post:not(:first-child) { grid-column: 1; }
+  .v2 #services { margin-top: var(--section); }
+}
+
+@media (max-width: 35rem) {
+  .v2 .phero { min-height: 34rem; }
+  .v2 .phero__copy { padding: 2rem 1.25rem; justify-content: flex-end; }
+  .v2 .phero__ph::after {
+    background: linear-gradient(180deg, rgba(5, 24, 37, .18) 0%, rgba(5, 24, 37, .82) 64%, rgba(5, 24, 37, .94) 100%);
+  }
+  .v2 .phero__ph img { object-position: 58% 35%; }
+}
+
+/* v3 strips every card surface — which left the ink tile painting white text
+   and 18%-white bars onto the page's white canvas: "Відвантажено за сезон" was
+   simply invisible, and two thirds of its twelve-step climb with it. In a
+   direction built on rules and air, a tonal tile states its accent through the
+   rule above it and the weight of its figure, never through a fill. */
+.v3 .stats-card--ink,
+.v3 .stats-card--lime { color: inherit; }
+.v3 .stats-card--ink .stat__l, .v3 .stats-card--ink .stat__u,
+.v3 .stats-card--lime .stat__l, .v3 .stats-card--lime .stat__u { color: var(--text-2); }
+.v3 .stats-card--ink .stats-card__index,
+.v3 .stats-card--lime .stats-card__index { color: var(--muted-on-light); }
+.v3 .stats-card--ink { border-top: 2px solid var(--ink); }
+.v3 .stats-card--lime { border-top: 2px solid var(--lime-lo); }
+.v3 .stats-card--ink .icon-badge { --badge-bg: var(--ink); --badge-fg: var(--white); box-shadow: none; }
+.v3 .stats-card--lime .icon-badge { --badge-bg: var(--lime); --badge-fg: var(--ink); box-shadow: none; }
+
+/* The twelve-step climb on the wide tiles never got a v3 treatment at all. */
+.v3 .stats-card__plot { border-top-color: var(--border); }
+.v3 .stats-card__plot i { background: var(--border); }
+.v3 .stats-card__plot i:nth-child(n+9) { background: var(--ink); }
+.v3 .stats-card--lime .stats-card__plot i:nth-child(n+9) { background: var(--lime-lo); }
+
+/* v3 carries no shadows: the instrument states its edge with a hairline, the
+   same way every other surface in this direction does. */
+.v3 .gauge { box-shadow: none; border: 1px solid var(--border); }
+.v3 .cap__viz { padding: 0; }
+
+/* --- partner orbit, per variation ---------------------------------------
+   The orbit ships on all three now. v1 keeps the lime-lit version defined in
+   03-components.css; the two below re-finish it without changing its geometry,
+   so the three sites say the same thing in their own voice. */
+
+/* v2 is a banded, hairline variation, and its strip sits on the dark. Rings
+   drawn in --border are invisible there, the lime bloom behind the hub reads
+   as a smudge, and the marks need to become outlines like every other v2 card. */
+.v2 .strip--orbit { background: var(--field); color: var(--on-dark); }
+.v2 .strip--orbit .partner-stage__copy p { color: var(--on-dark-2); }
+/* No bloom. v1 lights the orbit from behind with lime; on v2's dark band the
+   same bloom blends with --field into a warm brown cast around the hub, and
+   v2 draws with hairlines rather than with light anyway. */
+.v2 .partner-orbit::before { display: none; }
+.v2 .partner-orbit__ring { border-color: var(--line-dark); }
+.v2 .partner-orbit__ring--mid { border-color: var(--line-dark); opacity: .6; }
+.v2 .partner-orbit__hub { background: var(--ink); border: 1px solid var(--line-dark-2); box-shadow: none; }
+.v2 .partner-orbit__node .pm {
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid var(--line-dark);
+  box-shadow: none;
+  color: var(--white);
+}
+.v2 .partner-orbit__node .pm__t { color: var(--white); }
+
+/* v3 has no card containers anywhere, so the marks lose theirs: the ring is
+   the only structure, the type is the mark, and the lime is spent once — on
+   the hub — exactly as the rest of the variation spends it. */
+.v3 .partner-orbit::before { display: none; }
+.v3 .partner-orbit__ring { border-color: var(--border); }
+.v3 .partner-orbit__ring--inner { border-style: solid; opacity: .8; }
+.v3 .partner-orbit__ring--mid { opacity: .65; }
+.v3 .partner-orbit__hub {
+  background: none;
+  color: var(--text);
+  box-shadow: none;
+  border: 1px solid var(--border);
+}
+.v3 .partner-orbit__hub span { font-weight: var(--fw-light); }
+.v3 .partner-orbit__hub small { color: var(--lime-on-light); }
+.v3 .partner-orbit__node .pm {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  padding: .3rem .4rem;
 }
