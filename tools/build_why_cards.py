@@ -68,7 +68,9 @@ CANVAS_H = M_T + BH + M_B   # 1272  -> 318 at 1x
 # Cyrillic and normalise differently between systems.
 JOBS = [
     ("why-chart", "cmslxruly1ahf06adl5x4rb0n", "218.96x281.6"),    # динаміка за 5 сезонів
-    ("why-silos", "cmslxrume1bvn07adrqc0g50j", "218.96x287.26"),   # зайнято під роздільне зберігання
+    ("why-silos", "cmsm02rvb1b1o07ad9v0i2bxr", "218.96x287.26"),   # зайнято під роздільне зберігання
+    # ^ re-export: the first one read "5 800 т" on the plate while its own rows
+    #   said 46 000 + 12 000. Same frame and geometry, so it drops straight in.
     ("why-lab",   "cmslxrurs1bvo07ad04hhnvn9", "254.46x309.94"),   # протокол до відвантаження
     ("why-route", "cmslxruml1aa706adp7pzxvo0", "239.98x308.74"),   # куди їде зерно
 ]
