@@ -97,7 +97,16 @@ def center_crop(im, ratio):
 
 def main():
     os.makedirs(OUT_DIR, exist_ok=True)
+    # Start from whatever is already recorded rather than a blank dict: the
+    # #why card exports are written into this same manifest by
+    # tools/build_why_cards.py, which has its own crop rules (alpha, no
+    # ratio crop). Replacing the file wholesale here would delete those
+    # entries and the next site build would fail on a missing image.
     manifest = {}
+    manifest_path = os.path.join(OUT_DIR, "manifest.json")
+    if os.path.exists(manifest_path):
+        with open(manifest_path) as fh:
+            manifest = json.load(fh)
     total = 0
 
     for name, prefix, ratio, widths in JOBS:
@@ -134,7 +143,7 @@ def main():
               f"avif@{smallest}={entry['files'][f'{smallest}.avif']//1024}KB "
               f"webp@{smallest}={entry['files'][f'{smallest}.webp']//1024}KB")
 
-    with open(os.path.join(OUT_DIR, "manifest.json"), "w") as fh:
+    with open(manifest_path, "w") as fh:
         json.dump(manifest, fh, indent=1)
 
     print(f"\nTOTAL image payload: {total/1024/1024:.2f} MB across "

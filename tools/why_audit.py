@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
-"""Sweep the #why cards across widths and assert nothing escapes its card.
+"""Sweep the #why cards across widths and assert they stay square with each other.
 
-The failure mode this guards is specific: the tilted plate (.wback) is rotated,
-and a rotation's corner excursion scales with the plate's width, so a plate
-that sits correctly at one card width can hang out of the card at another.
-This walks the viewport across the whole range in small steps and compares
-each plate's rendered bounding box against its own card's box.
+The cards are now the client's rendered images rather than CSS, so the things
+that can go wrong changed. This checks the three that matter:
 
-Also checks that the plate's visible band is actually visible (the headline
-figure must not slide behind the white instrument) and that no card scrolls
-horizontally.
+  1. Nothing is stretched. Every image's rendered aspect ratio must match its
+     own intrinsic ratio — the "lock aspect ratio" requirement, enforced rather
+     than assumed.
+  2. The four line up. They are one normalised canvas with the card body at a
+     fixed offset, so equal rendered widths means the bodies align; the text
+     column underneath has to share the body's left edge, not the edge of the
+     artwork's transparent margin.
+  3. Nothing collides or overflows. The tilted plates lean outside their
+     bodies, so neighbouring cards must not touch, and the row must not push
+     the page sideways.
 
     python3 tools/why_audit.py [--shot]
 """
@@ -17,7 +21,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
-import os
+import json
 import socket
 import sys
 import threading
@@ -31,12 +35,48 @@ ROOT = Path(__file__).resolve().parent.parent
 # .qa/ is the repo's ignored home for screenshot matrices — see .gitignore.
 SHOTS = ROOT / ".qa" / "why-shots"
 
-# card-width regimes: 2-up desktop, 1-up tablet, phone
 WIDTHS = list(range(320, 1441, 40)) + [1600, 1920]
 PAGES = ["index.html", "v2/index.html", "v3/index.html", "en/index.html"]
 SHOT_WIDTHS = [390, 768, 1024, 1440]
 
-TOL = 0.75  # px, sub-pixel rounding in getBoundingClientRect
+TOL = 0.75          # px, sub-pixel rounding in getBoundingClientRect
+RATIO_TOL = 0.005   # 0.5% — anything more is a visible stretch
+
+# body geometry baked into the normalised canvas by tools/build_why_cards.py
+BODY_LEFT_RATIO = 152 / 1204   # body's left edge, as a fraction of image width
+
+# Where the visible artwork sits inside each canvas, as fractions of it. The
+# rest is glow, so neighbouring cards' boxes overlapping is fine and expected;
+# their artwork touching is not. Written by tools/build_why_cards.py so this
+# tracks the assets instead of restating them.
+with open(ROOT / "assets" / "img" / "manifest.json") as _fh:
+    ART = {k: v["art"] for k, v in json.load(_fh).items() if "art" in v}
+
+PROBE = """
+() => {
+  const cards = [...document.querySelectorAll('#why .wcard')];
+  const wrap = document.querySelector('#why .wrap').getBoundingClientRect();
+  return {
+    wrap: { left: wrap.left, right: wrap.right },
+    docScroll: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    cards: cards.map((card, i) => {
+      const img = card.querySelector('.wfig img');
+      const h3 = card.querySelector('.wcard__h3');
+      const r = img.getBoundingClientRect();
+      const t = h3.getBoundingClientRect();
+      return {
+        i,
+        w: r.width, h: r.height,
+        left: r.left, right: r.right, top: r.top, bottom: r.bottom,
+        natW: img.naturalWidth, natH: img.naturalHeight,
+        complete: img.complete && img.naturalWidth > 0,
+        currentSrc: (img.currentSrc || '').split('/').pop(),
+        textLeft: t.left,
+      };
+    }),
+  };
+}
+"""
 
 
 def free_port() -> int:
@@ -45,203 +85,104 @@ def free_port() -> int:
         return s.getsockname()[1]
 
 
-PROBE = """
-() => {
-  const out = [];
-  document.querySelectorAll('#why .wcard').forEach((card, i) => {
-    const c = card.getBoundingClientRect();
-    const back = card.querySelector('.wback');
-    const front = card.querySelector('.wfront');
-    const fig = card.querySelector('.wback__r');
-    const b = back.getBoundingClientRect();
-    const f = front.getBoundingClientRect();
-    const g = fig.getBoundingClientRect();
-    out.push({
-      i,
-      cls: card.className,
-      // how far the plate pokes past each edge of its own card
-      outL: c.left - b.left,
-      outR: b.right - c.right,
-      outT: c.top - b.top,
-      // band of plate still showing above the instrument, at the plate's
-      // downhill end (the end the figure lives on)
-      band: f.top - b.top,
-      // is the figure clear of the instrument's top edge?
-      figClear: f.top - g.bottom,
-      cardW: c.width,
-      scrollX: card.scrollWidth - card.clientWidth,
-    });
-  });
-  return out;
-}
-"""
-
-# Each silo's reading must sit clear of, and above, its own fill. Both parts
-# have failed before: --f was once set on the fill itself, which its sibling
-# label could not inherit, so every label pinned to the same height; and a
-# short track leaves no room above a 79% fill, putting the label on it.
-# Nothing a widget draws may spill out of the white instrument that frames it.
-# The drought tag is the one that hangs lowest — it sits below the year row by
-# design — but this deliberately checks every descendant so a future widget
-# cannot quietly poke out either.
-SPILL_PROBE = """
-() => {
-  const out = [];
-  document.querySelectorAll('#why .wfront').forEach((front, i) => {
-    const f = front.getBoundingClientRect();
-    let worst = null;
-    front.querySelectorAll('*').forEach(el => {
-      if (!el.getClientRects().length) return;
-      // .sr is the visually-hidden caption: being outside the box is the
-      // whole point of it, so it is not a spill.
-      if (el.classList.contains('sr')) return;
-      const r = el.getBoundingClientRect();
-      const over = Math.max(f.top - r.top, r.bottom - f.bottom,
-                            f.left - r.left, r.right - f.right);
-      if (worst === null || over > worst.over) {
-        worst = { over, cls: el.className.toString().slice(0, 40) };
-      }
-    });
-    if (worst) out.push({ i, over: worst.over, cls: worst.cls });
-  });
-  return out;
-}
-"""
-
-# The chart's baseline rule must sit at the bars' feet — above the year row,
-# not struck through it. Its offset is counted back from the chart's bottom
-# edge, so any change to the chart's bottom padding or the year line-height
-# moves it onto the labels.
-BASELINE_PROBE = """
-() => {
-  const g = document.querySelector('#why .cgbars');
-  if (!g) return null;
-  const gr = g.getBoundingClientRect();
-  const ruleY = gr.bottom - parseFloat(getComputedStyle(g, '::after').bottom);
-  let through = 0, gapToYear = 9e9, gapToBar = 9e9;
-  g.querySelectorAll('.bcol').forEach(c => {
-    const yr = c.querySelector('span').getBoundingClientRect();
-    const bar = c.querySelector('.btrack i').getBoundingClientRect();
-    if (ruleY > yr.top + 0.5 && ruleY < yr.bottom - 0.5) through++;
-    gapToYear = Math.min(gapToYear, yr.top - ruleY);
-    gapToBar = Math.min(gapToBar, Math.abs(bar.bottom - ruleY));
-  });
-  return { through, gapToYear, gapToBar };
-}
-"""
-
-SILO_PROBE = """
-() => {
-  const out = [];
-  document.querySelectorAll('#why .silo').forEach((s, i) => {
-    const v = s.querySelector('.silo__v').getBoundingClientRect();
-    const f = s.querySelector('.silo__f').getBoundingClientRect();
-    const c = s.querySelector('.silo__cap').getBoundingClientRect();
-    out.push({
-      i,
-      gap: f.top - c.bottom,          // label clear of its fill
-      inside: Math.min(c.top - v.top, v.bottom - c.bottom),  // inside track
-      aspect: v.width / v.height,     // dome must stay portrait-ish
-    });
-  });
-  return out;
-}
-"""
-
-
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--shot", action="store_true", help="also write screenshots")
     args = ap.parse_args()
 
     port = free_port()
-    handler = partial(SimpleHTTPRequestHandler, directory=str(ROOT))
-    httpd = ThreadingHTTPServer(("127.0.0.1", port), handler)
+    httpd = ThreadingHTTPServer(
+        ("127.0.0.1", port), partial(SimpleHTTPRequestHandler, directory=str(ROOT))
+    )
     threading.Thread(target=httpd.serve_forever, daemon=True).start()
 
     fails: list[str] = []
-    worst = {"outL": -9e9, "outR": -9e9, "outT": -9e9, "band": 9e9, "figClear": 9e9}
+    worst = {"ratio": 0.0, "align": 0.0, "gap": 9e9, "overflow": -9e9}
 
     with sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page()
-        # the reveal animation starts cards translated/faded; land them
         page.emulate_media(reduced_motion="reduce")
 
         for rel in PAGES:
             for w in WIDTHS:
                 page.set_viewport_size({"width": w, "height": 1000})
                 page.goto(f"http://127.0.0.1:{port}/{rel}#why", wait_until="load")
-                page.wait_for_timeout(120)
-                try:
-                    rows = page.evaluate(PROBE)
-                except Exception as exc:  # pragma: no cover
-                    fails.append(f"{rel} @{w}: probe failed: {exc}")
+                page.wait_for_timeout(150)
+                d = page.evaluate(PROBE)
+                cards = d["cards"]
+                if len(cards) != 4:
+                    fails.append(f"{rel} @{w}: expected 4 cards, got {len(cards)}")
                     continue
-                if len(rows) != 4:
-                    fails.append(f"{rel} @{w}: expected 4 cards, got {len(rows)}")
-                for r in rows:
-                    tag = f"{rel} @{w}px card{r['i'] + 1}"
-                    for edge in ("outL", "outR", "outT"):
-                        worst[edge] = max(worst[edge], r[edge])
-                        if r[edge] > TOL:
+
+                for c in cards:
+                    tag = f"{rel} @{w}px card{c['i'] + 1}"
+                    if not c["complete"]:
+                        fails.append(f"{tag}: image did not load ({c['currentSrc']})")
+                        continue
+
+                    # 1. no stretching
+                    want = c["natW"] / c["natH"]
+                    got = c["w"] / c["h"]
+                    err = abs(got - want) / want
+                    worst["ratio"] = max(worst["ratio"], err)
+                    if err > RATIO_TOL:
+                        fails.append(
+                            f"{tag}: stretched — rendered {got:.4f} vs intrinsic "
+                            f"{want:.4f} ({err * 100:.2f}%)"
+                        )
+
+                    # 2b. the text column sits on the card body, not on the
+                    #     artwork's transparent margin
+                    body_left = c["left"] + c["w"] * BODY_LEFT_RATIO
+                    off = abs(body_left - c["textLeft"])
+                    worst["align"] = max(worst["align"], off)
+                    if off > 1.5:
+                        fails.append(
+                            f"{tag}: text starts {off:.1f}px off the card's own left edge"
+                        )
+
+                # 2a. all four rendered identically
+                ws = {round(c["w"], 1) for c in cards}
+                if len(ws) > 1:
+                    fails.append(f"{rel} @{w}px: cards render at different widths {sorted(ws)}")
+
+                # 3. neighbours must not touch, and the row must stay in the wrap
+                rows: dict[float, list[dict]] = {}
+                for c in cards:
+                    rows.setdefault(round(c["top"] / 5), []).append(c)
+                for _, row in rows.items():
+                    row.sort(key=lambda c: c["left"])
+                    for a, b in zip(row, row[1:]):
+                        # artwork edges, not box edges
+                        ka = ART.get(a["currentSrc"].rsplit("-", 1)[0])
+                        kb = ART.get(b["currentSrc"].rsplit("-", 1)[0])
+                        if not ka or not kb:
+                            fails.append(f"{rel} @{w}px: no artwork extents for "
+                                         f"{a['currentSrc']} / {b['currentSrc']}")
+                            continue
+                        a_right = a["left"] + a["w"] * ka[2]
+                        b_left = b["left"] + b["w"] * kb[0]
+                        gap = b_left - a_right
+                        worst["gap"] = min(worst["gap"], gap)
+                        if gap < -TOL:
                             fails.append(
-                                f"{tag}: plate escapes {edge} by {r[edge]:.1f}px "
-                                f"(cardW {r['cardW']:.0f})"
+                                f"{rel} @{w}px: cards {a['i'] + 1} and {b['i'] + 1} "
+                                f"overlap by {-gap:.1f}px"
                             )
-                    worst["band"] = min(worst["band"], r["band"])
-                    if r["band"] < 8:
-                        fails.append(
-                            f"{tag}: plate band only {r['band']:.1f}px "
-                            f"(cardW {r['cardW']:.0f})"
-                        )
-                    # v3 flattens the plate into a static header: the figure
-                    # sits in normal flow there, so the clearance test does
-                    # not apply.
-                    if "/v3/" not in rel:
-                        worst["figClear"] = min(worst["figClear"], r["figClear"])
-                        if r["figClear"] < 0:
-                            fails.append(
-                                f"{tag}: headline figure overlapped by instrument "
-                                f"by {-r['figClear']:.1f}px"
-                            )
-                    if r["scrollX"] > 1:
-                        fails.append(f"{tag}: card scrolls horizontally by {r['scrollX']}px")
-
-                bl = page.evaluate(BASELINE_PROBE)
-                if bl:
-                    worst["ruleToBar"] = max(worst.get("ruleToBar", 0), bl["gapToBar"])
-                    if bl["through"]:
-                        fails.append(
-                            f"{rel} @{w}px: baseline rule strikes through "
-                            f"{bl['through']} year label(s)"
-                        )
-                    if bl["gapToBar"] > 2:
-                        fails.append(
-                            f"{rel} @{w}px: baseline rule {bl['gapToBar']:.1f}px "
-                            f"off the bars' feet"
-                        )
-
-                for s in page.evaluate(SPILL_PROBE):
-                    worst["spill"] = max(worst.get("spill", -9e9), s["over"])
-                    if s["over"] > TOL:
-                        fails.append(
-                            f"{rel} @{w}px card{s['i'] + 1}: .{s['cls']} spills "
-                            f"{s['over']:.1f}px out of its instrument"
-                        )
-
-                # v3 keeps the silos but drops the card chrome; the readings
-                # still have to clear their fills there too.
-                for s in page.evaluate(SILO_PROBE):
-                    tag = f"{rel} @{w}px silo{s['i'] + 1}"
-                    worst["siloGap"] = min(worst.get("siloGap", 9e9), s["gap"])
-                    worst["siloAspect"] = max(worst.get("siloAspect", 0), s["aspect"])
-                    if s["gap"] < 1:
-                        fails.append(f"{tag}: reading overlaps its fill by {-s['gap']:.1f}px")
-                    if s["inside"] < -TOL:
-                        fails.append(f"{tag}: reading outside its track by {-s['inside']:.1f}px")
-                    if s["aspect"] > 1.6:
-                        fails.append(f"{tag}: dome too wide, aspect {s['aspect']:.2f}")
+                for c in cards:
+                    k = ART.get(c["currentSrc"].rsplit("-", 1)[0])
+                    if not k:
+                        continue
+                    art_l = c["left"] + c["w"] * k[0]
+                    art_r = c["left"] + c["w"] * k[2]
+                    over = max(d["wrap"]["left"] - art_l, art_r - d["wrap"]["right"])
+                    worst["overflow"] = max(worst["overflow"], over)
+                    if over > TOL:
+                        fails.append(f"{rel} @{w}px card{c['i'] + 1}: artwork "
+                                     f"{over:.1f}px outside the wrap")
+                if d["docScroll"] > 1:
+                    fails.append(f"{rel} @{w}px: page scrolls sideways by {d['docScroll']}px")
 
         if args.shot:
             SHOTS.mkdir(parents=True, exist_ok=True)
@@ -260,20 +201,17 @@ def main() -> int:
     httpd.shutdown()
 
     print(
-        "worst margins — plate past card: "
-        f"L {worst['outL']:.1f}px  R {worst['outR']:.1f}px  T {worst['outT']:.1f}px  "
-        f"| min band {worst['band']:.1f}px  | min figure clearance {worst['figClear']:.1f}px\n"
-        f"silos — min reading gap {worst.get('siloGap', 0):.1f}px  "
-        f"| widest dome aspect {worst.get('siloAspect', 0):.2f}\n"
-        f"widget spill past instrument: {worst.get('spill', 0):.1f}px "
-        f"(negative = clear)"
+        f"worst aspect-ratio error {worst['ratio'] * 100:.3f}%  "
+        f"| worst text/card misalignment {worst['align']:.2f}px\n"
+        f"tightest gap between neighbours {worst['gap']:.1f}px  "
+        f"| furthest past the wrap {worst['overflow']:.1f}px (negative = inside)"
     )
     if fails:
         print(f"\n{len(fails)} FAILURES (first 25):")
         for f in fails[:25]:
             print("  ", f)
         return 1
-    print(f"OK — {len(PAGES)} pages x {len(WIDTHS)} widths x 4 cards, nothing escapes.")
+    print(f"OK — {len(PAGES)} pages x {len(WIDTHS)} widths x 4 cards.")
     return 0
 
 
