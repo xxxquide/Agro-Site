@@ -103,6 +103,7 @@
 /* --- light cards flatten to hairlines throughout v2 -------------------- */
 .v2 .card,
 .v2 .stat,
+.v2 .abstat,
 .v2 .value,
 .v2 .svc,
 .v2 .quote,
@@ -185,6 +186,7 @@
 /* --- no card containers: rules and space instead ----------------------- */
 .v3 .card,
 .v3 .stat,
+.v3 .abstat,
 .v3 .value,
 .v3 .cap__card,
 .v3 .plan,
@@ -198,6 +200,18 @@
 }
 .v3 .stat { border-top: 1px solid var(--border); border-radius: 0; padding-inline: 0; padding-top: var(--s-lg); }
 .v3 .stats { gap: var(--s-lg) var(--s-huge); }
+/* the about bento follows the same grammar: rules and space, no containers.
+   Its lime and ink cards lose their fills here, so their type has to come
+   back to the light-variant palette or it paints white on white. */
+.v3 .abstat { border-top: 1px solid var(--border); border-radius: 0; padding: var(--s-md) 0 0; }
+.v3 .abstats { gap: var(--s-md) var(--s-xl); }
+.v3 .abstat--lime .abstat__k,
+.v3 .abstat--ink .abstat__k { color: var(--text-2); }
+.v3 .abstat--ink .abstat__k i { background: currentColor; opacity: .5; }
+.v3 .abstat--ink .abstat__v b { color: var(--ink); }
+.v3 .abstat--lime .abstat__v em,
+.v3 .abstat--ink .abstat__v em { color: var(--text-2); }
+.v3 .abstat--ink { border-top-color: var(--ink); }
 .v3 .value { border-top: 1px solid var(--border); border-radius: 0; padding: var(--s-xl) 0 0; }
 .v3 .cap__card { border-top: 1px solid var(--border); border-radius: 0; padding: var(--s-huge) 0 0; }
 .v3 .cap__viz { background: transparent; border-radius: 0; padding: 0; min-height: 0; }

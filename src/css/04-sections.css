@@ -317,7 +317,106 @@
   line-height: 1.4;
   color: var(--black);
 }
-.about__stats { margin-top: clamp(2.5rem, 5vw, 4rem); }
+/* --- about figures: compact bento ---------------------------------------
+   Built to the client's reference: a small mono label with a dot above the
+   figure, the figure large and tight with its unit small beside it, and one
+   lime accent in the group.
+
+   This is its own component rather than a restyle of .stat, which still
+   serves the crop detail pages with the icon/index header and bar plot that
+   suit a single crop's numbers. Here those turned six figures into 517px of
+   mostly filler; dropping them and moving the label above the number takes
+   the block to roughly 300px without shrinking a single figure.
+
+   Widths are per row, not per card: column 1 is wider and the loop puts a
+   `hero` there every third card, so the two large tonnages get the room and
+   the four short figures share the narrow columns.
+   ------------------------------------------------------------------------ */
+.about__stats { margin-top: clamp(1.75rem, 3.5vw, 2.75rem); }
+
+.abstats {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr 1fr;
+  gap: clamp(.55rem, .9vw, .85rem);
+}
+.abstat {
+  background: var(--white);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+  padding: clamp(.9rem, 1.4vw, 1.3rem) clamp(1rem, 1.6vw, 1.45rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: clamp(.75rem, 1.7vw, 1.3rem);
+  min-width: 0;
+}
+
+.abstat__k {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  font-family: var(--mono);
+  font-size: .625rem;
+  letter-spacing: .13em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--text-2);
+  min-width: 0;
+}
+.abstat__k i {
+  width: .3125rem;
+  height: .3125rem;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .5;
+  flex: none;
+}
+
+.abstat__v { display: flex; align-items: baseline; gap: .38rem; min-width: 0; }
+.abstat__v b {
+  font-size: clamp(1.75rem, .9rem + 2.5vw, 2.9rem);
+  font-weight: var(--fw-medium);
+  letter-spacing: -.045em;
+  line-height: .92;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.abstat__v em {
+  font-style: normal;
+  font-size: clamp(.75rem, .55rem + .45vw, .9375rem);
+  letter-spacing: -.01em;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+.abstat--hero .abstat__v b { font-size: clamp(2rem, .95rem + 3.2vw, 3.6rem); }
+
+/* the one lime accent, and the one dark anchor opposite it */
+.abstat--lime { background: var(--lime); box-shadow: none; }
+.abstat--lime .abstat__k { color: #46600d; }
+.abstat--lime .abstat__k i { opacity: .75; }
+.abstat--lime .abstat__v em { color: #46600d; }
+
+.abstat--ink { background: var(--ink); box-shadow: none; }
+.abstat--ink .abstat__k { color: var(--on-dark-2); }
+.abstat--ink .abstat__k i { background: var(--lime); opacity: 1; }
+.abstat--ink .abstat__v b { color: var(--white); }
+.abstat--ink .abstat__v em { color: var(--on-dark-2); }
+
+@media (max-width: 60rem) {
+  .abstats { grid-template-columns: 1fr 1fr; }
+  .abstat--hero .abstat__v b { font-size: clamp(1.75rem, .9rem + 2.5vw, 2.9rem); }
+}
+@media (max-width: 30rem) {
+  /* Stay two-up rather than dropping to one column: six figures in a single
+     stack ran 492px, which is the opposite of the point. The figure comes
+     down instead, so two cards still fit a 320px screen without the unit
+     wrapping under the number. */
+  .abstat { padding: .8rem .9rem; gap: .55rem; }
+  .abstat__v b,
+  .abstat--hero .abstat__v b { font-size: 1.5rem; }
+  .abstat__v em { font-size: .6875rem; }
+  .abstat__k { font-size: .5625rem; letter-spacing: .1em; }
+}
 
 /* --- capacity grid ------------------------------------------------------ */
 

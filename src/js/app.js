@@ -56,13 +56,12 @@
   } catch (e) {
     numberFormatter = { format: function (n) { return String(n); } };
   }
-  /* The locale-correct way to print a counter's final value. Deliberately NOT
-     used by settleCounters() below: every non-animating branch has always
-     printed the raw digits, so a visitor with reduced motion reads "14200"
-     where everyone else reads "14 200". Wiring this in would fix that
-     inconsistency and change what those visitors see, which is a decision for
-     the owner and not a side effect of a performance pass. Kept here because it
-     is where that fix belongs when it is signed off. */
+  /* The locale-correct way to print a counter's final value. Now used by
+     settleCounters() too: the non-animating branches used to print raw digits,
+     so a visitor with reduced motion read "14200" where everyone else read
+     "14 200". Signed off by the owner while the about figures were rebuilt —
+     that block puts the number at display size, which made the difference
+     impossible to miss. */
   function renderCounterFinal(el) {
     var target = parseFloat(el.getAttribute('data-count'));
     if (isNaN(target)) return;
@@ -74,10 +73,7 @@
      move one of them and leave the others behind. Formatting is byte-for-byte
      what the reduced-motion branch already produced; see above. */
   function settleCounters() {
-    all('[data-count]').forEach(function (el) {
-      var t = parseFloat(el.getAttribute('data-count'));
-      if (!isNaN(t)) el.textContent = t + (el.getAttribute('data-suffix') || '');
-    });
+    all('[data-count]').forEach(renderCounterFinal);
   }
 
   /* =========================================================================

@@ -320,10 +320,35 @@
 </article>
 {%- endmacro -%}
 
+{#- The about figures use their own compact bento rather than stat_card().
+    stat_card() still serves the crop detail pages unchanged — it carries a
+    decorative bar plot and an icon/index header that make sense next to a
+    single crop's numbers but turned this block into 517px of mostly filler.
+
+    Anatomy is the client's reference: a small mono label above the figure
+    rather than a caption under it, the figure large and tight with its unit
+    kept small beside it, and exactly one lime accent in the group. Reading
+    the label first and the number second is also why this reads as compact —
+    the number needs no second line to explain itself.
+
+    Widths are per row, not per card: `hero` takes the wider column in each
+    row, and the two rows put the two large tonnages there. Tones cycle so
+    the lime lands top-middle and the ink bottom-left, which keeps the two
+    heavy cards off the same diagonal. -#}
 {%- macro sec_stats(inner=False) -%}
 {%- if not inner %}<section class="section" aria-label="{{ c.about.eyebrow }}"><div class="wrap">{% endif %}
-<div class="stats about__stats" data-stagger=".08">
-  {%- for s in c.about.stats %}{{ stat_card(s, loop.index0) }}{% endfor %}
+{%- set tones = ['plain', 'plain', 'lime', 'ink', 'plain', 'plain'] -%}
+<div class="abstats about__stats" data-stagger=".06">
+  {%- for s in c.about.stats %}
+  {%- set dur = 1.3 if s.value < 100 else (1.9 if s.value < 10000 else 2.5) -%}
+  <article class="abstat abstat--{{ tones[loop.index0 % 6] }}{{ ' abstat--hero' if loop.index0 % 3 == 0 }}">
+    <span class="abstat__k"><i aria-hidden="true"></i>{{ s.label }}</span>
+    <span class="abstat__v">
+      <b class="stat__num" data-count="{{ s.value }}" data-dur="{{ dur }}">0</b>
+      {%- if s.suffix %}<em>{{ s.suffix|trim }}</em>{% endif %}
+    </span>
+  </article>
+  {%- endfor %}
 </div>
 {%- if not inner %}</div></section>{% endif %}
 {%- endmacro -%}
